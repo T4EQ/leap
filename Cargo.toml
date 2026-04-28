@@ -48,7 +48,7 @@ tracing-actix-web = "0.7.21"
 tracing-bunyan-formatter = "0.3.10"
 tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 uuid = { version = "1.23", features = ["serde", "v4"] }
-wasm-bindgen = "=0.2.118" # This pins a specific version of wasm-bindgen that needs to match the version of wasm-bindgen-cli in the nix flake.
+wasm-bindgen = "=0.2.120" # This pins a specific version of wasm-bindgen that needs to match the version of wasm-bindgen-cli in the nix flake.
 wasm-bindgen-futures = "0.4"
 wasm-logger = "0.2"
 web-sys = "0.3"

@@ -4,7 +4,9 @@ use crate::{
 };
 use gloo_net::http::Request;
 use gloo_timers::future::sleep;
-use leap_api::types::{IpConfig, NetworkConfig, ProvisionStatus, StaticIpConfig, WiredConfig, WirelessConfig};
+use leap_api::types::{
+    IpConfig, NetworkConfig, ProvisionStatus, StaticIpConfig, WiredConfig, WirelessConfig,
+};
 use secrecy::SecretString;
 use std::net::Ipv4Addr;
 use std::str::FromStr;

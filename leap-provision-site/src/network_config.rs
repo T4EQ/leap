@@ -3,10 +3,12 @@ use crate::{
     oninput,
 };
 use gloo_net::http::Request;
-use leap_api::types::{IpConfig, NetworkConfig, StaticIpConfig, WiredConfig, WirelessConfig};
+use gloo_timers::future::sleep;
+use leap_api::types::{IpConfig, NetworkConfig, ProvisionStatus, StaticIpConfig, WiredConfig, WirelessConfig};
 use secrecy::SecretString;
 use std::net::Ipv4Addr;
 use std::str::FromStr;
+use std::time::Duration;
 use wasm_bindgen_futures::spawn_local;
 use web_sys::{HtmlInputElement, HtmlSelectElement};
 use yew::prelude::*;
@@ -37,6 +39,7 @@ pub fn network_config_page() -> Html {
     let net_mask = use_state(String::new);
     let toast: UseStateHandle<Option<String>> = use_state(|| None);
     let submitting = use_state(|| false);
+    let reconnecting = use_state(|| false);
 
     let on_connection_change = {
         let connection_type = connection_type.clone();
@@ -76,6 +79,7 @@ pub fn network_config_page() -> Html {
         let net_mask = net_mask.clone();
         let toast = toast.clone();
         let submitting = submitting.clone();
+        let reconnecting = reconnecting.clone();
 
         Callback::from(move |_| {
             let conn_type = *connection_type;
@@ -87,6 +91,7 @@ pub fn network_config_page() -> Html {
             let net_mask_val = (*net_mask).clone();
             let toast = toast.clone();
             let submitting = submitting.clone();
+            let reconnecting = reconnecting.clone();
             let navigator = navigator.clone();
 
             submitting.set(true);
@@ -147,8 +152,47 @@ pub fn network_config_page() -> Html {
 
                 let response = match request.send().await {
                     Ok(r) => r,
-                    Err(e) => {
-                        toast.set(Some(format!("Request failed: {e}")));
+                    Err(_) => {
+                        // Connection dropped — the device is likely switching networks.
+                        // Poll /provision/status until we can confirm the result.
+                        reconnecting.set(true);
+
+                        // 45 polls × 2 s = 90 s, enough for the 30 s network test + reconnect.
+                        let mut result_msg: Option<String> = None;
+                        let mut navigated = false;
+                        for _ in 0..45u32 {
+                            sleep(Duration::from_secs(2)).await;
+                            let Ok(resp) = Request::get("/provision/status").send().await else {
+                                continue;
+                            };
+                            let Ok(status) = resp.json::<ProvisionStatus>().await else {
+                                continue;
+                            };
+                            match status {
+                                ProvisionStatus::NetworkConfig => {
+                                    result_msg = Some(
+                                        "Network configuration could not be applied. \
+                                         Please check your settings and try again."
+                                            .to_string(),
+                                    );
+                                }
+                                _ => {
+                                    navigator.replace(&Route::from(status));
+                                    navigated = true;
+                                }
+                            }
+                            break;
+                        }
+
+                        if !navigated {
+                            toast.set(Some(result_msg.unwrap_or_else(|| {
+                                "The device did not reconnect within the expected time. \
+                                 Please verify the network settings and try again."
+                                    .to_string()
+                            })));
+                        }
+
+                        reconnecting.set(false);
                         submitting.set(false);
                         return;
                     }
@@ -166,7 +210,7 @@ pub fn network_config_page() -> Html {
                 }
 
                 if let Ok(status_resp) = Request::get("/provision/status").send().await
-                    && let Ok(status) = status_resp.json::<leap_api::types::ProvisionStatus>().await
+                    && let Ok(status) = status_resp.json::<ProvisionStatus>().await
                 {
                     navigator.replace(&Route::from(status));
                 }
@@ -246,9 +290,15 @@ pub fn network_config_page() -> Html {
                 <div class="form-actions">
                     <button class="btn-primary" onclick={on_configure}
                         disabled={*submitting}>
-                        { "Configure" }
+                        if *submitting { { "Please wait…" } } else { { "Configure" } }
                     </button>
                 </div>
+                if *reconnecting {
+                    <p class="reconnect-notice">
+                        { "Waiting for the device to reconnect to the provisioning \
+                           network. This may take up to a minute…" }
+                    </p>
+                }
             </div>
         </div>
     }

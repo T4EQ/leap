@@ -11,6 +11,7 @@ repository = "https://github.com/t4eq/leap"
 [dependencies]
 anyhow.workspace = true
 gloo-net.workspace = true
+gloo-timers = { version = "0.3", features = ["futures"] }
 leap-api.path = "../leap-api"
 log.workspace = true
 secrecy.workspace = true

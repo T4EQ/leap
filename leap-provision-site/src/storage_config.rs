@@ -179,9 +179,14 @@ pub fn storage_config_page() -> Html {
                 </div>
                 <div class="form-actions">
                     <button class="btn-primary" onclick={on_format} disabled={*formatting}>
-                        { "Format" }
+                        if *formatting { { "Please wait…" } } else { { "Format" } }
                     </button>
                 </div>
+                if *formatting {
+                    <p class="reconnect-notice">
+                        { "Formatting storage device, please wait…" }
+                    </p>
+                }
             </div>
         </div>
     }

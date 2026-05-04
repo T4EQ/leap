@@ -177,20 +177,16 @@ pub fn leap_config_page() -> Html {
                             let Ok(status) = resp.json::<ProvisionStatus>().await else {
                                 continue;
                             };
-                            match status {
-                                ProvisionStatus::LeapConfig => {
-                                    result_msg = Some(
-                                        "LEAP configuration could not be applied. \
-                                         Please check your S3 settings and try again."
-                                            .to_string(),
-                                    );
-                                }
-                                _ => {
-                                    navigator.replace(&Route::from(status));
-                                    navigated = true;
-                                }
+                            if status == ProvisionStatus::LeapConfig {
+                                result_msg = Some(
+                                    "LEAP configuration could not be applied. \
+                                        Please check your S3 settings and try again."
+                                        .to_string(),
+                                );
+                            } else {
+                                navigator.replace(&Route::from(status));
+                                navigated = true;
                             }
-                            break;
                         }
 
                         if !navigated {

@@ -170,20 +170,16 @@ pub fn network_config_page() -> Html {
                             let Ok(status) = resp.json::<ProvisionStatus>().await else {
                                 continue;
                             };
-                            match status {
-                                ProvisionStatus::NetworkConfig => {
-                                    result_msg = Some(
-                                        "Network configuration could not be applied. \
-                                         Please check your settings and try again."
-                                            .to_string(),
-                                    );
-                                }
-                                _ => {
-                                    navigator.replace(&Route::from(status));
-                                    navigated = true;
-                                }
+                            if status == ProvisionStatus::NetworkConfig {
+                                result_msg = Some(
+                                    "Network configuration could not be applied. \
+                                        Please check your settings and try again."
+                                        .to_string(),
+                                );
+                            } else {
+                                navigator.replace(&Route::from(status));
+                                navigated = true;
                             }
-                            break;
                         }
 
                         if !navigated {

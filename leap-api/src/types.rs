@@ -216,7 +216,7 @@ impl NetworkConfig {
 
 pub type NetworkConfigResult = std::result::Result<(), String>;
 
-#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, Copy)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ProvisionStatus {
     NetworkConfig,
     StorageConfig,

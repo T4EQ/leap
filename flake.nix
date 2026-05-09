@@ -21,6 +21,7 @@
           ./leap-provision-site
           ./leap-server
           ./leap-linux
+          ./pkgs
         ];
 
         options = {
@@ -56,7 +57,7 @@
                     nativeBuildInputs = with pkgsWithRustOverlay; [
                       (rust-bin.fromRustupToolchainFile ./rust-toolchain.toml)
                       trunk
-                      wasm-bindgen-cli_0_2_118
+                      config.packages.wasm-bindgen-cli_0_2_120
                       dart-sass
                       cargo-watch
                       cargo-deny

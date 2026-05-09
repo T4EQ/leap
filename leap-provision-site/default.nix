@@ -1,7 +1,7 @@
 { inputs, ... }:
 {
   perSystem =
-    { pkgs, ... }:
+    { config, pkgs, ... }:
     {
       packages = {
         # The site is always cross compiled using trunk and wasm. That's why we can build it with the
@@ -19,7 +19,7 @@
 
           nativeBuildInputs = with pkgs; [
             trunk
-            wasm-bindgen-cli_0_2_118
+            config.packages.wasm-bindgen-cli_0_2_120
             dart-sass
             lld
           ];

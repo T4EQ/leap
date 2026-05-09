@@ -60,3 +60,8 @@ web-sys = "0.3"
 xshell = "0.2.7"
 yew = { version = "0.23.0", features = ["csr"] }
 yew-router = "0.20"
+
+[profile.release]
+# A few more settings for performance
+lto = "thin"
+codegen-units = 1

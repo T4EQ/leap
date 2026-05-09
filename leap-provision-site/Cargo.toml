@@ -1,6 +1,6 @@
 [package]
 name = "leap-provision-site"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 description = "Low-bandwidth Educational Access Platform provisioning frontend site"
 license = "MIT OR Apache-2.0"
@@ -11,8 +11,8 @@ repository = "https://github.com/t4eq/leap"
 [dependencies]
 anyhow.workspace = true
 gloo-net.workspace = true
-gloo-timers = { version = "0.3", features = ["futures"] }
-leap-api.path = "../leap-api"
+gloo-timers = { workspace = true, features = ["futures"] }
+leap-api.workspace = true
 log.workspace = true
 secrecy.workspace = true
 serde.workspace = true

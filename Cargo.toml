@@ -9,6 +9,10 @@ members = [
 ]
 
 [workspace.dependencies]
+# Internal workspace dependencies
+leap-api = { path = "./leap-api", version = "0.2.0" }
+
+# External dependencies
 actix-web = "4"
 actix-web-static-files = { version = "4.1", features = ["static-files-03"] }
 anyhow = "1.0"
@@ -25,6 +29,7 @@ deadpool-diesel = { version = "0.6.1", features = ["sqlite"] }
 diesel = { version = "2.3.7", features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
 diesel_migrations = "2.3.1"
 gloo-net = "0.7"
+gloo-timers = { version = "0.3", features = ["futures"] }
 googletest = "0.14"
 http = "1.4"
 humantime-serde = "1.1.1"

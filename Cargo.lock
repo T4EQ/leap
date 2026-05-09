@@ -2636,7 +2636,7 @@ checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
 
 [[package]]
 name = "leap-api"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "http 1.4.0",
  "humantime-serde",
@@ -2646,7 +2646,7 @@ dependencies = [
 
 [[package]]
 name = "leap-provision-site"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "gloo-net 0.7.0",
@@ -2666,7 +2666,7 @@ dependencies = [
 
 [[package]]
 name = "leap-server"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "actix-web",
  "actix-web-static-files",
@@ -2709,7 +2709,7 @@ dependencies = [
 
 [[package]]
 name = "leap-site"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "gloo-net 0.7.0",
@@ -4864,7 +4864,7 @@ checksum = "32ac00cd3f8ec9c1d33fb3e7958a82df6989c42d747bd326c822b1d625283547"
 
 [[package]]
 name = "xtask"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "clap",

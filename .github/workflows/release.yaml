@@ -1,0 +1,48 @@
+name: "Release job"
+
+on:
+  push:
+    tags: [ "v*.*.*" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  nix-release-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Disable app armor. Causes problems with bwrap and Nix.
+      run: |
+        sudo aa-teardown || true
+        sudo systemctl disable --now apparmor.service || true
+        sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+    - uses: actions/checkout@v6
+    - uses: cachix/install-nix-action@v31
+      with:
+        github_access_token: ${{ secrets.GITHUB_TOKEN }}
+        nix_path: nixpkgs=channel:nixos-unstable
+    - run: nix build .#leap-linux
+    - uses: actions/upload-artifact@v7
+      with:
+        name: leap-linux.img
+        path: ./result/images/sdcard.img
+
+  release:
+    runs-on: ubuntu-latest
+    needs: nix-release-linux
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v6
+    - uses: actions/download-artifact@v4
+      with:
+        name: leap-linux.img
+        path: artifacts/
+    - uses: release-drafter/release-drafter@v7
+      with:
+        name: ${{ github.ref_name }}
+        tag: ${{ github.ref_name }}
+        publish: true
+        files: artifacts/*
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -22,13 +22,13 @@ jobs:
         sudo aa-teardown || true
         sudo systemctl disable --now apparmor.service || true
         sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-    - uses: actions/checkout@v6
-    - uses: cachix/install-nix-action@v31
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+    - uses: cachix/install-nix-action@8aa03977d8d733052d78f4e008a241fd1dbf36b3 # v31
       with:
         github_access_token: ${{ secrets.GITHUB_TOKEN }}
         nix_path: nixpkgs=channel:nixos-unstable
     - run: nix build .#leap-linux
-    - uses: actions/upload-artifact@v7
+    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
       with:
         name: leap-linux.img
         path: ./result/images/sdcard.img

@@ -38,11 +38,6 @@ jobs:
       with:
         name: leap-linux.img
         path: artifacts/
-    - uses: release-drafter/release-drafter@c2e2804cc59f45f57076a99af580d0fedb697927 # v7
+    - uses: ncipollo/release-action@v1.21.0
       with:
-        name: ${{ github.ref_name }}
-        tag: ${{ github.ref_name }}
-        publish: true
-        files: artifacts/*
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        artifacts: artifacts/*

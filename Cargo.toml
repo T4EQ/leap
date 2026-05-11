@@ -29,7 +29,7 @@ deadpool-diesel = { version = "0.6.1", features = ["sqlite"] }
 diesel = { version = "2.3.7", features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
 diesel_migrations = "2.3.1"
 gloo-net = "0.7"
-gloo-timers = { version = "0.3", features = ["futures"] }
+gloo-timers = { version = "0.4", features = ["futures"] }
 googletest = "0.14"
 http = "1.4"
 humantime-serde = "1.1.1"

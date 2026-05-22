@@ -51,7 +51,7 @@ jobs:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
     - name: 'Install rust-toolchain.toml'
       run: rustup toolchain install
-    - uses: cargo-bins/cargo-binstall@1c2b96c2b86875d56caeec7b7ee9980812daf0d9 # main
+    - uses: cargo-bins/cargo-binstall@7884deddd95d515c3701294cf61a8b96cccc123b # main
     - run: cargo binstall trunk
     - run: cargo br
 

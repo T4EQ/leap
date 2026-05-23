@@ -23,9 +23,6 @@ ignore = [
     #{ crate = "a-crate-that-is-yanked@0.1.1", reason = "you can specify why you are ignoring the yanked crate" },
     { id = "RUSTSEC-2024-0370", reason = "There is no alternative to proc-macro-error. Yew 0.22 depends on it. At this time 0.22 is the latest version" },
     { id = "RUSTSEC-2025-0141", reason = "Yew 0.22 depends on it. At this time 0.22 is the latest version." },
-    { id = "RUSTSEC-2026-0104", reason = "rustls-webpki is used by aws crates, which did not yet update to patch the vulnerability." },
-    { id = "RUSTSEC-2026-0099", reason = "rustls-webpki is used by aws crates, which did not yet update to patch the vulnerability." },
-    { id = "RUSTSEC-2026-0098", reason = "rustls-webpki is used by aws crates, which did not yet update to patch the vulnerability." },
 ]
 # If this is true, then cargo deny will use the git executable to fetch advisory database.
 # If this is false, then it uses a built-in git library.

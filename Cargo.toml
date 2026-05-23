@@ -18,8 +18,8 @@ actix-web-static-files = { version = "4.1", features = ["static-files-03"] }
 anyhow = "1.0"
 async-stream = "0.3.6"
 async-trait = "0.1.89"
-aws-config = "1.8.15"
-aws-sdk-s3 = "1.129.0"
+aws-config = { version = "1.8.15", features = ["rt-tokio", "default-https-client"], default-features = false }
+aws-sdk-s3 = { version = "1.129.0", default-features = false, features = ["default-https-client", "http-1x", "rt-tokio", "sigv4a"] }
 built = "0.8.0"
 chrono = { version = "0.4", features = ["serde"] }
 clap = { version = "4.6", features = ["derive"] }

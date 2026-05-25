@@ -17,39 +17,54 @@ fn default_children_node() -> Vec<BlockDevice> {
     vec![]
 }
 
+/// Represents the type of a block device.
 #[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq, Eq)]
 pub enum BlockDeviceType {
+    /// A physical disk.
     #[serde(rename = "disk")]
     Disk,
 
+    /// A partition on a disk.
     #[serde(rename = "part")]
     Partition,
 }
 
+/// Represents a block device and its associated metadata.
+///
+/// This struct is used to represent the information returned by `lsblk`.
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct BlockDevice {
+    /// The kernel name of the block device (e.g., `/dev/sda`).
     #[serde(rename = "kname")]
     pub name: String,
 
+    /// Whether the device is removable.
     #[serde(rename = "rm")]
     pub removable: bool,
 
+    /// Whether the device is read-only.
     #[serde(rename = "ro")]
     pub read_only: bool,
 
+    /// The type of the block device.
     #[serde(rename = "type")]
     pub ty: BlockDeviceType,
 
+    /// The size of the device in bytes.
     pub size: u64,
 
+    /// The mount points where this device is currently mounted.
     pub mountpoints: Vec<String>,
 
+    /// The subsystems that this device belongs to.
     pub subsystems: String,
 
+    /// The child block devices (e.g., partitions of a disk).
     #[serde(default = "default_children_node")]
     pub children: Vec<BlockDevice>,
 }
 
+/// The output of the `lsblk` command in JSON format.
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct LsblkOutput {
     blockdevices: Vec<BlockDevice>,

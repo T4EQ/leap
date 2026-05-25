@@ -1,3 +1,14 @@
+//! Database and Manifest management.
+//!
+//! This module provides an abstraction over:
+//! - An SQLite database that handles the video status information.
+//! - A manifest file saved directly in filesystem storage. This was simpler
+//!   than coercing the manifest data into the database, which is complex
+//!   due to the amount of tables that it would require (due to normalization).
+//!
+//! The `Database` struct manages both the SQLite connection pool and an in-memory
+//! cache of the manifest file for fast access.
+
 mod models;
 mod schema;
 
@@ -13,37 +24,44 @@ use tokio::sync::RwLock;
 
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("migrations");
 
+/// Errors that can occur during database and manifest management.
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
+    /// An error occurred while interacting with the connection pool.
     #[error("Pool error: {0:?}")]
     Pool(#[from] deadpool_diesel::PoolError),
+    /// An error occurred while building the SQLite connection.
     #[error("Build error: {0:?}")]
     Build(#[from] deadpool_diesel::sqlite::BuildError),
+    /// A Diesel error occurred.
     #[error("Diesel error: {0:?}")]
     Diesel(#[from] diesel::result::Error),
+    /// An error occurred during database migration.
     #[error("Migration error")]
     Migration,
+    /// The provided download status is invalid.
     #[error("Invalid download status: {0:?}")]
     InvalidDownloadStatus(i64),
+    /// The provided UUID is invalid.
     #[error("Invalid uuid: {0:?}")]
     InvalidUUID(#[from] uuid::Error),
+    /// An error occurred while saving the manifest file to disk.
     #[error("Error saving manifest: {0:?}")]
     ManifestSaveFailed(std::io::Error),
+    /// A video is present in the manifest but not in the database.
     #[error("A video is not present in the DB but it is present in the manifest: {0}")]
     MissingVideoInDb(uuid::Uuid),
+    /// A video being deleted is still present in the manifest.
     #[error("The video being deleted is still present in the manifest: {0}")]
     VideoIsStillInManifest(uuid::Uuid),
+    /// An I/O error occurred.
     #[error("Filesystem error: {0}")]
     IoError(#[from] std::io::Error),
 }
 
 pub type Result<T> = core::result::Result<T, Error>;
 
-/// An abstraction over:
-/// - An sqlite database that handles the video status information.
-/// - A manifest file saved directly in fs storage. This was simpler
-///   than coercing the manifest data into the database, which is complex
-///   due to the amount of tables that it would require (due to normalization).
+/// The main entry point for interacting with the database and manifest.
 pub struct Database {
     config: DbConfig,
     pool: Pool<Manager<diesel::sqlite::SqliteConnection>>,

@@ -1,3 +1,8 @@
+//! Database models for the `leap-server`.
+//!
+//! This module defines the core data structures that map to the database tables,
+//! including `Video` and `DownloadStatus`.
+
 use std::{ffi::OsString, os::unix::ffi::OsStringExt, path::PathBuf};
 
 use diesel::{
@@ -7,11 +12,16 @@ use diesel::{
 
 use super::schema;
 
+/// Represents the current download status of a video.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum DownloadStatus {
+    /// The download has not started yet.
     Pending,
+    /// The download failed with the specified error message.
     Failed(String),
+    /// The download is in progress, with the current amount of bytes downloaded and total bytes.
     InProgress((u64, u64)),
+    /// The download is completed and the file is located at the specified path.
     Downloaded(PathBuf),
 }
 
@@ -68,20 +78,26 @@ pub const DOWNLOAD_STATUS_FAILED: i64 = 1;
 pub const DOWNLOAD_STATUS_IN_PROGRESS: i64 = 2;
 pub const DOWNLOAD_STATUS_DOWNLOADED: i64 = 3;
 
+/// Represents a video entry in the database.
 #[derive(Queryable, Debug, Clone, PartialEq, Eq)]
 #[diesel(table_name = schema::videos)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct Video {
+    /// The unique identifier for the video.
     #[diesel(deserialize_as = String)]
     pub id: uuid::Uuid,
 
+    /// The name of the video.
     pub name: String,
 
+    /// The total file size of the video in bytes.
     #[diesel(deserialize_as = i64)]
     pub file_size: u64,
 
+    /// The current download status of the video.
     pub download_status: DownloadStatus,
 
+    /// The number of times the video has been viewed.
     #[diesel(deserialize_as = i64)]
     pub view_count: u64,
 }

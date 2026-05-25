@@ -1,3 +1,32 @@
+//! This module provides the context for managing and providing content metadata throughout the application.
+//!
+//! It uses [`ContentContext`] to hold the playlists and [`ContentProvider`] as a context provider component
+//! that loads and keeps the [`ContentContext`] state.
+//!
+//! # Usage Guide
+//!
+//! Wrap your application (or a part of it) with the [`ContentProvider`] component to make the content
+//! metadata available via [`use_context`] in child components.
+//!
+//! ```rust,no_run
+//! use yew::prelude::*;
+//! use leap_site::context::{ContentProvider};
+//!
+//! #[function_component(MyComponent)]
+//! pub fn my_component() -> Html {
+//!     /// ...
+//! #   todo!()
+//! }
+//!
+//! fn App() -> Html {
+//!     html! {
+//!         <ContentProvider>
+//!             <MyComponent />
+//!         </ContentProvider>
+//!     }
+//! }
+//! ```
+
 use gloo_net::http::Request;
 use std::rc::Rc;
 use wasm_bindgen_futures::spawn_local;

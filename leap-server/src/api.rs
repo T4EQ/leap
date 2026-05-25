@@ -1,3 +1,9 @@
+//! API routing and shared data structures for the `leap-server`.
+//!
+//! This module defines the `ApiData` and `ProvisionApiData` structures which are
+//! shared across HTTP handlers, and provides functions to register handlers for
+//! both the main API and the provisioning API.
+
 use std::sync::Arc;
 
 use crate::provision::DynProvision;
@@ -9,10 +15,13 @@ use tokio::sync::mpsc::UnboundedSender;
 mod provision;
 mod user;
 
-/// Shared resources used in HTTP handlers
+/// Shared resources used in HTTP handlers.
 pub struct ApiData {
+    /// The LEAP configuration.
     config: LeapConfig,
+    /// A handle to the database.
     db: Arc<Database>,
+    /// A channel to send commands to the downloader service.
     cmd_sender: UnboundedSender<UserCommand>,
 }
 
@@ -30,9 +39,10 @@ impl ApiData {
     }
 }
 
-/// Shared resources used in HTTP handlers
+/// Shared resources used in provisioning HTTP handlers.
 #[derive(Debug)]
 pub struct ProvisionApiData {
+    /// The provisioning engine.
     provision: DynProvision,
 }
 
@@ -48,6 +58,7 @@ fn common_api_handlers() -> actix_web::Scope {
     web::scope("api").service(user::get_version)
 }
 
+/// Registers the main API handlers.
 pub fn register_handlers(app: &mut web::ServiceConfig) {
     app.service(
         common_api_handlers()
@@ -61,6 +72,7 @@ pub fn register_handlers(app: &mut web::ServiceConfig) {
     );
 }
 
+/// Registers the provisioning API handlers.
 pub fn register_provisioning_handlers(app: &mut web::ServiceConfig) {
     app.service(common_api_handlers());
     app.service(

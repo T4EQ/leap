@@ -1,3 +1,14 @@
+//! Component for configuring network settings.
+//!
+//! This component provides a form to configure:
+//! - **Connection type**: Wired or Wireless.
+//! - **Wireless settings**: SSID and password (if wireless is selected).
+//! - **IP configuration**: DHCP or Static IP (with IP, gateway, and netmask).
+//!
+//! When configured, the settings are sent to the server at `/provision/network`.
+//! The component handles the asynchronous submission and manages the connection
+//! state during the device's reconfiguration and potential network switch.
+
 use crate::{
     app::{Route, use_provision_redirect},
     oninput,
@@ -28,6 +39,7 @@ enum IpMode {
     Static,
 }
 
+/// The component for configuring network settings.
 #[function_component(NetworkConfigPage)]
 pub fn network_config_page() -> Html {
     use_provision_redirect(Route::NetworkConfig);

@@ -1,3 +1,13 @@
+//! Component for configuring storage settings.
+//!
+//! This component allows users to:
+//! - View available block storage devices on the system.
+//! - Select a device to be used for the LEAP installation.
+//! - Format the selected device, which will erase all its data.
+//!
+//! The component fetches device information from `/provision/storage/devices`
+//! and handles the formatting request at `/provision/storage/format`.
+
 use crate::app::{Route, use_provision_redirect};
 use gloo_net::http::Request;
 use leap_api::provision::storage::devices::get::BlockDevice;
@@ -37,6 +47,7 @@ async fn fetch_devices() -> Option<Vec<BlockDevice>> {
     }
 }
 
+/// The component for configuring storage settings.
 #[function_component(StorageConfigPage)]
 pub fn storage_config_page() -> Html {
     use_provision_redirect(Route::StorageConfig);

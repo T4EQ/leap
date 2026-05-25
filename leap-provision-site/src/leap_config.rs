@@ -1,3 +1,13 @@
+//! Component for configuring LEAP-specific settings.
+//!
+//! This component provides a form to configure:
+//! - **Downloader settings**: Concurrent downloads, update intervals, and retry backoff parameters.
+//! - **S3 settings**: Bucket URI, access keys, endpoint URL, region, and path-style access.
+//!
+//! When configured, the settings are sent to the server at `/provision/config`.
+//! The component handles the asynchronous submission and manages the connection
+//! state during the device's reconfiguration and potential network switch.
+
 use crate::{
     app::{Route, use_provision_redirect},
     oninput,
@@ -7,10 +17,10 @@ use gloo_timers::future::sleep;
 use leap_api::types::ProvisionStatus;
 use std::time::Duration;
 use wasm_bindgen_futures::spawn_local;
-use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew_router::prelude::*;
 
+/// The component for configuring LEAP-specific settings.
 #[function_component(LeapConfigPage)]
 pub fn leap_config_page() -> Html {
     use_provision_redirect(Route::LeapConfig);

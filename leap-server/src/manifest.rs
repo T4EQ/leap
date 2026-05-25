@@ -1,13 +1,23 @@
+//! This module defines the manifest file structure used to describe sets of videos
+//! and sections for the LEAP system.
+//!
+//! The manifest includes versioning, metadata for each video, and groups videos into sections.
+//! It provides serialization and deserialization support for JSON.
+
 use std::{fmt::Display, ops::Deref};
 
 /// Version data type made of major, minor and revision numbers.
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Version {
+    /// Major version number.
     pub major: u32,
+    /// Minor version number.
     pub minor: u32,
+    /// Revision number.
     pub revision: u32,
 }
 
+/// A SHA-256 hash represented as a hex string.
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Sha256(String);
 
@@ -18,6 +28,7 @@ impl Display for Sha256 {
 }
 
 impl Sha256 {
+    /// Returns the 32-byte representation of the SHA-256 hash.
     pub fn as_bytes(&self) -> [u8; 32] {
         (0..32)
             .map(|byte_idx| {

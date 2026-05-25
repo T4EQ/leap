@@ -1,3 +1,8 @@
+//! This module contains the dashboard page component.
+//!
+//! It displays a list of available playlists using [`PlaylistsList`], which in turn
+//! uses [`PlaylistCard`] to render each individual playlist.
+
 use std::hash::{DefaultHasher, Hasher};
 use yew::prelude::*;
 use yew_router::prelude::*;

@@ -1,3 +1,14 @@
+//! Handlers for the content and versioning API endpoints.
+//!
+//! This module provides endpoints for:
+//! - Fetching the current build information.
+//! - Listing content metadata.
+//! - Fetching specific content metadata by ID.
+//! - Streaming content (videos).
+//! - Incrementing view counts.
+//! - Fetching the latest manifest.
+//! - Fetching the system log file.
+
 use std::str::FromStr;
 
 use actix_web::{
@@ -58,6 +69,9 @@ impl From<crate::build_info::BuildInfo> for leap_api::api::version::get::BuildIn
         request_id = %uuid::Uuid::new_v4(),
     )
 )]
+/// Returns the current build information.
+///
+/// This endpoint provides information about the current version, git hash, and build profile.
 #[get("/version")]
 async fn get_version() -> impl Responder {
     let info = crate::build_info::get();
@@ -71,6 +85,9 @@ async fn get_version() -> impl Responder {
         request_id = %uuid::Uuid::new_v4(),
     )
 )]
+/// Lists all content metadata currently available in the server.
+///
+/// This endpoint returns a list of sections, each containing a list of video metadata.
 #[get("/content/meta")]
 async fn list_content_metadata(api_data: web::Data<ApiData>) -> impl Responder {
     use leap_api::api::content::meta::get::Response;
@@ -111,6 +128,11 @@ async fn list_content_metadata(api_data: web::Data<ApiData>) -> impl Responder {
         %id
     )
 )]
+/// Returns metadata for a specific video by its ID.
+///
+/// Returns `400 Bad Request` if the ID is invalid.
+/// Returns `200 OK` with `null` if the video is not found.
+/// Returns `500 Internal Server Error` if a database error occurs.
 #[get("/content/meta/{id}")]
 async fn content_metadata_for_id(
     api_data: web::Data<ApiData>,
@@ -146,6 +168,14 @@ async fn content_metadata_for_id(
         %id
     )
 )]
+/// Streams the content of a specific video.
+///
+/// This endpoint supports HTTP Range requests for partial content streaming,
+/// which is essential for seeking within video files.
+///
+/// Returns `400 Bad Request` if the ID is invalid.
+/// Returns `404 Not Found` if the video is not available.
+/// Returns `500 Internal Server Error` if there is an issue reading the file or the database.
 #[get("/content/{id}")]
 async fn get_content(
     api_data: web::Data<ApiData>,
@@ -289,6 +319,10 @@ async fn get_content(
         %id
     )
 )]
+/// Increments the view count for a specific video.
+///
+/// Returns `400 Bad Request` if the ID is invalid.
+/// Returns `404 Not Found` if the video is not found.
 #[post("/content/{id}/view")]
 async fn increment_view_cnt(api_data: web::Data<ApiData>, id: web::Path<String>) -> impl Responder {
     let Ok(id) = id.into_inner().try_into() else {
@@ -312,6 +346,7 @@ async fn increment_view_cnt(api_data: web::Data<ApiData>, id: web::Path<String>)
         request_id = %uuid::Uuid::new_v4(),
     )
 )]
+/// Returns the current manifest in JSON format.
 #[get("/manifest/latest")]
 async fn get_manifest(api_data: web::Data<ApiData>) -> impl Responder {
     let manifest = api_data.db.current_manifest().await;
@@ -332,6 +367,9 @@ async fn get_manifest(api_data: web::Data<ApiData>) -> impl Responder {
         request_id = %uuid::Uuid::new_v4(),
     )
 )]
+/// Triggers a new manifest fetch.
+///
+/// This tells the downloader service to fetch the latest manifest from the remote source.
 #[post("/manifest/fetch")]
 async fn fetch_manifest(api_data: web::Data<ApiData>) -> impl Responder {
     match api_data.cmd_sender.send(UserCommand::FetchManifest) {
@@ -350,6 +388,7 @@ async fn fetch_manifest(api_data: web::Data<ApiData>) -> impl Responder {
         request_id = %uuid::Uuid::new_v4(),
     )
 )]
+/// Returns the content of the system log file.
 #[get("/logfile")]
 async fn log_file(api_data: web::Data<ApiData>) -> impl Responder {
     let log = match tokio::fs::read_to_string(api_data.config.db_config.logfile()).await {

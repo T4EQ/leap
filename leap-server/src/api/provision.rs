@@ -1,3 +1,13 @@
+//! Handlers for the provisioning API endpoints.
+//!
+//! This module provides endpoints for:
+//! - Configuring network settings.
+//! - Listing available storage devices.
+//! - Formatting storage.
+//! - Configuring the LEAP system.
+//! - Completing the provisioning process.
+//! - Checking the current provisioning status.
+
 use std::path::PathBuf;
 
 use actix_web::{HttpResponse, Responder, get, post, web};
@@ -30,6 +40,7 @@ impl From<crate::provision::BlockDevice> for BlockDevice {
 }
 
 #[tracing::instrument(fields(request_id = %uuid::Uuid::new_v4()))]
+/// Configures the network settings.
 #[post("network")]
 async fn set_network_config(
     provision_data: web::Data<Mutex<ProvisionApiData>>,
@@ -45,6 +56,7 @@ async fn set_network_config(
 }
 
 #[tracing::instrument(fields(request_id = %uuid::Uuid::new_v4()))]
+/// Lists the available block devices.
 #[get("storage/devices")]
 async fn get_storage_devs(provision_data: web::Data<Mutex<ProvisionApiData>>) -> impl Responder {
     match provision_data.try_lock() {
@@ -65,6 +77,7 @@ struct FormatStorageQuery {
 }
 
 #[tracing::instrument(fields(request_id = %uuid::Uuid::new_v4()))]
+/// Formats a specific storage device.
 #[post("storage/format")]
 async fn format_storage(
     provision_data: web::Data<Mutex<ProvisionApiData>>,
@@ -80,6 +93,7 @@ async fn format_storage(
 }
 
 #[tracing::instrument(fields(request_id = %uuid::Uuid::new_v4()))]
+/// Configures the LEAP system.
 #[post("config")]
 async fn set_configuration(
     provision_data: web::Data<Mutex<ProvisionApiData>>,
@@ -95,6 +109,7 @@ async fn set_configuration(
 }
 
 #[tracing::instrument(fields(request_id = %uuid::Uuid::new_v4()))]
+/// Completes the provisioning process.
 #[post("complete")]
 async fn complete_provisioning(
     provision_data: web::Data<Mutex<ProvisionApiData>>,
@@ -109,6 +124,8 @@ async fn complete_provisioning(
 }
 
 #[tracing::instrument(fields(request_id = %uuid::Uuid::new_v4()))]
+/// Returns the current provisioning status, rebooting the system. This request is not expected to
+/// return in the happy path.
 #[get("status")]
 async fn status(provision_data: web::Data<Mutex<ProvisionApiData>>) -> impl Responder {
     match provision_data.try_lock() {

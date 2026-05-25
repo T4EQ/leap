@@ -1,10 +1,53 @@
-//! Implements the provisioning state machine for the LEAP server. Provisioning is made of:
-//! - A storage step in charge of formatting the external storage used for LEAP.
-//! - A networking step in charge of configuring the networking of LEAP (Wired/Wireless +
-//!   credentials and DHCP vs manual configuration).
-//! - A LEAP configuration step that creates the `config.toml` file for LEAP and validates it.
-//! - A completion step which triggers the system reboot and saves a record of the provision
-//!   process configuration.
+//! Implements the provisioning state machine for the LEAP server.
+//!
+//! Provisioning is a multi-step process implemented using the type-state pattern to ensure
+//! that steps are performed in the correct order. The process consists of:
+//!
+//! 1. **Storage**: Formatting the external storage used for LEAP.
+//! 2. **Networking**: Configuring the networking of LEAP (Wired/Wireless, credentials, DHCP/manual).
+//! 3. **Configuration**: Creating and validating the `config.toml` file for LEAP.
+//! 4. **Completion**: Triggering a system reboot and saving the provisioning record.
+//!
+//! ### Type-safe API
+//! The [`Provision`] struct uses the type-state pattern to enforce the provisioning sequence
+//! at compile time. Each step transitions the machine to a new state.
+//!
+//! ```rust,no_run
+//! # async fn provision_flow() -> anyhow::Result<()> {
+//! # let path = todo!();
+//! # let network_config = todo!();
+//! # let leap_config = todo!();
+//! use leap_server::provision::{Provision, StorageStep};
+//! // Example of using the type-safe API (pseudo-code)
+//! let provision = Provision::<StorageStep>::new().await?;
+//! let provision = provision.configure_storage(path).await.unwrap();
+//! let provision = provision.configure_network(&network_config).await.unwrap();
+//! let provision = provision.configure_leap(&leap_config).await.unwrap();
+//! provision.finish().await?;
+//! # Ok(())
+//! # }
+//! ```
+//!
+//! ### Dynamic API
+//! For cases where the state is not known at compile time (e.g., when handling a provisioning
+//! process that might have been interrupted), the [`DynProvision`] struct provides a
+//! dynamic representation of the state machine.
+//!
+//! ```rust,no_run
+//! # async fn provision_flow() -> anyhow::Result<()> {
+//! # let path = todo!();
+//! # let network_config = todo!();
+//! # let leap_config = todo!();
+//! use leap_server::provision::DynProvision;
+//! // Example of using the dynamic API
+//! let mut provision = DynProvision::new().await?;
+//! provision.configure_storage(path).await?;
+//! provision.configure_network(&network_config).await?;
+//! provision.configure_leap(&leap_config).await?;
+//! provision.finish().await?;
+//! # Ok(())
+//! # }
+//! ```
 
 use crate::cfg::LeapConfig;
 use leap_api::types::NetworkConfig;
@@ -59,6 +102,10 @@ impl ProvisionStep for StorageStep {}
 impl ProvisionStep for LeapConfigStep {}
 impl ProvisionStep for CompleteStep {}
 
+/// A type-safe state machine for the provisioning process.
+///
+/// The `Step` type parameter represents the current state of the provisioning process.
+/// This ensures that only valid transitions can be made at compile time.
 #[derive(Debug)]
 pub struct Provision<Step: ProvisionStep> {
     inner: Step,
@@ -171,9 +218,6 @@ impl Provision<CompleteStep> {
     }
 }
 
-/// Dynamic representation of the Provision state machine. Wraps the type-states so that methods
-/// can be called without knowing the exact state of the state machine. Handles invalid calls
-/// gracefully.
 #[allow(
     clippy::large_enum_variant,
     reason = "No improvement would be made here if we box each variant"
@@ -219,6 +263,11 @@ impl ProvisionVariant for CompleteStep {
     const NAME: &str = "CompleteStep";
 }
 
+/// A dynamic representation of the provisioning state machine.
+///
+/// This wraps the type-state machine [`Provision`] in an enum to allow for
+/// runtime state transitions. This is useful when the current state of
+/// provisioning is not known at compile time.
 pub struct DynProvision(Option<DynProvisionImpl>);
 
 impl DynProvision {

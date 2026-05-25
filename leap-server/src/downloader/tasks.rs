@@ -1,3 +1,18 @@
+//! This module provides the core logic for downloading and managing video content based on manifests.
+//!
+//! It handles the entire lifecycle of a download:
+//! - Initializing video entries in the database from a new manifest.
+//! - Cleaning up old video content that is no longer present in the manifest.
+//! - Managing a pool of concurrent download tasks with retry logic and exponential backoff.
+//! - Verifying the integrity of downloaded files using SHA-256 checksums.
+//!
+//! It depends on [`crate::db::Database`] for persistence and [`crate::manifest::ManifestFile`] for
+//! describing the content to be downloaded.
+//!
+//! # Usage Guide
+//!
+//! The primary entry point for downloading a manifest is [`download_manifest_task`].
+
 use crate::{
     db::{Database, DownloadStatus},
     manifest::{ManifestFile, Video},

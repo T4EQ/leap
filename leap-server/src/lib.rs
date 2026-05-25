@@ -11,6 +11,7 @@ use crate::{api::ProvisionApiData, cfg::LeapConfig};
 pub mod build_info;
 pub mod cfg;
 pub mod db;
+pub mod utils;
 
 mod api;
 mod downloader;

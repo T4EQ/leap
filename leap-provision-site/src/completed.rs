@@ -1,8 +1,14 @@
+//! Component for the completion page.
+//!
+//! This component is displayed when the provisioning process has finished successfully.
+//! It provides a way for the user to trigger a reboot of the device.
+
 use crate::app::{Route, use_provision_redirect};
 use gloo_net::http::Request;
 use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
 
+/// The component displayed when provisioning is successfully completed.
 #[function_component(CompletedPage)]
 pub fn completed_page() -> Html {
     use_provision_redirect(Route::Completed);

@@ -1,3 +1,23 @@
+//! Main application module for the LEAP Provisioning Site.
+//!
+//! This module defines the routing logic, the main application component,
+//! and the primary navigation flow for the provisioning process.
+//!
+//! It coordinates between various configuration pages (Storage, Network, Leap)
+//! and ensures the user is redirected to the correct step based on their
+//! current provisioning status.
+//!
+//! # Routing
+//!
+//! The application uses [`Route`] to manage navigation between different stages
+//! of the provisioning process.
+//!
+//! # Navigation Flow
+//!
+//! The application uses the [`use_provision_redirect`] hook to automatically
+//! synchronize the client-side route with the actual provisioning status fetched
+//! from the server.
+
 use crate::completed::CompletedPage;
 use crate::leap_config::LeapConfigPage;
 use crate::network_config::NetworkConfigPage;
@@ -9,16 +29,22 @@ use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
 use yew_router::prelude::*;
 
+/// Represents the different routes available in the provisioning application.
 #[derive(Debug, Clone, PartialEq, Routable)]
 pub enum Route {
+    /// The initial landing page.
     #[at("/")]
     Start,
+    /// The page for configuring storage settings.
     #[at("/storage")]
     StorageConfig,
+    /// The page for configuring network settings.
     #[at("/network")]
     NetworkConfig,
+    /// The page for configuring LEAP-specific settings.
     #[at("/leap")]
     LeapConfig,
+    /// The page shown when provisioning is complete.
     #[at("/completed")]
     Completed,
 }
@@ -34,6 +60,10 @@ impl From<ProvisionStatus> for Route {
     }
 }
 
+/// A hook that synchronizes the current route with the provisioning status from the server.
+///
+/// This hook fetches the current provisioning status from `/provision/status`
+/// and redirects the user to the appropriate route if it differs from the current one.
 #[hook]
 pub fn use_provision_redirect(current: Route) {
     let navigator = use_navigator().unwrap();
@@ -62,6 +92,7 @@ pub fn use_provision_redirect(current: Route) {
     });
 }
 
+/// The initial landing page component.
 #[function_component(StartPage)]
 pub fn start_page() -> Html {
     use_provision_redirect(Route::StorageConfig);
@@ -88,6 +119,7 @@ fn switch(route: Route) -> Html {
     }
 }
 
+/// The main application component.
 #[function_component(App)]
 pub fn app() -> Html {
     html! {

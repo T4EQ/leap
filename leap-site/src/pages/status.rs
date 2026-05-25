@@ -1,3 +1,11 @@
+//! This module contains the status page component.
+//!
+//! The status page provides a comprehensive overview of the system's current state, including:
+//! - Build information (version, authors, etc.)
+//! - Current manifest information
+//! - Pending downloads
+//! - System logs
+
 use crate::context::ContentContextHandle;
 
 use gloo_net::http::Request;

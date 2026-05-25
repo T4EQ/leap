@@ -1,3 +1,11 @@
+//! S3 backend implementation for downloading resources.
+//!
+//! This module provides [`S3Backend`], which implements the [`crate::downloader::backend::Backend`]
+//! trait for interacting with Amazon S3 or S3-compatible storage services.
+//! It supports downloading resources via URIs and fetching manifests.
+//!
+//! It depends on [`aws_sdk_s3`] for interacting with S3.
+
 use std::pin::Pin;
 
 use crate::cfg::S3Config;
@@ -17,6 +25,10 @@ struct ResolvedS3Config {
     pub region: String,
 }
 
+/// An S3 backend for downloading resources.
+///
+/// This backend implements [`crate::downloader::backend::Backend`] and interacts with an
+/// S3-compatible storage service to fetch resources and manifests.
 pub struct S3Backend {
     client: Client,
     bucket: String,
@@ -61,6 +73,18 @@ impl S3Backend {
         })
     }
 
+    /// Creates a new `S3Backend` for the given bucket.
+    ///
+    /// # Arguments
+    ///
+    /// * `bucket` - The name of the S3 bucket to use.
+    /// * `s3_config` - The configuration for the S3 backend.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if:
+    /// - The S3 configuration cannot be resolved (e.g., missing credentials).
+    /// - The AWS client fails to initialize.
     pub async fn new(bucket: &str, s3_config: &crate::cfg::S3Config) -> anyhow::Result<Self> {
         tracing::info!("Initializing S3 backend for bucket: {}", bucket);
         let s3_config = Self::resolve_s3_config(s3_config)?;

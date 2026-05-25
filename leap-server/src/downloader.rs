@@ -1,5 +1,50 @@
-mod backend;
+//! This module implements the downloader logic for the leap server.
+//!
+//! The downloader is responsible for periodically checking for updated manifests
+//! from a remote backend (either S3 or a local filesystem) and ensuring that
+//! the latest files are downloaded and stored in the local database.
+//!
+//! It handles:
+//! - Manifest polling and update detection.
+//! - Automatic resumption of interrupted downloads.
+//! - Backend abstraction (S3 or local file system).
+//! - User-triggered manifest fetches.
+//!
+//! It depends on [`crate::db::Database`] for persisting manifest state and
+//! [`crate::cfg::DownloaderConfig`] for configuration.
+//!
+//! # Usage Guide
+//!
+//! The primary entry point is [`run_downloader`], which should be run in its own
+//! asynchronous task. It requires a [`DownloaderConfig`], [`S3Config`], an [`Arc<Database>`],
+//! and a receiver for [`UserCommand`]s.
+//!
+//! ```rust,no_run
+//! use std::sync::Arc;
+//! use tokio::sync::mpsc;
+//! use leap_server::downloader::{run_downloader, UserCommand};
+//! use leap_server::cfg::{DownloaderConfig, S3Config};
+//! use leap_server::db::Database;
+//!
+//! // ... setup config and db ...
+//! # let db = todo!();
+//! # let config = todo!();
+//! # let s3_config = todo!();
+//!
+//! let (cmd_tx, cmd_rx) = mpsc::unbounded_channel();
+//!
+//! // Run the downloader in the background
+//! tokio::spawn(async move {
+//!     run_downloader(config, s3_config, db, cmd_rx).await.unwrap();
+//! });
+//!
+//! // Trigger a fetch manually
+//! cmd_tx.send(UserCommand::FetchManifest).unwrap();
+//! ```
+
+pub mod backend;
 pub mod s3backend;
+
 mod tasks;
 
 use std::{path::PathBuf, sync::Arc};

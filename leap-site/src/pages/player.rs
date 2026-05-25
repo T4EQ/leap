@@ -1,3 +1,8 @@
+//! This module contains the video player page component.
+//!
+//! It allows users to view a specific video within a playlist. It also provides
+//! a list of other videos in the same playlist for easy navigation.
+
 use crate::context::ContentContextHandle;
 use gloo_net::http::Request;
 use leap_api::api::content::meta::get::VideoStatus::{Downloaded, Downloading, Failed, Pending};

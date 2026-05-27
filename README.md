@@ -14,8 +14,23 @@ The `LEAP` system consists of:
 - A management API to initiate the download of video content from remote servers,
 as well as managing the local content available in LEAP.
 
-The `LEAP` functionality can run in low power devices such as raspberry pi and similar SBCs, and is
-tailored such that it uses minimal resources during runtime.
+`LEAP` is designed to run in low power devices such as raspberry pi and similar SBCs, and is
+tailored such that it uses minimal resources during runtime. The default build targets
+a Raspberry Pi 4 with 1GiB of RAM.
+
+## Provisioning
+
+On first boot, or if no external storage device is detected, the device boots into a provisioning mode. 
+In this mode, it starts a dedicated wireless hotspot named `LEAP-setup`.
+
+Connecting to this hotspot allows you to access a web-based configuration interface (implemented via 
+the `leap-provision-site` crate) to perform the following tasks:
+
+- **Select External Storage**: Choose the external drive to be used for configuration and data 
+storage. The system SD card remains read-only to increase the lifetime of the card.
+- **Configure Networking**: Set up network connectivity options.
+- **Configure LEAP Options**: Set LEAP-specific parameters, such as the remote S3 server bucket and 
+retry parameters.
 
 ## Getting started
 
@@ -31,12 +46,14 @@ The layout of this directory is as follows:
 ```
 .
 ├── README.md           -> This file. Contains information about the project.
+├── leap-api            -> A library crate containing data types that are shared between frontend and backend.
+├── leap-linux          -> The full Linux image build definition using Buildroot and Nix.
+├── leap-provision-site -> The web-based configuration interface crate used during provisioning.
 ├── leap-server         -> The main web server application crate, build using actix-web.
 ├── leap-site           -> The frontend application crate, built using Yew. It is built as a wasm application and embedded into the leap-server binary.
 │   ├── index.html      -> The entrypoint of the single-page web application. The body tag is populated from the Yew app.
 │   ├── index.scss      -> The sylesheet applicable to the whole frontend.
 │   └── ...             -> Other files belonging a regular Rust crate.
-├── leap-api            -> A library crate containing data types that may be shared between frontend and backend.
 ├── xtask               -> A binary crate that implements tasks to build and run the whole project.
 ├── flake.nix           -> Declares the dependencies of the project in order to perform reproducible builds. You can safely ignore this file.
 ├── flake.lock          -> Pins the dependencies of the repository. You can safely ignore this file.
@@ -47,12 +64,12 @@ The layout of this directory is as follows:
 ### Dependencies
 
 This website relies on the following software:
-- `Rust`, `v1.91.1`. It is recommended you install a toolchain using [rustup](rustup.rs), to help you manage multiple installs.
+- `Rust`, `v1.95`. It is recommended you install a toolchain using [rustup](rustup.rs), to help you manage multiple installs.
   Alternatively, using the `nix develop` environment will include the right versions out of the box.
 - `trunk`, `v0.21` application bundler. See install instructions [here](https://trunkrs.dev/) 
 - _Optional:_ `Nix` package manager. See install instructions [here](https://nixos.org/download/).
 
-The `Nix` package manager is used to ensure that the build results are fully reproducible accross 
+The `Nix` package manager is used to ensure that the build results are fully reproducible across 
 all machines. When using `Nix`, you don't need to worry about installing other tools separately. 
 It is mostly intended for continuous integration/deployment in GitHub, so you may decide to skip 
 its installation for your local development setup.
@@ -89,8 +106,8 @@ cargo rr
 Note that this command does not terminate, but keeps serving the website at `http://localhost:8080`. 
 
 For development, you might want to use [`cargo-watch`](https://crates.io/crates/cargo-watch) to watch 
-all file changes and automatically rebuild the `leap-server` (and `leap-site`) when they change, 
-so that simply refreshing the web browser page displays the latest edits. 
+all file changes and automatically rebuild the `leap-server` (and both `leap-site` and `leap-provision-site`) 
+when they change, so that simply refreshing the web browser page displays the latest edits. 
 
 ```sh
 cargo watch -x 'rr'
@@ -135,3 +152,11 @@ A static binary will be present under the `result/bin/leap-server` path, compile
 Note that this build can be particularly slow if you are building on an x64 computer, because it is 
 cross compiling to aarch64 and running aarch64 binaries. In order to run aarch64 binaries, you might 
 need to register an interpreter for aarch64 elf binaries using [binfmt](https://man.archlinux.org/man/binfmt.d.5.en).
+
+### Build the Linux Image
+
+To build the full Linux image, use:
+
+```sh
+nix build --extra-experimental-features 'nix-command flakes' .#leap-linux
+```

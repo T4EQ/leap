@@ -1,3 +1,50 @@
+//! The `leap-server` crate provides the core server functionality for Leap.
+//!
+//! It is responsible for managing the main application server, which includes
+//! an API, a database connection, and a background downloader task. Additionally,
+//! it provides a provisioning server for device setup.
+//!
+//! ## Main Components
+//!
+//! - **Application Server**: The primary entry point for interacting with Leap,
+//!   providing the main API via [`run_app`].
+//! - **Provisioning Server**: A specialized server for provisioning devices via [`run_provisioning`].
+//! - **Downloader**: A background task managed by the application server that handles
+//!   asynchronous downloads.
+//! - **Database**: Manages persistent storage via the [`db`] module.
+//!
+//! ## Usage Guide
+//!
+//! To start the main application, use [`run_app`] with a [`TcpListener`] and a [`LeapConfig`].
+//!
+//! ```rust,no_run
+//! use leap_server::{run_app, cfg::LeapConfig};
+//! use std::net::TcpListener;
+//! use std::path::Path;
+//!
+//! #[tokio::main]
+//! async fn main() -> anyhow::Result<()> {
+//!     let listener = TcpListener::bind("127.0.0.1:8080")?;
+//!     let config = leap_server::cfg::get_config(&Path::new("config.toml"))?;
+//!     run_app(listener, config).await?;
+//!     Ok(())
+//! }
+//! ```
+//!
+//! To start the provisioning server, use [`run_provisioning`]:
+//!
+//! ```rust,no_run
+//! use leap_server::run_provisioning;
+//! use std::net::TcpListener;
+//!
+//! #[tokio::main]
+//! async fn main() -> anyhow::Result<()> {
+//!     let listener = TcpListener::bind("127.0.0.1:9000")?;
+//!     run_provisioning(listener).await?;
+//!     Ok(())
+//! }
+//! ```
+//!
 use actix_web::{App, HttpServer, web};
 use anyhow::Context;
 use tokio::sync::{Mutex, mpsc};
@@ -11,12 +58,12 @@ use crate::{api::ProvisionApiData, cfg::LeapConfig};
 pub mod build_info;
 pub mod cfg;
 pub mod db;
+pub mod downloader;
+pub mod manifest;
+pub mod provision;
 pub mod utils;
 
 mod api;
-mod downloader;
-mod manifest;
-mod provision;
 mod static_files;
 
 pub async fn init_logging(logfile: Option<&Path>, debug: bool) {

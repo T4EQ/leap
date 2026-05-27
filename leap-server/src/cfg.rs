@@ -1,3 +1,34 @@
+//! Configuration management for the LEAP server.
+//!
+//! This module provides structures and functions for loading and managing the
+//! configuration of the LEAP application, including settings for the downloader,
+//! database, and S3 access. Configuration can be loaded from a file and
+//! overridden by environment variables prefixed with `LEAP_`.
+//!
+//! # Environment Variables
+//!
+//! The following environment variables can be used to override configuration settings.
+//! Nested configuration structures are delimited by double underscores (`__`).
+//!
+//! | Environment Variable | Description |
+//! | --- | --- |
+//! | `LEAP_DEBUG` | Enables debug logging/tracing. |
+//! | `LEAP_DOWNLOADER_CONFIG__CONCURRENT_DOWNLOADS` | Number of maximum concurrent downloads. |
+//! | `LEAP_DOWNLOADER_CONFIG__CONTENT_PATH` | The read/writeable path where the video files will be stored. |
+//! | `LEAP_DOWNLOADER_CONFIG__REMOTE_SERVER` | URI of the remote server providing the manifest and content cached by the LEAP. |
+//! | `LEAP_DOWNLOADER_CONFIG__UPDATE_INTERVAL` | The interval at which the remote is queried for new content. |
+//! | `LEAP_DOWNLOADER_CONFIG__RETRY_PARAMS__INITIAL_BACKOFF` | The initial backoff time after a download failure. |
+//! | `LEAP_DOWNLOADER_CONFIG__RETRY_PARAMS__BACKOFF_FACTOR` | The adjustment factor for the backoff after a failure. |
+//! | `LEAP_DOWNLOADER_CONFIG__RETRY_PARAMS__MAX_BACKOFF` | The maximum backoff time after a download failure. |
+//! | `LEAP_DB_CONFIG__BUSY_TIMEOUT` | The maximum amount of time that the DB thread will wait until the DB is available for its operation. |
+//! | `LEAP_DB_CONFIG__POOL_SIZE` | The number of connections that are created for the database. |
+//! | `LEAP_DB_CONFIG__RUNTIME_PATH` | The path where the database contents are stored. |
+//! | `LEAP_S3_CONFIG__ENDPOINT_URL` | S3 Endpoint URL. Defaults to AWS if not given. |
+//! | `LEAP_S3_CONFIG__FORCE_PATH_STYLE` | Uses path-style access to buckets instead of dns-based access. |
+//! | `LEAP_S3_CONFIG__ACCESS_KEY_ID` | Access key ID. |
+//! | `LEAP_S3_CONFIG__SECRET_ACCESS_KEY` | Secret Access key. |
+//! | `LEAP_S3_CONFIG__REGION` | AWS region. Defaults to `us-east-1`. |
+
 use std::path::{Path, PathBuf};
 
 use anyhow::{Context, Result};
@@ -5,6 +36,8 @@ use config::Config;
 use http::Uri;
 use secrecy::{ExposeSecret, SecretString};
 
+/// Default location of the LEAP configuration file. The assumption is that `/var/lib/leap` is a
+/// mountpoint of the target storage of LEAP.
 pub const DEFAULT_CONFIG_PATH: &str = "/var/lib/leap/config/config.toml";
 
 fn default_path_style() -> bool {
@@ -15,10 +48,7 @@ fn default_aws_region() -> String {
     "us-east-1".to_string()
 }
 
-pub fn serialize_secret_str<S>(
-    data: &Option<SecretString>,
-    serializer: S,
-) -> Result<S::Ok, S::Error>
+fn serialize_secret_str<S>(data: &Option<SecretString>, serializer: S) -> Result<S::Ok, S::Error>
 where
     S: serde::Serializer,
 {
@@ -28,6 +58,7 @@ where
     }
 }
 
+/// Content download retry parameters. Only apply if a download fails.
 #[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
 pub struct RetryParams {
     /// The initial backoff time after a download failure.
@@ -43,6 +74,7 @@ pub struct RetryParams {
     pub max_backoff: std::time::Duration,
 }
 
+/// Configuration for the downloader.
 #[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
 pub struct DownloaderConfig {
     /// Number of maximum concurrent downloads.
@@ -63,6 +95,7 @@ pub struct DownloaderConfig {
     pub retry_params: RetryParams,
 }
 
+/// SQlite database configuration for LEAP.
 #[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
 pub struct DbConfig {
     /// The maximum amount of time that the DB thread will wait until the DB is available for its
@@ -80,18 +113,22 @@ pub struct DbConfig {
 }
 
 impl DbConfig {
+    /// Returns the path to the sqlite database used by LEAP.
     pub fn db_path(&self) -> PathBuf {
         self.runtime_path.join("leap.db")
     }
 
+    /// Returns the path to the current manifest used by LEAP.
     pub fn manifest_path(&self) -> PathBuf {
         self.runtime_path.join("current_manifest.json")
     }
 
+    /// Temporary manifest path used for staging a manifest download before committing it.
     pub fn temp_manifest_path(&self) -> PathBuf {
         self.runtime_path.join("_temp_manifest.json")
     }
 
+    /// Location of the persistent log file for LEAP.
     pub fn logfile(&self) -> PathBuf {
         self.runtime_path.join("leap_runtime.log")
     }

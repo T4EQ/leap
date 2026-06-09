@@ -4,16 +4,16 @@
     { pkgs, ... }:
     {
       packages = {
-        wasm-bindgen-cli_0_2_122 = pkgs.rustPlatform.buildRustPackage rec {
+        wasm-bindgen-cli_0_2_123 = pkgs.rustPlatform.buildRustPackage rec {
         pname = "wasm-bindgen-cli";
-        version = "0.2.122";
+        version = "0.2.123";
 
         src = pkgs.fetchCrate {
           inherit pname version;
-          hash = "sha256-vO4RSxi/sMWxmsEs3GuljdMfIRSu75A+Q+c5wgYToRU=";
+          hash = "sha256-ymeAEYsr7OnupWYJWjSeVGvq3+s+zxSNkODbzY62rYs=";
         };
 
-        cargoHash = "sha256-Inup6vvJSG5ghNyeDPyZbfZo4d0LsMG2OJfStoaeDBs=";
+        cargoHash = "sha256-d7x6gtx5OqEE4MyT6yjYn/qtgjx7GroTpXJewnBV2dU=";
 
         nativeBuildInputs = [ pkgs.pkg-config ];
         buildInputs = with pkgs; [ openssl ];

@@ -1,1 +1,6 @@
 *    @T4EQ/leap-team
+Cargo.toml
+Cargo.lock
+flake.lock
+.github/workflows/*
+rust-toolchain.toml

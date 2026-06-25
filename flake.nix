@@ -57,7 +57,7 @@
                     nativeBuildInputs = with pkgsWithRustOverlay; [
                       (rust-bin.fromRustupToolchainFile ./rust-toolchain.toml)
                       trunk
-                      config.packages.wasm-bindgen-cli_0_2_125
+                      config.packages.wasm-bindgen-cli_0_2_126
                       dart-sass
                       cargo-watch
                       cargo-deny

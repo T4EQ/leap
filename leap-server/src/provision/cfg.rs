@@ -4,8 +4,9 @@
 use std::time::Duration;
 
 use super::{CONTENT_PATH, MOUNT_PATH, RUNTIME_PATH};
-use crate::cfg::{
-    DEFAULT_CONFIG_PATH, DbConfig, DownloaderConfig, LeapConfig, RetryParams, S3Config,
+use crate::{
+    cfg::{DEFAULT_CONFIG_PATH, DbConfig, DownloaderConfig, LeapConfig, RetryParams, S3Config},
+    utils,
 };
 
 impl From<&leap_api::provision::config::post::LeapConfig> for LeapConfig {
@@ -49,33 +50,6 @@ impl From<&leap_api::provision::config::post::LeapConfig> for LeapConfig {
     }
 }
 
-async fn check_timesync() -> anyhow::Result<bool> {
-    let output = tokio::process::Command::new("timedatectl")
-        .arg("show")
-        .arg("-P")
-        .arg("NTPSynchronized")
-        .output()
-        .await?;
-    if !output.status.success() {
-        tracing::error!("Failure checking time synchronization {output:?}");
-        anyhow::bail!("Failure checking time synchronization {output:?}");
-    }
-
-    Ok(output.stdout == b"yes\n")
-}
-
-async fn wait_timesync(timeout: std::time::Duration) -> anyhow::Result<()> {
-    let start = std::time::Instant::now();
-    while std::time::Instant::now() - start < timeout {
-        if check_timesync().await? {
-            return Ok(());
-        }
-        tokio::time::sleep(std::time::Duration::from_millis(100)).await;
-    }
-
-    anyhow::bail!("Timeout while waiting for time synchronization");
-}
-
 /// Saves LEAP configuration to disk. Ensures that the S3 credentials are valid by enabling
 /// temporarily the network connection, then waiting for time sync (NTP) to ensure HTTPs will work,
 /// and finally by checking connectivity to S3. The provision network configuration is restored
@@ -107,7 +81,7 @@ pub async fn provision_configuration(
             const TIMEOUT: std::time::Duration = std::time::Duration::from_secs(30);
             // This is a best-effort synchronization. It might be that date was previously
             // synchronized, so we try to connect to S3 either way.
-            let _ = wait_timesync(TIMEOUT)
+            let _ = utils::wait_timesync(TIMEOUT)
                 .await
                 .inspect(|_| tracing::info!("Time synchronized"))
                 .inspect_err(|e| tracing::error!("Time synchronization failed: {e:?}"));

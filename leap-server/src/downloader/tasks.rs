@@ -208,7 +208,7 @@ pub async fn download_manifest_task(
                         tracing::error!("Video {} failed. Backing off for {:?}", job.video.id, job.backoff_time);
                         let wakeup_time = tokio::time::Instant::now() + job.backoff_time;
                         job.backoff_time = job.backoff_time .mul_f64( ctx.config.retry_params.backoff_factor);
-                        backoff_list.push_back((wakeup_time, job));
+                        backoff_list.push_back((wakeup_time, *job));
                     }
                     Err(DownloadJobError::Unrecoverable(job)) => {
                         let msg = format!("Unrecoverable download error for video: {}", job.video.id);
@@ -225,8 +225,18 @@ pub async fn download_manifest_task(
 
 #[derive(Debug)]
 enum DownloadJobError {
-    ShouldRetry(Job),
-    Unrecoverable(Job),
+    ShouldRetry(Box<Job>),
+    Unrecoverable(Box<Job>),
+}
+
+impl DownloadJobError {
+    #[cfg(test)]
+    fn to_job(&self) -> Job {
+        match self {
+            DownloadJobError::ShouldRetry(job) => (**job).clone(),
+            DownloadJobError::Unrecoverable(job) => (**job).clone(),
+        }
+    }
 }
 
 /// download job task
@@ -245,14 +255,14 @@ async fn download_job_task(ctx: DownloadContext, job: Job) -> Result<(), Downloa
     if let Some(dir) = target_filepath.parent() {
         tokio::fs::create_dir_all(dir).await.map_err(|e| {
             tracing::error!("Error creating directory: {dir:?}. Error: {e}");
-            DownloadJobError::ShouldRetry(job.clone())
+            DownloadJobError::ShouldRetry(Box::new(job.clone()))
         })?;
     }
     let mut target_file = tokio::fs::File::create(&target_filepath)
         .await
         .map_err(|e| {
             tracing::error!("Error creating file: {target_filepath:?}. Error: {e}");
-            DownloadJobError::ShouldRetry(job.clone())
+            DownloadJobError::ShouldRetry(Box::new(job.clone()))
         })?;
 
     let translate_error = |e: crate::db::Result<()>| {
@@ -260,7 +270,7 @@ async fn download_job_task(ctx: DownloadContext, job: Job) -> Result<(), Downloa
             tracing::error!(
                 "Error setting download status for file: {target_filepath:?}. Error: {e}",
             );
-            DownloadJobError::Unrecoverable(job.clone())
+            DownloadJobError::Unrecoverable(Box::new(job.clone()))
         })
     };
 
@@ -279,14 +289,14 @@ async fn download_job_task(ctx: DownloadContext, job: Job) -> Result<(), Downloa
 
                 translate_error(ctx.db.set_download_failed(video.id, &error_msg).await)?;
 
-                return Err(DownloadJobError::ShouldRetry(job.clone()));
+                return Err(DownloadJobError::ShouldRetry(Box::new(job.clone())));
             }
         };
 
         hasher.update(&chunk[..]);
         target_file.write_all(&chunk[..]).await.map_err(|e| {
             tracing::error!("Error writing file: {target_filepath:?}. Error: {e}");
-            DownloadJobError::ShouldRetry(job.clone())
+            DownloadJobError::ShouldRetry(Box::new(job.clone()))
         })?;
         total_size += chunk.len();
 
@@ -311,7 +321,7 @@ async fn download_job_task(ctx: DownloadContext, job: Job) -> Result<(), Downloa
         let err_msg = &format!("Got hash: {hash}. Expected: {}", video.sha256);
         translate_error(ctx.db.set_download_failed(video.id, err_msg).await)?;
         tracing::error!("{}", err_msg);
-        return Err(DownloadJobError::ShouldRetry(job.clone()));
+        return Err(DownloadJobError::ShouldRetry(Box::new(job.clone())));
     }
 
     translate_error(ctx.db.set_downloaded(video.id, &target_filepath).await)?;
@@ -661,13 +671,17 @@ pub mod test {
         .await;
 
         assert_that!(
-            result,
-            err(matches_pattern!(DownloadJobError::ShouldRetry(
-                matches_pattern!(Job {
-                    video: matches_pattern!(Video { id: &id, .. }),
-                    backoff_time: &ctx.download_ctx.config.retry_params.initial_backoff,
-                })
-            )))
+            &result,
+            err(all!(
+                matches_pattern!(DownloadJobError::ShouldRetry(_)),
+                property!(
+                    DownloadJobError.to_job(),
+                    matches_pattern!(Job {
+                        video: matches_pattern!(Video { id: &id, .. }),
+                        backoff_time: &ctx.download_ctx.config.retry_params.initial_backoff,
+                    })
+                )
+            ))
         );
 
         // Check that file is available in the database
@@ -784,13 +798,17 @@ pub mod test {
         .await;
 
         assert_that!(
-            result,
-            err(matches_pattern!(DownloadJobError::ShouldRetry(
-                matches_pattern!(Job {
-                    video: matches_pattern!(Video { id: &id, .. }),
-                    backoff_time: &ctx.download_ctx.config.retry_params.initial_backoff,
-                })
-            )))
+            &result,
+            err(all!(
+                matches_pattern!(DownloadJobError::ShouldRetry(_)),
+                property!(
+                    DownloadJobError.to_job(),
+                    matches_pattern!(Job {
+                        video: matches_pattern!(Video { id: &id, .. }),
+                        backoff_time: &ctx.download_ctx.config.retry_params.initial_backoff,
+                    })
+                )
+            ))
         );
 
         // Check that file is available in the database

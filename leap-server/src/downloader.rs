@@ -3,6 +3,7 @@ pub mod s3backend;
 mod tasks;
 
 use std::{path::PathBuf, sync::Arc};
+use tokio::time::Duration;
 
 use crate::{
     cfg::{DownloaderConfig, S3Config},
@@ -137,6 +138,15 @@ pub async fn run_downloader(
         backend,
         db,
     };
+
+    // Wait for time sync before starting anything
+    tracing::info!("Waiting for time sync before starting downloader");
+    let _ = crate::utils::wait_timesync(Duration::from_secs(30))
+        .await
+        .inspect(|_| tracing::info!("Time synchronized before downloader startup"))
+        .inspect_err(|e| {
+            tracing::error!("Time synchronization failed before downloader startup: {e:?}")
+        });
 
     // We keep track of the last pending task so that we can cancel it if we discovered an
     // even-newer manifest

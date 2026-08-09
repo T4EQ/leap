@@ -28,22 +28,24 @@
 //! ```
 
 use std::rc::Rc;
-use wasm_bindgen::{closure::Closure, JsCast};
+use wasm_bindgen::{JsCast, closure::Closure};
 use yew::prelude::*;
 
-use leap_api::api::content::meta::get::{GroupedSection, Response};
+use leap_api::{api::content::meta::get::Response, types::ManifestMeta};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct ContentContext {
-    pub sections: Option<Rc<Vec<GroupedSection>>>,
+    pub loaded: bool,
+    pub manifest_meta: Rc<Option<ManifestMeta>>,
 }
 
 impl Reducible for ContentContext {
-    type Action = Vec<GroupedSection>;
+    type Action = Option<ManifestMeta>;
 
     fn reduce(self: Rc<Self>, action: Self::Action) -> Rc<Self> {
         Rc::new(Self {
-            sections: Some(Rc::new(action)),
+            loaded: true,
+            manifest_meta: Rc::new(action),
         })
     }
 }
@@ -58,7 +60,10 @@ pub struct ContentProviderProps {
 
 #[function_component(ContentProvider)]
 pub fn content_provider(props: &ContentProviderProps) -> Html {
-    let context = use_reducer(|| ContentContext { sections: None });
+    let context = use_reducer(|| ContentContext {
+        loaded: false,
+        manifest_meta: Rc::new(None),
+    });
 
     {
         let context = context.clone();
@@ -72,7 +77,7 @@ pub fn content_provider(props: &ContentProviderProps) -> Html {
                                 return;
                             };
                             match serde_json::from_str::<Response>(&data) {
-                                Ok(response) => context.dispatch(response.videos),
+                                Ok(response) => context.dispatch(response.meta),
                                 Err(e) => log::error!("Failed to decode content event: {e:?}"),
                             }
                         });

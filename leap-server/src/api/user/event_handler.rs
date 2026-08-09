@@ -2,40 +2,19 @@
 //! a rebuild of the serialized state of the database.
 //!
 //! This serves as an optimization to reduce the work that is done per client
-//! connection. By keeping a up-to-date single serialized state we can simply
-//! forward the bytes to the client on every response without locking and
-//! rebuilding the state for every client request.
+//! connection. By keeping a up-to-date single state we can simply forward the
+//! response to the client without locking and rebuilding the state for every
+//! client request.
 
 use std::sync::Arc;
 
 use tokio::sync::Notify;
 use tokio::sync::watch;
-use tracing::Instrument as _;
 
-use leap_api::api::content::meta::get::{GroupedSection, Response as ContentMetaResponse};
+use leap_api::api::content::meta::get::Response as ContentMetaResponse;
 
+use super::utils::content_metadata;
 use crate::db;
-
-async fn content_metadata(db: &db::Database) -> db::Result<ContentMetaResponse> {
-    let sections = db
-        .current_manifest_sections()
-        .instrument(tracing::info_span!(
-            "Querying manifest information from database"
-        ))
-        .await?;
-
-    let _span =
-        tracing::info_span!("Collecting manifest information as content metadata").entered();
-    let videos = sections
-        .into_iter()
-        .map(|(name, content)| {
-            let content = content.into_iter().map(|v| v.into()).collect();
-            GroupedSection { name, content }
-        })
-        .collect();
-
-    Ok(ContentMetaResponse { videos })
-}
 
 pub struct StateEventHandler {
     task_cancel: Arc<Notify>,
@@ -65,11 +44,12 @@ impl StateEventHandler {
                                 Ok(meta) => meta,
                                 Err(db_error) => {
                                     tracing::error!("Unable to emit state update due to db error: {db_error}");
+                                    // Self-notify to try again
+                                    state_changed_notifier.notify_one();
                                     continue;
                                 }
                             };
-                            // TODO: emit proper data
-                            let _ = serialized_state_tx.send(Arc::new(meta));
+                            let _ = serialized_state_tx.send_replace(Arc::new(meta));
 
                             // Throttle the event updates to limit the notification rate to roughly
                             // 200 ms

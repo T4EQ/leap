@@ -92,6 +92,19 @@ pub struct GroupedSection {
     pub content: Vec<LocalVideoMeta>,
 }
 
+/// Metadata for the manifest file
+#[derive(Debug, serde::Deserialize, serde::Serialize, PartialEq, Clone)]
+pub struct ManifestMeta {
+    /// Name of the manifest.
+    pub name: String,
+
+    /// Date of the manifest.
+    pub date: chrono::NaiveDate,
+
+    /// Sections ordered as displayed.
+    pub content: Vec<GroupedSection>,
+}
+
 #[derive(Debug, serde::Deserialize, serde::Serialize, PartialEq, Clone)]
 pub struct BuildInfo {
     pub name: String,

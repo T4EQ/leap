@@ -10,6 +10,7 @@
 //! - Fetching the system log file.
 
 mod event_handler;
+mod utils;
 
 use std::sync::Arc;
 use std::{convert::Infallible, str::FromStr};
@@ -22,7 +23,7 @@ use tokio::io::{AsyncReadExt, AsyncSeekExt};
 use tokio::sync::mpsc::UnboundedSender;
 use tracing::instrument::Instrument;
 
-use leap_api::api::content::meta::get::{GroupedSection, LocalVideoMeta, Progress, VideoStatus};
+use leap_api::api::content::meta::get::{LocalVideoMeta, Progress, VideoStatus};
 
 use crate::{cfg::LeapConfig, db::Database, downloader::UserCommand};
 
@@ -127,7 +128,7 @@ async fn events(api_data: web::Data<ApiData>) -> impl Responder {
         let mut keep_alive = tokio::time::interval(CONTENT_EVENT_KEEP_ALIVE_INTERVAL);
         keep_alive.tick().await;
         {
-            let content = content_changes.borrow_and_update();
+            let content = Arc::clone(&*content_changes.borrow_and_update());
             match serialize_content_event(&content) {
                 Ok(event) => yield Result::<Bytes, Infallible>::Ok(event),
                 Err(e) => {
@@ -148,7 +149,7 @@ async fn events(api_data: web::Data<ApiData>) -> impl Responder {
                     // Progress is persisted for every downloaded chunk. Wait briefly and mark the
                     // newest revision as seen so a burst produces at most one snapshot per interval.
                     tokio::time::sleep(CONTENT_EVENT_INTERVAL).await;
-                    let content = content_changes.borrow_and_update();
+                    let content = Arc::clone(&*content_changes.borrow_and_update());
 
                     match serialize_content_event(&content) {
                         Ok(event) => yield Result::<Bytes, Infallible>::Ok(event),
@@ -197,35 +198,11 @@ async fn get_version() -> impl Responder {
 /// This endpoint returns a list of sections, each containing a list of video metadata.
 #[get("/content/meta")]
 async fn list_content_metadata(api_data: web::Data<ApiData>) -> impl Responder {
-    use leap_api::api::content::meta::get::Response;
-
-    let sections = match api_data
-        .db
-        .current_manifest_sections()
-        .instrument(tracing::info_span!(
-            "Querying manifest information from database"
-        ))
-        .await
-    {
-        Ok(sections) => sections,
-        Err(e) => {
-            return HttpResponse::InternalServerError()
-                .body(format!("Unexpected error querying content list: {e:?}"));
-        }
-    };
-
-    let _span =
-        tracing::info_span!("Collecting manifest information as /content/meta response").entered();
-
-    let videos = sections
-        .into_iter()
-        .map(|(name, content)| {
-            let content = content.into_iter().map(|v| v.into()).collect();
-            GroupedSection { name, content }
-        })
-        .collect();
-
-    HttpResponse::Ok().json(Response { videos })
+    match utils::content_metadata(&api_data.db).await {
+        Ok(content) => HttpResponse::Ok().json(content),
+        Err(e) => HttpResponse::InternalServerError()
+            .body(format!("Unexpected error querying content metadata: {e:?}")),
+    }
 }
 
 #[tracing::instrument(

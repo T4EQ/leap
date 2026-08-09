@@ -118,7 +118,6 @@ struct Status {
     version: BuildInfo,
     logs: Vec<LogEntry>,
     manifest: Option<(String, ManifestInfo)>,
-    pending_downloads: Vec<DownloadItem>,
 }
 
 #[derive(Properties, PartialEq)]
@@ -379,9 +378,7 @@ pub fn status_dashboard() -> Html {
         let state_data = state_data.clone();
         move |_| {
             spawn_local(async move {
-                if let Some(sections) = context.sections.as_ref()
-                    && state_data.is_none()
-                {
+                if context.sections.is_some() && state_data.is_none() {
                     let version = match fetch_version_info().await {
                         Ok(logs) => logs,
                         Err(e) => {
@@ -412,27 +409,28 @@ pub fn status_dashboard() -> Html {
                         }
                     };
 
-                    let pending_downloads = sections
-                        .iter()
-                        .flat_map(|s| &s.content)
-                        .filter(|v| v.status != VideoStatus::Downloaded)
-                        .map(|v| DownloadItem {
-                            name: v.name.clone(),
-                            id: v.id.clone(),
-                            status: v.status.clone(),
-                        })
-                        .collect();
-
                     state_data.set(Some(Status {
                         version,
                         logs,
                         manifest,
-                        pending_downloads,
                     }));
                 }
             });
         }
     });
+
+    let pending_downloads: Vec<_> = context
+        .sections
+        .iter()
+        .flat_map(|s| s.iter())
+        .flat_map(|s| &s.content)
+        .filter(|v| v.status != VideoStatus::Downloaded)
+        .map(|v| DownloadItem {
+            name: v.name.clone(),
+            id: v.id.clone(),
+            status: v.status.clone(),
+        })
+        .collect();
 
     let on_fetch = Callback::from(|_| {
         web_sys::console::log_1(&"Triggering manifest fetch...".into());
@@ -455,7 +453,7 @@ pub fn status_dashboard() -> Html {
                         html! {
                             <>
                                 <ManifestStatus manifest={state_data.manifest.clone()} on_fetch={on_fetch} />
-                                <DownloadsList downloads={state_data.pending_downloads.clone()} />
+                                <DownloadsList downloads={pending_downloads.clone()} />
                                 <VersionInfo version={state_data.version.clone()} />
                                 <LogViewer logs={state_data.logs.clone()} />
                             </>

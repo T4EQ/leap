@@ -117,12 +117,12 @@ impl<'de> serde::Deserialize<'de> for LogEntry {
 struct Status {
     version: BuildInfo,
     logs: Vec<LogEntry>,
-    manifest: Option<(String, ManifestInfo)>,
+    manifest: Option<ManifestInfo>,
 }
 
 #[derive(Properties, PartialEq)]
 pub struct ManifestStatusProps {
-    pub manifest: Option<(String, ManifestInfo)>,
+    pub manifest: Option<ManifestInfo>,
     pub on_fetch: Callback<MouseEvent>,
 }
 
@@ -135,7 +135,7 @@ pub fn manifest_status(ManifestStatusProps { manifest, on_fetch }: &ManifestStat
             <div class="card details-card">
                 <div class="details">
                 {
-                    if let Some((_, manifest_info)) = manifest {
+                    if let Some(manifest_info) = manifest {
                         html! {
                             <>
                             <div class="row">
@@ -283,7 +283,7 @@ async fn fetch_logs() -> anyhow::Result<Vec<LogEntry>> {
     Ok(new_logs)
 }
 
-async fn fetch_manifest_info() -> anyhow::Result<Option<(String, ManifestInfo)>> {
+async fn fetch_manifest_info() -> anyhow::Result<Option<ManifestInfo>> {
     let resp = Request::get("/api/manifest/latest").send().await?;
 
     if !resp.ok() {
@@ -295,7 +295,7 @@ async fn fetch_manifest_info() -> anyhow::Result<Option<(String, ManifestInfo)>>
         return Ok(None);
     }
     let info = serde_json::from_str(&text)?;
-    Ok(Some((text, info)))
+    Ok(Some(info))
 }
 
 async fn trigger_manifest_update_check() -> anyhow::Result<()> {

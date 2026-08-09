@@ -9,18 +9,54 @@
 //! - Fetching the latest manifest.
 //! - Fetching the system log file.
 
-use std::str::FromStr;
+mod event_handler;
+
+use std::sync::Arc;
+use std::{convert::Infallible, str::FromStr};
 
 use actix_web::{
     HttpRequest, HttpResponse, Responder, get, post,
     web::{self, Bytes, BytesMut},
 };
 use tokio::io::{AsyncReadExt, AsyncSeekExt};
+use tokio::sync::mpsc::UnboundedSender;
 use tracing::instrument::Instrument;
 
 use leap_api::api::content::meta::get::{GroupedSection, LocalVideoMeta, Progress, VideoStatus};
 
-use crate::{api::ApiData, downloader::UserCommand};
+use crate::{cfg::LeapConfig, db::Database, downloader::UserCommand};
+
+/// Shared resources used in HTTP handlers.
+pub struct ApiData {
+    /// The LEAP configuration.
+    config: LeapConfig,
+    /// A handle to the database.
+    db: Arc<Database>,
+    /// A channel to send commands to the downloader service.
+    cmd_sender: UnboundedSender<UserCommand>,
+    /// DB State event handler. Receives db update events and emits content metadata responses
+    /// to be forwarded to any HTTP subscribers.
+    event_handler: event_handler::StateEventHandler,
+}
+
+impl ApiData {
+    pub async fn new(
+        config: LeapConfig,
+        db: Arc<Database>,
+        cmd_sender: UnboundedSender<UserCommand>,
+    ) -> Self {
+        let notifier = db.notifier();
+        let event_handler = event_handler::StateEventHandler::start(notifier, Arc::clone(&db))
+            .await
+            .expect("Unable to construct event handler notifier");
+        Self {
+            config,
+            db,
+            cmd_sender,
+            event_handler,
+        }
+    }
+}
 
 impl From<crate::db::DownloadStatus> for VideoStatus {
     fn from(value: crate::db::DownloadStatus) -> Self {
@@ -62,6 +98,67 @@ impl From<crate::build_info::BuildInfo> for leap_api::api::version::get::BuildIn
             features: value.features.to_string(),
         }
     }
+}
+
+fn serialize_content_event(
+    content: &leap_api::api::content::meta::get::Response,
+) -> serde_json::Result<Bytes> {
+    serde_json::to_string(content).map(|content| Bytes::from(format!("data: {content}\n\n")))
+}
+
+#[tracing::instrument(
+    skip(api_data)
+    fields(
+        request_id = %uuid::Uuid::new_v4(),
+    )
+)]
+/// Streams complete content metadata snapshots whenever the content changes.
+#[get("/content/events")]
+async fn events(api_data: web::Data<ApiData>) -> impl Responder {
+    const CONTENT_EVENT_INTERVAL: std::time::Duration = std::time::Duration::from_millis(500);
+    const CONTENT_EVENT_KEEP_ALIVE_INTERVAL: std::time::Duration =
+        std::time::Duration::from_secs(15);
+
+    // Subscribe before obtaining the first snapshot. If a change races with that query, the
+    // receiver remains dirty and sends another snapshot rather than silently missing the change.
+    let mut content_changes = api_data.event_handler.subscribe();
+
+    let stream = async_stream::stream! {
+        let mut keep_alive = tokio::time::interval(CONTENT_EVENT_KEEP_ALIVE_INTERVAL);
+        keep_alive.tick().await;
+        loop {
+            tokio::select! {
+                changed = content_changes.changed() => {
+                    if changed.is_err() {
+                        // This is only reachable if the current channel has been closed, should not
+                        // be an error.
+                        break;
+                    }
+
+                    // Progress is persisted for every downloaded chunk. Wait briefly and mark the
+                    // newest revision as seen so a burst produces at most one snapshot per interval.
+                    tokio::time::sleep(CONTENT_EVENT_INTERVAL).await;
+                    let content = content_changes.borrow_and_update();
+
+                    match serialize_content_event(&content) {
+                        Ok(event) => yield Result::<Bytes, Infallible>::Ok(event),
+                        Err(e) => {
+                            tracing::error!("Unable to serialize content update event: {e}");
+                            break;
+                        }
+                    };
+                }
+                _ = keep_alive.tick() => {
+                    yield Ok(Bytes::from_static(b": keep-alive\n\n"));
+                }
+            }
+        }
+    };
+
+    HttpResponse::Ok()
+        .insert_header(("Cache-Control", "no-cache"))
+        .content_type("text/event-stream")
+        .streaming(stream)
 }
 
 #[tracing::instrument(

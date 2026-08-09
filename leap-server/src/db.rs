@@ -20,7 +20,7 @@ pub use models::{DownloadStatus, Video};
 use deadpool_diesel::{Manager, Pool};
 use diesel::{connection::SimpleConnection, prelude::*};
 use diesel_migrations::{EmbeddedMigrations, MigrationHarness, embed_migrations};
-use tokio::sync::RwLock;
+use tokio::sync::{Notify, RwLock};
 
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("migrations");
 
@@ -67,6 +67,7 @@ pub struct Database {
     pool: Pool<Manager<diesel::sqlite::SqliteConnection>>,
     // An in-memory copy of the manifest, for fast access to the data.
     current_manifest: Arc<RwLock<Option<ManifestFile>>>,
+    update_notifier: Arc<Notify>,
 }
 
 impl Database {
@@ -101,12 +102,23 @@ impl Database {
                 .ok()
                 .and_then(|content| serde_json::from_slice(&content).ok()),
         ));
+        let update_notifier = Arc::new(Notify::new());
 
         Ok(Self {
             config,
             pool,
             current_manifest,
+            update_notifier,
         })
+    }
+
+    /// Subscribes to changes to content metadata.
+    pub fn notifier(&self) -> Arc<Notify> {
+        Arc::clone(&self.update_notifier)
+    }
+
+    fn notify_content_changed(&self) {
+        self.update_notifier.notify_one();
     }
 
     /// The database may not yet exist on disk, or may have a format from previous versions of this
@@ -161,6 +173,8 @@ impl Database {
             .write()
             .await
             .replace(manifest_data.clone());
+
+        self.notify_content_changed();
     }
 
     /// Returns a the current manifest. The manifest will not be written until all read handles are
@@ -323,6 +337,9 @@ impl Database {
             })
             .await
             .expect("Unexpected panic of a background DB thread")
+            .inspect(|_| {
+                self.notify_content_changed();
+            })
     }
 
     /// Updates the download progress for a given video. `downloaded_size` should be
@@ -347,6 +364,9 @@ impl Database {
             })
             .await
             .expect("Unexpected panic of a background DB thread")
+            .inspect(|_| {
+                self.notify_content_changed();
+            })
     }
 
     /// Marks the given video as failed with the given error message.
@@ -368,6 +388,9 @@ impl Database {
             })
             .await
             .expect("Unexpected panic of a background DB thread")
+            .inspect(|_| {
+                self.notify_content_changed();
+            })
     }
 
     /// Marks the given video as downloaded, at the given file path.
@@ -391,6 +414,9 @@ impl Database {
             })
             .await
             .expect("Unexpected panic of a background DB thread")
+            .inspect(|_| {
+                self.notify_content_changed();
+            })
     }
 }
 

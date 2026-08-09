@@ -34,12 +34,14 @@ pub mod api {
     pub mod content {
         pub mod meta {
             pub mod get {
-                pub use crate::types::{GroupedSection, LocalVideoMeta, Progress, VideoStatus};
+                pub use crate::types::{
+                    GroupedSection, LocalVideoMeta, ManifestMeta, Progress, VideoStatus,
+                };
 
                 /// The response to the `GET` `api/content/meta` request
                 #[derive(Debug, serde::Deserialize, serde::Serialize, PartialEq)]
                 pub struct Response {
-                    pub videos: Vec<GroupedSection>,
+                    pub meta: Option<ManifestMeta>,
                 }
             }
 

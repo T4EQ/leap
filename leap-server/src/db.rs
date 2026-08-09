@@ -61,6 +61,13 @@ pub enum Error {
 
 pub type Result<T> = core::result::Result<T, Error>;
 
+#[derive(Clone, Debug)]
+pub struct ManifestMetadata {
+    pub name: String,
+    pub date: chrono::NaiveDate,
+    pub sections: Vec<(String, Vec<Video>)>,
+}
+
 /// The main entry point for interacting with the database and manifest.
 pub struct Database {
     config: DbConfig,
@@ -190,19 +197,20 @@ impl Database {
 
     /// Returns the current manifest content divided by sections and ordered in the same way as the
     /// manifest (for both the sections and the videos within a section).
-    pub async fn current_manifest_sections(&self) -> Result<Vec<(String, Vec<Video>)>> {
-        let manifest_sections = self
-            .current_manifest
-            .read()
-            .await
-            .as_ref()
-            .map(|manifest| manifest.sections.clone())
-            .unwrap_or(vec![]);
+    pub async fn current_manifest_meta(&self) -> Result<Option<ManifestMetadata>> {
+        let manifest_lock = self.current_manifest.read().await;
+        let Some(manifest) = manifest_lock.as_ref() else {
+            return Ok(None);
+        };
+        let name = manifest.name.clone();
+        let date = manifest.date;
 
+        let manifest_sections = manifest.sections.clone();
         let ids: Vec<String> = manifest_sections
             .iter()
             .flat_map(|s| s.content.iter().map(|v| v.id.to_string()))
             .collect();
+        drop(manifest_lock);
 
         let connection = self.pool.get().await?;
         let videos_from_db: Vec<Video> = connection
@@ -217,7 +225,7 @@ impl Database {
             .await
             .expect("Unexpected panic of a background DB thread")?;
 
-        manifest_sections
+        let manifest_sections: Result<Vec<(String, Vec<Video>)>> = manifest_sections
             .into_iter()
             .map(|s| {
                 s.content
@@ -235,7 +243,13 @@ impl Database {
                     .collect::<Result<Vec<Video>>>()
                     .map(|inner| (s.name, inner))
             })
-            .collect()
+            .collect();
+
+        Ok(Some(ManifestMetadata {
+            name,
+            date,
+            sections: manifest_sections?,
+        }))
     }
 
     /// Returns a list of all the videos in the database.
@@ -719,8 +733,20 @@ mod test {
                 .or_fail()?;
         }
 
-        let sections = db.current_manifest_sections().await.or_fail()?;
+        let meta = db.current_manifest_meta().await.or_fail()?;
 
+        assert_that!(
+            meta,
+            some(all!(
+                field!(ManifestMetadata.name, eq("manifest")),
+                field!(
+                    &ManifestMetadata.date,
+                    eq(chrono::NaiveDate::from_str("2025-10-10").unwrap())
+                )
+            ))
+        );
+
+        let sections = meta.unwrap().sections;
         assert_that!(sections.len(), eq(manifest.sections.len()));
         for ((name, content), manifest_section) in sections.iter().zip(manifest.sections) {
             expect_that!(name, eq(&manifest_section.name));

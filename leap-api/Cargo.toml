@@ -9,7 +9,8 @@ homepage = "https://github.com/t4eq/leap"
 repository = "https://github.com/t4eq/leap"
 
 [dependencies]
-serde.workspace = true
+chrono.workspace = true
 http.workspace = true
-secrecy.workspace = true
 humantime-serde.workspace = true
+secrecy.workspace = true
+serde.workspace = true

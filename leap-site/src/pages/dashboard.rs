@@ -3,7 +3,10 @@
 //! It displays a list of available playlists using [`PlaylistsList`], which in turn
 //! uses [`PlaylistCard`] to render each individual playlist.
 
-use std::hash::{DefaultHasher, Hasher};
+use std::{
+    hash::{DefaultHasher, Hasher},
+    ops::Deref,
+};
 use yew::prelude::*;
 use yew_router::prelude::*;
 
@@ -59,27 +62,27 @@ pub fn playlist_card(
 pub fn playlists_list() -> Html {
     let context = use_context::<ContentContextHandle>().expect("ContentContext not found");
 
-    let Some(sections) = &context.sections else {
+    if !context.loaded {
         return html! {
             <p>{"Loading..."}</p>
         };
+    }
+
+    let Some(meta) = context.manifest_meta.deref() else {
+        return html! {
+            <p1>{ "No playlists available yet." }</p1>
+        };
     };
 
-    if sections.is_empty() {
-        html! {
-            <p1>{ "No playlists available yet." }</p1>
-        }
-    } else {
-        html! {
-                <div class="playlist-list list">
-                {
-                    sections.iter().enumerate().map(|(index, section)| {
-                        let num_videos = section.content.len();
-                        html! { <PlaylistCard playlist_id={index} playlist_name={section.name.clone()} num_videos={num_videos} /> }
-                    }).collect::<Html>()
-                }
-                </div>
-        }
+    html! {
+            <div class="playlist-list list">
+            {
+                meta.content.iter().enumerate().map(|(index, section)| {
+                    let num_videos = section.content.len();
+                    html! { <PlaylistCard playlist_id={index} playlist_name={section.name.clone()} num_videos={num_videos} /> }
+                }).collect::<Html>()
+            }
+            </div>
     }
 }
 

@@ -5,7 +5,11 @@
 
 use crate::context::ContentContextHandle;
 use gloo_net::http::Request;
-use leap_api::api::content::meta::get::VideoStatus::{Downloaded, Downloading, Failed, Pending};
+use leap_api::{
+    api::content::meta::get::VideoStatus::{Downloaded, Downloading, Failed, Pending},
+    types::ManifestMeta,
+};
+use std::borrow::Borrow as _;
 use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
 use yew_router::prelude::*;
@@ -28,11 +32,11 @@ pub fn video_player(
 
     {
         let context = context.clone();
-        let sections_loaded = context.sections.is_some();
         use_effect_with(
-            (*playlist_id, video_id.clone(), sections_loaded),
+            (*playlist_id, video_id.clone(), context.loaded),
             move |(playlist_id, video_id, _)| {
-                if let Some(sections) = &context.sections
+                let meta: &Option<ManifestMeta> = context.manifest_meta.borrow();
+                if let Some(sections) = meta.as_ref().map(|d| &d.content)
                     && let Some(video_id) = video_id.as_ref()
                     && sections.get(*playlist_id).is_some_and(|s| {
                         s.content
@@ -63,15 +67,23 @@ pub fn video_player(
         );
     }
 
-    let Some(sections) = &context.sections else {
+    if !context.loaded {
         return html! {
             <div class={"page"}>
                 <p>{"Loading..."}</p>
             </div>
         };
+    }
+
+    let Some(meta) = context.manifest_meta.as_ref() else {
+        return html! {
+            <div class={"page"}>
+                <p>{"Video not found."}</p>
+            </div>
+        };
     };
 
-    let Some(section) = sections.get(*playlist_id) else {
+    let Some(section) = meta.content.get(*playlist_id) else {
         return html! {
             <div class={"page"}>
                 <p>{"Invalid playlist."}</p>

@@ -10,9 +10,12 @@ use crate::context::ContentContextHandle;
 
 use gloo_net::http::Request;
 use leap_api::api::content::meta::get::VideoStatus;
+use leap_api::types::ManifestMeta;
+use std::borrow::Borrow as _;
 use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
 
+use leap_api::api::content::meta::get::GroupedSection;
 use leap_api::api::version::get::BuildInfo;
 
 #[derive(PartialEq, Clone)]
@@ -117,7 +120,6 @@ impl<'de> serde::Deserialize<'de> for LogEntry {
 struct Status {
     version: BuildInfo,
     logs: Vec<LogEntry>,
-    manifest: Option<ManifestInfo>,
 }
 
 #[derive(Properties, PartialEq)]
@@ -283,21 +285,6 @@ async fn fetch_logs() -> anyhow::Result<Vec<LogEntry>> {
     Ok(new_logs)
 }
 
-async fn fetch_manifest_info() -> anyhow::Result<Option<ManifestInfo>> {
-    let resp = Request::get("/api/manifest/latest").send().await?;
-
-    if !resp.ok() {
-        anyhow::bail!("Response is not successful: {}", resp.status());
-    }
-
-    let text = resp.text().await?;
-    if text.is_empty() {
-        return Ok(None);
-    }
-    let info = serde_json::from_str(&text)?;
-    Ok(Some(info))
-}
-
 async fn trigger_manifest_update_check() -> anyhow::Result<()> {
     let resp = Request::post("/api/manifest/fetch").send().await?;
     if !resp.ok() {
@@ -370,15 +357,11 @@ pub fn version_info(VersionInfoProps { version }: &VersionInfoProps) -> Html {
 pub fn status_dashboard() -> Html {
     let state_data = use_state(|| None);
 
-    let context = use_context::<ContentContextHandle>().expect("ContentContext not found");
-    let sections_loaded = context.sections.is_some();
-
-    use_effect_with(sections_loaded, {
-        let context = context.clone();
+    use_effect_with((), {
         let state_data = state_data.clone();
         move |_| {
             spawn_local(async move {
-                if context.sections.is_some() && state_data.is_none() {
+                if state_data.is_none() {
                     let version = match fetch_version_info().await {
                         Ok(logs) => logs,
                         Err(e) => {
@@ -399,30 +382,25 @@ pub fn status_dashboard() -> Html {
                         }
                     };
 
-                    let manifest = match fetch_manifest_info().await {
-                        Ok(v) => v,
-                        Err(e) => {
-                            web_sys::console::log_1(
-                                &format!("Error while fetching manifest information: {e}").into(),
-                            );
-                            return;
-                        }
-                    };
-
-                    state_data.set(Some(Status {
-                        version,
-                        logs,
-                        manifest,
-                    }));
+                    state_data.set(Some(Status { version, logs }));
                 }
             });
         }
     });
 
-    let pending_downloads: Vec<_> = context
-        .sections
+    let context = use_context::<ContentContextHandle>().expect("ContentContext not found");
+
+    let meta: &Option<ManifestMeta> = context.manifest_meta.borrow();
+    let manifest_data = meta.as_ref().map(|meta| ManifestInfo {
+        name: meta.name.clone(),
+        date: meta.date.to_string(),
+    });
+
+    let pending_downloads: Vec<_> = meta
+        .as_ref()
+        .map(|meta| &meta.content as &[GroupedSection])
+        .unwrap_or(&[])
         .iter()
-        .flat_map(|s| s.iter())
         .flat_map(|s| &s.content)
         .filter(|v| v.status != VideoStatus::Downloaded)
         .map(|v| DownloadItem {
@@ -452,7 +430,7 @@ pub fn status_dashboard() -> Html {
                     if let Some(state_data) = &*state_data {
                         html! {
                             <>
-                                <ManifestStatus manifest={state_data.manifest.clone()} on_fetch={on_fetch} />
+                                <ManifestStatus manifest={manifest_data} on_fetch={on_fetch} />
                                 <DownloadsList downloads={pending_downloads.clone()} />
                                 <VersionInfo version={state_data.version.clone()} />
                                 <LogViewer logs={state_data.logs.clone()} />

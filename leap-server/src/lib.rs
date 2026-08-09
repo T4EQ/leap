@@ -34,12 +34,14 @@
 //! To start the provisioning server, use [`run_provisioning`]:
 //!
 //! ```rust,no_run
+//! #[cfg(feature = "provision")]
 //! use leap_server::run_provisioning;
 //! use std::net::TcpListener;
 //!
 //! #[tokio::main]
 //! async fn main() -> anyhow::Result<()> {
 //!     let listener = TcpListener::bind("127.0.0.1:9000")?;
+//!     #[cfg(feature = "provision")]
 //!     run_provisioning(listener).await?;
 //!     Ok(())
 //! }
@@ -47,19 +49,20 @@
 //!
 use actix_web::{App, HttpServer, web};
 use anyhow::Context;
-use tokio::sync::{Mutex, mpsc};
+use tokio::sync::mpsc;
 use tracing_bunyan_formatter::{BunyanFormattingLayer, JsonStorageLayer};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 use std::{io::stdout, net::TcpListener, path::Path, sync::Arc};
 
-use crate::{api::ProvisionApiData, cfg::LeapConfig};
+use cfg::LeapConfig;
 
 pub mod build_info;
 pub mod cfg;
 pub mod db;
 pub mod downloader;
 pub mod manifest;
+#[cfg(feature = "provision")]
 pub mod provision;
 pub mod utils;
 
@@ -103,8 +106,9 @@ pub async fn init_logging(logfile: Option<&Path>, debug: bool) {
     }
 }
 
+#[cfg(feature = "provision")]
 pub async fn run_provisioning(listener: TcpListener) -> anyhow::Result<()> {
-    let app_data = web::Data::new(Mutex::new(ProvisionApiData::new().await?));
+    let app_data = web::Data::new(tokio::sync::Mutex::new(api::ProvisionApiData::new().await?));
     let server = HttpServer::new(move || {
         App::new()
             .app_data(app_data.clone())

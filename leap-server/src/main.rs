@@ -85,6 +85,7 @@ async fn start_leap_server(args: &Args) -> Result<(), AppError> {
     Ok(())
 }
 
+#[cfg(feature = "provision")]
 async fn start_leap_provisioning(args: &Args) -> anyhow::Result<()> {
     leap_server::init_logging(None, false).await;
     let listener = TcpListener::bind(format!("{}:{}", args.address, args.port))?;
@@ -100,21 +101,28 @@ async fn main() -> anyhow::Result<()> {
         return Ok(());
     }
 
-    if args.provision {
-        start_leap_provisioning(&args).await?;
-    } else {
-        match start_leap_server(&args).await {
-            Err(AppError::InvalidConfiguration(error)) => {
-                if args.provision_fallback {
-                    tracing::error!(
-                        "Failed to start leap with the given configuration file. Falling back to provisioning: {error}"
-                    );
-                    start_leap_provisioning(&args).await?;
-                }
-                Err(AppError::InvalidConfiguration(error))
+    std::cfg_select! {
+        feature = "provision" => {
+            if args.provision {
+                start_leap_provisioning(&args).await?;
+            } else {
+                match start_leap_server(&args).await {
+                    Err(AppError::InvalidConfiguration(error)) => {
+                        if args.provision_fallback {
+                            tracing::error!(
+                                "Failed to start leap with the given configuration file. Falling back to provisioning: {error}"
+                            );
+                            start_leap_provisioning(&args).await?;
+                        }
+                        Err(AppError::InvalidConfiguration(error))
+                    }
+                    result => result,
+                }?;
             }
-            result => result,
-        }?;
+        }
+        _ => {
+            start_leap_server(&args).await?;
+        }
     }
 
     Ok(())

@@ -70,6 +70,11 @@ impl StateEventHandler {
                             };
                             // TODO: emit proper data
                             let _ = serialized_state_tx.send(Arc::new(meta));
+
+                            // Throttle the event updates to limit the notification rate to roughly
+                            // 200 ms
+                            const MAX_UPDATE_RATE: std::time::Duration = std::time::Duration::from_millis(200);
+                            tokio::time::sleep(MAX_UPDATE_RATE).await;
                         }
 
                     }

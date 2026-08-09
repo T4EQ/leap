@@ -6,12 +6,12 @@
 
 use std::sync::Arc;
 
-use crate::provision::DynProvision;
 use crate::{cfg::LeapConfig, db::Database, downloader::UserCommand};
 
 use actix_web::web;
 use tokio::sync::mpsc::UnboundedSender;
 
+#[cfg(feature = "provision")]
 mod provision;
 mod user;
 
@@ -39,17 +39,19 @@ impl ApiData {
     }
 }
 
+#[cfg(feature = "provision")]
 /// Shared resources used in provisioning HTTP handlers.
 #[derive(Debug)]
 pub struct ProvisionApiData {
     /// The provisioning engine.
-    provision: DynProvision,
+    provision: crate::provision::DynProvision,
 }
 
+#[cfg(feature = "provision")]
 impl ProvisionApiData {
     pub async fn new() -> anyhow::Result<Self> {
         Ok(Self {
-            provision: DynProvision::new().await?,
+            provision: crate::provision::DynProvision::new().await?,
         })
     }
 }
@@ -72,6 +74,7 @@ pub fn register_handlers(app: &mut web::ServiceConfig) {
     );
 }
 
+#[cfg(feature = "provision")]
 /// Registers the provisioning API handlers.
 pub fn register_provisioning_handlers(app: &mut web::ServiceConfig) {
     app.service(common_api_handlers());

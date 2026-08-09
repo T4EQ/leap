@@ -32,6 +32,10 @@
               runHook postBuild
             ";
 
+          checkPhase = "
+              # No tests for this package
+            ";
+
           installPhase = "
               runHook preInstall
               pushd leap-provision-site

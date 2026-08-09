@@ -31,7 +31,7 @@ top@{ inputs, ... }:
             # GCC compiles by default with -moutline-atomics, but this is not supported by the musl
             # variant of the build, as it would require linking to libgcc. This is needed by libdbus.
             export CFLAGS="$CFLAGS ${opts.extra-cflags or ""}"
-            cargo build --release --offline -j $NIX_BUILD_CORES --target ${targetPkgs.stdenv.hostPlatform.rust.rustcTarget} --no-default-features
+            cargo build --release --offline -j $NIX_BUILD_CORES --target ${targetPkgs.stdenv.hostPlatform.rust.rustcTarget} --no-default-features --features provision
             popd
             runHook postBuild
           '';

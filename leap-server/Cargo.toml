@@ -11,6 +11,7 @@ repository = "https://github.com/t4eq/leap"
 [features]
 default = ["git2"]
 git2 = ["built/git2"]
+provision = ["dbus"]
 
 [dependencies]
 actix-web-static-files.workspace = true
@@ -23,7 +24,7 @@ aws-sdk-s3.workspace = true
 chrono.workspace = true
 clap.workspace = true
 config.workspace = true
-dbus.workspace = true
+dbus = { workspace = true, optional = true }
 deadpool-diesel.workspace = true
 diesel.workspace = true
 diesel_migrations.workspace = true

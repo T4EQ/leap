@@ -17,11 +17,13 @@ mod provisioning_files {
         clippy::pedantic,
         clippy::nursery,
         unused_imports,
-        unused_variables
+        unused_variables,
+        dead_code
     )]
     include!(concat!(env!("OUT_DIR"), "/provisioning/generated.rs"));
 }
 
+#[cfg(feature = "provision")]
 pub fn register_provisioning_files(app: &mut web::ServiceConfig) {
     let generated = provisioning_files::generate();
     app.service(

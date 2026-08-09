@@ -27,9 +27,8 @@
 //! }
 //! ```
 
-use gloo_net::http::Request;
 use std::rc::Rc;
-use wasm_bindgen_futures::spawn_local;
+use wasm_bindgen::{closure::Closure, JsCast};
 use yew::prelude::*;
 
 use leap_api::api::content::meta::get::{GroupedSection, Response};
@@ -64,15 +63,35 @@ pub fn content_provider(props: &ContentProviderProps) -> Html {
     {
         let context = context.clone();
         use_effect_with((), move |_| {
-            if context.sections.is_none() {
-                let context = context.clone();
-                spawn_local(async move {
-                    if let Some(sections) = fetch_sections().await {
-                        context.dispatch(sections);
-                    }
-                });
+            let subscription = match web_sys::EventSource::new("/api/content/events") {
+                Ok(event_source) => {
+                    let on_message: Closure<dyn FnMut(web_sys::MessageEvent)> =
+                        Closure::new(move |event: web_sys::MessageEvent| {
+                            let Some(data) = event.data().as_string() else {
+                                log::error!("Content event did not contain text data");
+                                return;
+                            };
+                            match serde_json::from_str::<Response>(&data) {
+                                Ok(response) => context.dispatch(response.videos),
+                                Err(e) => log::error!("Failed to decode content event: {e:?}"),
+                            }
+                        });
+                    event_source.set_onmessage(Some(on_message.as_ref().unchecked_ref()));
+                    Some((event_source, on_message))
+                }
+                Err(e) => {
+                    log::error!("Failed to subscribe to content events: {e:?}");
+                    None
+                }
+            };
+
+            move || {
+                if let Some((event_source, on_message)) = subscription {
+                    event_source.set_onmessage(None);
+                    event_source.close();
+                    drop(on_message);
+                }
             }
-            || ()
         });
     }
 
@@ -81,24 +100,4 @@ pub fn content_provider(props: &ContentProviderProps) -> Html {
             { props.children.clone() }
         </ContextProvider<ContentContextHandle>>
     }
-}
-
-async fn fetch_sections() -> Option<Vec<GroupedSection>> {
-    let response = match Request::get("/api/content/meta").send().await {
-        Ok(v) => v,
-        Err(e) => {
-            log::error!("Failed to fetch content meta. Error performing HTTP request: {e:?}");
-            return None;
-        }
-    };
-
-    let response = match response.json::<Response>().await {
-        Ok(v) => v,
-        Err(e) => {
-            log::error!("Failed to fetch videos. Error decoding json: {e:?}");
-            return None;
-        }
-    };
-
-    Some(response.videos)
 }

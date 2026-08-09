@@ -126,6 +126,16 @@ async fn events(api_data: web::Data<ApiData>) -> impl Responder {
     let stream = async_stream::stream! {
         let mut keep_alive = tokio::time::interval(CONTENT_EVENT_KEEP_ALIVE_INTERVAL);
         keep_alive.tick().await;
+        {
+            let content = content_changes.borrow_and_update();
+            match serialize_content_event(&content) {
+                Ok(event) => yield Result::<Bytes, Infallible>::Ok(event),
+                Err(e) => {
+                    tracing::error!("Unable to serialize content update event: {e}");
+                }
+            };
+        }
+
         loop {
             tokio::select! {
                 changed = content_changes.changed() => {

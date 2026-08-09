@@ -40,33 +40,21 @@ pub fn video_player(
                             .any(|v| v.id == *video_id && v.status == Downloaded)
                     })
                 {
-                    let playlist_id = *playlist_id;
                     let video_id = video_id.clone();
-                    let context = context.clone();
 
                     spawn_local(async move {
                         let Ok(resp) = Request::post(&format!("/api/content/{video_id}/view"))
                             .send()
                             .await
+                            .inspect_err(|e| {
+                                log::error!("Failed to increment view count: {e}");
+                            })
                         else {
                             return;
                         };
 
                         if !resp.ok() {
-                            return;
-                        }
-
-                        let Some(sections) = context.sections.as_ref() else {
-                            return;
-                        };
-
-                        let mut new_sections = (**sections).clone();
-                        if let Some(video) = new_sections
-                            .get_mut(playlist_id)
-                            .and_then(|s| s.content.iter_mut().find(|v| v.id == video_id))
-                        {
-                            video.view_count += 1;
-                            context.dispatch(new_sections);
+                            log::error!("Failed to increment view count: HTTP {}", resp.status());
                         }
                     });
                 }

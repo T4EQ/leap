@@ -18,7 +18,20 @@ use leap_api::types::DeviceType;
 use serde::Deserialize;
 use tokio::sync::Mutex;
 
-use crate::api::ProvisionApiData;
+/// Shared resources used in provisioning HTTP handlers.
+#[derive(Debug)]
+pub struct ProvisionApiData {
+    /// The provisioning engine.
+    provision: crate::provision::DynProvision,
+}
+
+impl ProvisionApiData {
+    pub async fn new() -> anyhow::Result<Self> {
+        Ok(Self {
+            provision: crate::provision::DynProvision::new().await?,
+        })
+    }
+}
 
 impl From<crate::provision::BlockDeviceType> for DeviceType {
     fn from(value: crate::provision::BlockDeviceType) -> Self {

@@ -140,11 +140,9 @@ pub async fn run_app(listener: TcpListener, config: LeapConfig) -> anyhow::Resul
         user_command_receiver,
     );
 
-    let api_data = web::Data::new(api::ApiData::new(
-        config.clone(),
-        Arc::clone(&database),
-        user_command_sender,
-    ));
+    let api_data = web::Data::new(
+        api::ApiData::new(config.clone(), Arc::clone(&database), user_command_sender).await,
+    );
 
     let server = HttpServer::new(move || {
         App::new()

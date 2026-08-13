@@ -194,7 +194,11 @@ pub fn get_config(path: &Path) -> Result<LeapConfig> {
             path.to_str()
                 .context("Parsing configuration path as a str")?,
         ))
-        .add_source(config::Environment::with_prefix("LEAP"))
+        .add_source(
+            config::Environment::with_prefix("LEAP")
+                .prefix_separator("_")
+                .separator("__"),
+        )
         .build()
         .context("Building the configuration of the LEAP from file and environment")?;
 

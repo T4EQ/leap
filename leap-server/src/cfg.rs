@@ -74,6 +74,16 @@ pub struct RetryParams {
     pub max_backoff: std::time::Duration,
 }
 
+impl RetryParams {
+    pub fn fixed_backoff(duration: std::time::Duration) -> RetryParams {
+        RetryParams {
+            initial_backoff: duration,
+            backoff_factor: 1.0,
+            max_backoff: duration,
+        }
+    }
+}
+
 /// Configuration for the downloader.
 #[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
 pub struct DownloaderConfig {
@@ -136,7 +146,7 @@ impl DbConfig {
 
 /// Configuration to access the S3 server. Note the bucket is handled separately in the main
 /// configuration.
-#[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
+#[derive(serde::Deserialize, serde::Serialize, Debug, Clone, Default)]
 pub struct S3Config {
     /// S3 Endpoint URL. Defaults to AWS if not given.
     pub endpoint_url: Option<String>,

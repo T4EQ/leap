@@ -28,6 +28,7 @@ dbus = { workspace = true, optional = true }
 deadpool-diesel.workspace = true
 diesel.workspace = true
 diesel_migrations.workspace = true
+dotenvy.workspace = true
 http.workspace = true
 humantime-serde.workspace = true
 leap-api.workspace = true

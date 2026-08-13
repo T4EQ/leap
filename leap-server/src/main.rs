@@ -101,6 +101,9 @@ async fn main() -> anyhow::Result<()> {
         return Ok(());
     }
 
+    // Load .env file if present
+    let _ = dotenvy::dotenv();
+
     std::cfg_select! {
         feature = "provision" => {
             if args.provision {

@@ -28,6 +28,7 @@ dbus = { version = "0.9.10", features = ["vendored"] }
 deadpool-diesel = { version = "0.6.1", features = ["sqlite"] }
 diesel = { version = "2.3.7", features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
 diesel_migrations = "2.3.1"
+dotenvy = "0.15.7"
 gloo-net = "0.7"
 gloo-timers = { version = "0.4", features = ["futures"] }
 googletest = "0.14"

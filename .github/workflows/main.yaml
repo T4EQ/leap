@@ -42,7 +42,7 @@ jobs:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
     - name: 'Install rust-toolchain.toml'
       run: rustup toolchain install
-    - run: cargo clippy
+    - run: cargo clippy --all-features --tests -- -D warnings
 
   cargo_build:
     runs-on: ubuntu-latest
@@ -62,7 +62,8 @@ jobs:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
     - name: 'Install rust-toolchain.toml'
       run: rustup toolchain install
-    - run: cargo test
+    - run: cargo install --locked cargo-nextest
+    - run: cargo nextest run
 
   cargo_fmt:
     runs-on: ubuntu-latest
@@ -80,4 +81,22 @@ jobs:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
     - name: 'Install rust-toolchain.toml'
       run: rustup toolchain install
-    - run: cargo doc
+    - run: RUSTDOCFLAGS='-D warnings' cargo doc --document-private-items --all-features
+    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+      with:
+        name: cargo_doc
+        path: ./target/doc
+
+  cargo_coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+    - name: 'Install rust-toolchain.toml'
+      run: rustup toolchain install
+    - run: cargo install --locked cargo-llvm-cov
+    - run: cargo llvm-cov --html -p leap-server
+    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+      with:
+        name: coverage_report
+        path: ./target/llvm-cov/html

@@ -130,7 +130,7 @@ pub async fn mark_interrupted_downloads(
 ///
 /// This task needs to be cancel-safe, because it might get cancelled by calling code if a newer
 /// manifest is found.
-/// For references on cancellation-safety: https://sunshowers.io/posts/cancelling-async-rust/
+/// For references on cancellation-safety: <https://sunshowers.io/posts/cancelling-async-rust/>
 #[tracing::instrument(
     name = "download_manifest_task",
     skip(ctx, new_manifest),

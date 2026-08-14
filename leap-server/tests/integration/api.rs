@@ -46,8 +46,6 @@ static TEST_SECTIONS_2: LazyLock<Vec<SectionDefinition>> = LazyLock::new(|| {
 #[tokio::test]
 #[gtest]
 async fn initialize_server() -> googletest::Result<()> {
-    leap_server::init_logging(None, false).await;
-
     let test_resources = TestResources::try_new_for_test().or_fail()?;
     let server = TestServer::start(&test_resources).or_fail()?;
 
@@ -64,8 +62,6 @@ async fn initialize_server() -> googletest::Result<()> {
 #[tokio::test]
 #[gtest]
 async fn version_endpoint() -> googletest::Result<()> {
-    leap_server::init_logging(None, false).await;
-
     let test_resources = TestResources::try_new_for_test().or_fail()?;
     let server = TestServer::start(&test_resources).or_fail()?;
 
@@ -100,8 +96,6 @@ async fn version_endpoint() -> googletest::Result<()> {
 #[tokio::test]
 #[gtest]
 async fn manifest_and_video_fetching() -> googletest::Result<()> {
-    leap_server::init_logging(None, false).await;
-
     let test_resources = TestResources::try_new_for_test().or_fail()?;
 
     // Step 1: Save videos and publish a new manifest with them
@@ -138,8 +132,6 @@ async fn manifest_and_video_fetching() -> googletest::Result<()> {
 #[tokio::test]
 #[gtest]
 async fn serve_video_content() -> googletest::Result<()> {
-    leap_server::init_logging(None, false).await;
-
     let test_resources = TestResources::try_new_for_test().or_fail()?;
 
     // Step 1: Save videos and publish a new manifest with them
@@ -189,8 +181,6 @@ async fn serve_video_content() -> googletest::Result<()> {
 #[tokio::test]
 #[gtest]
 async fn serve_partial_video_content() -> googletest::Result<()> {
-    leap_server::init_logging(None, false).await;
-
     let test_resources = TestResources::try_new_for_test().or_fail()?;
 
     // Step 1: Save videos and publish a new manifest with them
@@ -247,8 +237,6 @@ async fn serve_partial_video_content() -> googletest::Result<()> {
 #[tokio::test]
 #[gtest]
 async fn fetch_not_downloaded_content() -> googletest::Result<()> {
-    leap_server::init_logging(None, false).await;
-
     let test_resources = TestResources::try_new_for_test().or_fail()?;
 
     // Step 1: Start the LEAP server
@@ -283,8 +271,6 @@ async fn fetch_not_downloaded_content() -> googletest::Result<()> {
 #[tokio::test]
 #[gtest]
 async fn fetch_invalid_video_id() -> googletest::Result<()> {
-    leap_server::init_logging(None, false).await;
-
     let test_resources = TestResources::try_new_for_test().or_fail()?;
 
     // Step 1: Start the LEAP server
@@ -306,8 +292,6 @@ async fn fetch_invalid_video_id() -> googletest::Result<()> {
 #[tokio::test]
 #[gtest]
 async fn return_video_meta() -> googletest::Result<()> {
-    leap_server::init_logging(None, false).await;
-
     let test_resources = TestResources::try_new_for_test().or_fail()?;
     let manifest_date = chrono::NaiveDate::from_str("2026-08-14").or_fail()?;
 
@@ -391,8 +375,6 @@ async fn return_video_meta() -> googletest::Result<()> {
 #[tokio::test]
 #[gtest]
 async fn return_specific_video_meta() -> googletest::Result<()> {
-    leap_server::init_logging(None, false).await;
-
     let test_resources = TestResources::try_new_for_test().or_fail()?;
     let manifest_date = chrono::NaiveDate::from_str("2026-08-14").or_fail()?;
 
@@ -448,8 +430,6 @@ async fn return_specific_video_meta() -> googletest::Result<()> {
 #[tokio::test]
 #[gtest]
 async fn view_count_increments() -> googletest::Result<()> {
-    leap_server::init_logging(None, false).await;
-
     let test_resources = TestResources::try_new_for_test().or_fail()?;
     let manifest_date = chrono::NaiveDate::from_str("2026-08-14").or_fail()?;
 
@@ -527,8 +507,6 @@ async fn view_count_increments() -> googletest::Result<()> {
 #[tokio::test]
 #[gtest]
 async fn manifest_updates_after_first_sync() -> googletest::Result<()> {
-    leap_server::init_logging(None, false).await;
-
     let test_resources = TestResources::try_new_for_test().or_fail()?;
     let first_manifest_date = chrono::NaiveDate::from_str("2026-08-14").or_fail()?;
 
@@ -593,8 +571,6 @@ async fn manifest_updates_after_first_sync() -> googletest::Result<()> {
 #[tokio::test]
 #[gtest]
 async fn manifest_does_not_update_with_same_date() -> googletest::Result<()> {
-    leap_server::init_logging(None, false).await;
-
     let test_resources = TestResources::try_new_for_test().or_fail()?;
     let first_manifest_date = chrono::NaiveDate::from_str("2026-08-14").or_fail()?;
 
@@ -660,8 +636,6 @@ async fn manifest_does_not_update_with_same_date() -> googletest::Result<()> {
 #[tokio::test]
 #[gtest]
 async fn fetch_current_manifest() -> googletest::Result<()> {
-    leap_server::init_logging(None, false).await;
-
     let test_resources = TestResources::try_new_for_test().or_fail()?;
     let first_manifest_date = chrono::NaiveDate::from_str("2026-08-14").or_fail()?;
 

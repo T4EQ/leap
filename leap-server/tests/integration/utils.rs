@@ -9,7 +9,12 @@ use leap_server::{
     manifest::{self},
 };
 use sha2::Digest;
-use std::{net::TcpListener, path::PathBuf, str::FromStr as _, time::Duration};
+use std::{
+    net::{SocketAddr, TcpListener},
+    path::PathBuf,
+    str::FromStr as _,
+    time::Duration,
+};
 use tokio::task::AbortHandle;
 use uuid::Uuid;
 
@@ -171,23 +176,17 @@ impl Drop for TestResources {
 pub struct TestServer<'a> {
     // Resources cannot be destroyed while the server operates.
     _test_resources: std::marker::PhantomData<&'a TestResources>,
-    port: u16,
+    local_addr: SocketAddr,
     handle: AbortHandle,
 }
 
 impl<'a> TestServer<'a> {
     pub fn start(test_resources: &'a TestResources) -> googletest::Result<Self> {
         // let's try to find a random unused port
-        let (listener, port) = {
-            loop {
-                let port: u16 = rand::random_range(30000..32000);
-                let addr = format!("localhost:{port}");
-                match TcpListener::bind(&addr) {
-                    Ok(listener) => break (listener, port),
-                    Err(error) if error.kind() == std::io::ErrorKind::AddrInUse => {}
-                    Err(error) => return Err(error.into()),
-                }
-            }
+        let (listener, local_addr) = {
+            let listener = TcpListener::bind("localhost:0").or_fail()?;
+            let addr = listener.local_addr().or_fail()?;
+            (listener, addr)
         };
 
         let leap_config = test_resources.leap_config().or_fail()?;
@@ -195,13 +194,14 @@ impl<'a> TestServer<'a> {
         let handle = handle.abort_handle();
         Ok(Self {
             _test_resources: std::marker::PhantomData,
-            port,
+            local_addr,
             handle,
         })
     }
 
     pub fn endpoint_url(&self, path: &str) -> String {
-        format!("http://localhost:{}/{}", self.port, path)
+        let addr = self.local_addr;
+        format!("http://{addr}/{}", path)
     }
 }
 

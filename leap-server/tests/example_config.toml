@@ -1,0 +1,24 @@
+debug = true
+
+[db_config]
+runtime_path = "/tmp/leap/runtime_path"
+busy_timeout = "10 seconds"
+pool_size = 16
+
+[downloader_config]
+concurrent_downloads = 8
+content_path = "/tmp/leap/content_path"
+remote_server = "s3://bucket"
+update_interval = "20 seconds"
+
+[downloader_config.retry_params]
+initial_backoff = "5 seconds"
+backoff_factor = 1.5
+max_backoff = "2 hours"
+
+[s3_config]
+access_key_id = "1234"
+secret_access_key = "4567"
+endpoint_url = "https://s3.server.com"
+force_path_style = true
+region = "us-east-1"

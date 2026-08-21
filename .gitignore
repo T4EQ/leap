@@ -4,3 +4,4 @@ video-data
 .direnv
 result
 /leap-linux/output
+.env

@@ -18,6 +18,7 @@ top@{ inputs, ... }:
           };
 
           nativeBuildInputs = with pkgs; [
+            cacert # needed by the tests in this package.
             lld
           ];
 

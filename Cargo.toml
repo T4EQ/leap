@@ -25,7 +25,7 @@ chrono = { version = "0.4", features = ["serde"] }
 clap = { version = "4.6", features = ["derive"] }
 config = "0.15"
 dbus = { version = "0.9.10", features = ["vendored"] }
-deadpool-diesel = { version = "0.6.1", features = ["sqlite"] }
+deadpool-diesel = { version = "0.7.0", features = ["sqlite"] }
 diesel = { version = "2.3.7", features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
 diesel_migrations = "2.3.1"
 gloo-net = "0.7"

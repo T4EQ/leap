@@ -1,0 +1,43 @@
+software = {
+    version = "1.0.0";
+
+    stable = {
+        rootfs-a = {
+            images: (
+                {
+                    filename = "rootfs.ext4";
+                    type = "raw";
+                    device = "/dev/disk/by-partlabel/rootfs-a";
+                    installed-directly = true;
+                    sha256 = "8f40e1b701116e59c475dc5b7690f2ee4b87a9980a5080b42d36127360880b8d";
+                }
+            );
+
+            bootenv: (
+                {
+                    name = "bootpart";
+                    value = "3";
+                }
+            );
+        };
+
+        rootfs-b = {
+            images: (
+                {
+                    filename = "rootfs.ext4";
+                    type = "raw";
+                    device = "/dev/disk/by-partlabel/rootfs-b";
+                    installed-directly = true;
+                    sha256 = "8f40e1b701116e59c475dc5b7690f2ee4b87a9980a5080b42d36127360880b8d";
+                }
+            );
+
+            bootenv: (
+                {
+                    name = "bootpart";
+                    value = "4";
+                }
+            );
+        };
+    };
+};

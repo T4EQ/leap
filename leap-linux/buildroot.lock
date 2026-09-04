@@ -331,6 +331,15 @@
       "https://sources.buildroot.net/gperf-3.3.tar.gz"
     ]
   },
+  "gzip-1.14.tar.xz": {
+    "algo": "sha256",
+    "checksum": "01a7b881bd220bfdf615f97b8718f80bdfd3f6add385b993dcf6efd14e8c0ac6",
+    "uris": [
+      "https://ftpmirror.gnu.org/gzip/gzip-1.14.tar.xz",
+      "https://sources.buildroot.net/gzip/gzip-1.14.tar.xz",
+      "https://sources.buildroot.net/gzip-1.14.tar.xz"
+    ]
+  },
   "htop-3.4.1.tar.xz": {
     "algo": "sha256",
     "checksum": "904f7d4580fc11cffc7e0f06895a4789e0c1c054435752c151e812fead9f6220",
@@ -367,6 +376,15 @@
       "https://sources.buildroot.net/jinja2-3.1.6.tar.gz"
     ]
   },
+  "json-c-0.18.tar.gz": {
+    "algo": "sha256",
+    "checksum": "876ab046479166b869afc6896d288183bbc0e5843f141200c677b3e8dfb11724",
+    "uris": [
+      "https://s3.amazonaws.com/json-c_releases/releases/json-c-0.18.tar.gz",
+      "https://sources.buildroot.net/json-c/json-c-0.18.tar.gz",
+      "https://sources.buildroot.net/json-c-0.18.tar.gz"
+    ]
+  },
   "kbd-2.9.0.tar.xz": {
     "algo": "sha256",
     "checksum": "fb3197f17a99eb44d22a3a1a71f755f9622dd963e66acfdea1a45120951b02ed",
@@ -392,6 +410,24 @@
       "https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-2.77.tar.xz",
       "https://sources.buildroot.net/libcap/libcap-2.77.tar.xz",
       "https://sources.buildroot.net/libcap-2.77.tar.xz"
+    ]
+  },
+  "libconf-2.0.1.tar.gz": {
+    "algo": "sha256",
+    "checksum": "2f907258953ba60a95a82d5633726b47c81f2d5cf8d8801b092579016d757f4a",
+    "uris": [
+      "https://files.pythonhosted.org/packages/c8/41/592c24b42ec6e349629f2b6310ff31255b213bc696c0e4ad2ee1d2bbb68e/libconf-2.0.1.tar.gz",
+      "https://sources.buildroot.net/python-libconf/libconf-2.0.1.tar.gz",
+      "https://sources.buildroot.net/libconf-2.0.1.tar.gz"
+    ]
+  },
+  "libconfig-1.8.2.tar.gz": {
+    "algo": "sha256",
+    "checksum": "e59ffb902dd5731d5d4e4fb81d3b989697615feab72dfd7c30618167b91a42ee",
+    "uris": [
+      "https://hyperrealm.github.io/libconfig/dist/libconfig-1.8.2.tar.gz",
+      "https://sources.buildroot.net/libconfig/libconfig-1.8.2.tar.gz",
+      "https://sources.buildroot.net/libconfig-1.8.2.tar.gz"
     ]
   },
   "libevent-2.1.12-stable.tar.gz": {
@@ -446,6 +482,15 @@
       "https://ftpmirror.gnu.org/libtool/libtool-2.4.6.tar.xz",
       "https://sources.buildroot.net/libtool/libtool-2.4.6.tar.xz",
       "https://sources.buildroot.net/libtool-2.4.6.tar.xz"
+    ]
+  },
+  "libubootenv-0.3.7.tar.gz": {
+    "algo": "sha256",
+    "checksum": "92021fc5a0a965030588d0c867a771d28b28c0d17c9fd022f0dafe9f01de714e",
+    "uris": [
+      "https://github.com/sbabic/libubootenv/archive/v0.3.7/libubootenv-0.3.7.tar.gz",
+      "https://sources.buildroot.net/libubootenv/libubootenv-0.3.7.tar.gz",
+      "https://sources.buildroot.net/libubootenv-0.3.7.tar.gz"
     ]
   },
   "libunistring-1.4.2.tar.xz": {
@@ -736,6 +781,24 @@
       "https://sources.buildroot.net/sudo-1.9.17p1.tar.gz"
     ]
   },
+  "swugenerator-0.6.tar.gz": {
+    "algo": "sha256",
+    "checksum": "06098c4b3a6c3e5946a11929f95f280baacb512fc4154e16af2262c60a36cbc6",
+    "uris": [
+      "https://github.com/sbabic/swugenerator/archive/0.6/swugenerator-0.6.tar.gz",
+      "https://sources.buildroot.net/swugenerator/swugenerator-0.6.tar.gz",
+      "https://sources.buildroot.net/swugenerator-0.6.tar.gz"
+    ]
+  },
+  "swupdate-2025.05.tar.gz": {
+    "algo": "sha256",
+    "checksum": "678b47fd2419727c4d0abf5c9f3bc0dc4b67e95951132bd1c8f5603e88947779",
+    "uris": [
+      "https://github.com/sbabic/swupdate/archive/2025.05/swupdate-2025.05.tar.gz",
+      "https://sources.buildroot.net/swupdate/swupdate-2025.05.tar.gz",
+      "https://sources.buildroot.net/swupdate-2025.05.tar.gz"
+    ]
+  },
   "systemd-258.4.tar.gz": {
     "algo": "sha256",
     "checksum": "5c95e54e555b21594ab11e76f91a092c6383553ed725292eb0a929bf2fe028ae",
@@ -826,6 +889,15 @@
       "https://sources.buildroot.net/xz-5.8.1.tar.bz2"
     ]
   },
+  "yaml-0.2.5.tar.gz": {
+    "algo": "sha256",
+    "checksum": "c642ae9b75fee120b2d96c712538bd2cf283228d2337df2cf2988e3c02678ef4",
+    "uris": [
+      "http://pyyaml.org/download/libyaml/yaml-0.2.5.tar.gz",
+      "https://sources.buildroot.net/libyaml/yaml-0.2.5.tar.gz",
+      "https://sources.buildroot.net/yaml-0.2.5.tar.gz"
+    ]
+  },
   "zlib-1.3.2.tar.xz": {
     "algo": "sha256",
     "checksum": "d7a0654783a4da529d1bb793b7ad9c3318020af77667bcae35f95d0e42a792f3",
@@ -833,6 +905,15 @@
       "https://www.zlib.net/zlib-1.3.2.tar.xz",
       "https://sources.buildroot.net/libzlib/zlib-1.3.2.tar.xz",
       "https://sources.buildroot.net/zlib-1.3.2.tar.xz"
+    ]
+  },
+  "zstd-1.5.7.tar.gz": {
+    "algo": "sha256",
+    "checksum": "eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3",
+    "uris": [
+      "https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz",
+      "https://sources.buildroot.net/zstd/zstd-1.5.7.tar.gz",
+      "https://sources.buildroot.net/zstd-1.5.7.tar.gz"
     ]
   }
 }

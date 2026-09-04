@@ -37,6 +37,8 @@ let
       gnutls.dev
       expat
       expat.dev
+      python3
+      xxd
 
     ];
 in

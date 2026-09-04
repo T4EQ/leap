@@ -1,0 +1,19 @@
+stdin=serial,usbkbd
+stdout=serial,vidconsole
+stderr=serial,vidconsole
+
+bootm_size=0x20000000
+
+kernel_addr_r=0x00080000
+kernel_comp_addr_r=0x02000000
+kernel_comp_size=0x03400000
+scriptaddr=0x05400000
+pxefile_addr_r=0x05500000
+fdt_addr_r=0x05600000
+ramdisk_addr_r=0x05700000
+
+boot_targets=mmc
+
+bootpart=3
+boot_slot=if part uuid mmc 0:${bootpart} rootpartuuid; then sysboot mmc 0:${bootpart} any ${pxefile_addr_r} /boot/extlinux/extlinux.conf; fi
+bootcmd=run boot_slot

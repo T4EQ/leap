@@ -1,0 +1,8 @@
+uboot:
+  size: 0x4000
+  lockfile: /var/lock/fw_printenv.lock
+  devices:
+    - path: /dev/disk/by-partlabel/u-boot
+      offset: 0x00000000
+    - path: /dev/disk/by-partlabel/u-boot
+      offset: 0x00004000

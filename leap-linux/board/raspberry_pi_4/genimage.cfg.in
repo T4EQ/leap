@@ -5,21 +5,34 @@ image boot.vfat {
 		}
 	}
 
-	size = 32M
+	size = 100M
 }
 
 image sdcard.img {
 	hdimage {
+		partition-table-type = "gpt"
 	}
 
 	partition boot {
-		partition-type = 0xC
+		partition-type-uuid = "esp"
 		bootable = "true"
 		image = "boot.vfat"
 	}
 
-	partition rootfs {
-		partition-type = 0x83
+	partition u-boot {
+		partition-type-uuid = "u-boot-env"
+		size = 32M
+	}
+
+	partition rootfs-a {
+		partition-uuid = "546798d9-ce3b-45e1-b9b9-452728cbf974"
+		partition-type-uuid = "linux"
+		image = "rootfs.ext4"
+	}
+
+	partition rootfs-b {
+		partition-uuid = "2656ef9e-8e89-409e-a79d-7f808dbc9c4e"
+		partition-type-uuid = "linux"
 		image = "rootfs.ext4"
 	}
 }

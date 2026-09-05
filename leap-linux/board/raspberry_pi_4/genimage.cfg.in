@@ -21,7 +21,7 @@ image sdcard.img {
 
 	partition u-boot {
 		partition-type-uuid = "u-boot-env"
-		size = 32M
+		size = 32K
 	}
 
 	partition rootfs-a {

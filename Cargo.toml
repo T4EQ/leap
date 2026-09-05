@@ -28,6 +28,7 @@ dbus = { version = "0.9.10", features = ["vendored"] }
 deadpool-diesel = { version = "0.7.0", features = ["sqlite"] }
 diesel = { version = "2.3.7", features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
 diesel_migrations = "2.3.1"
+dotenvy = "0.15.7"
 gloo-net = "0.7"
 gloo-timers = { version = "0.4", features = ["futures"] }
 googletest = "0.14"
@@ -36,13 +37,16 @@ humantime-serde = "1.1.1"
 libsqlite3-sys = { version = "0.38", features = ["bundled"] }
 log = "0.4"
 nix = { version = "0.31.2", features = ["mount", "reboot", "fs"] }
+rand = "0.10.2"
 regex = "1.12.3"
 reqwest = { version = "0.13", features = ["blocking", "json"] }
+rstest = "0.26.1"
 secrecy = { version = "0.10.3", features = ["serde"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 sha2 = "0.11.0"
 static-files = "0.3.1"
+temp-env = "0.3.6"
 tempfile = "3.27"
 thiserror = "2.0.18"
 tokio = { version = "1.51", features = ["full"] }

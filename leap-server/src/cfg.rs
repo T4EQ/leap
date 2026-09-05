@@ -74,6 +74,16 @@ pub struct RetryParams {
     pub max_backoff: std::time::Duration,
 }
 
+impl RetryParams {
+    pub fn fixed_backoff(duration: std::time::Duration) -> RetryParams {
+        RetryParams {
+            initial_backoff: duration,
+            backoff_factor: 1.0,
+            max_backoff: duration,
+        }
+    }
+}
+
 /// Configuration for the downloader.
 #[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
 pub struct DownloaderConfig {
@@ -136,7 +146,7 @@ impl DbConfig {
 
 /// Configuration to access the S3 server. Note the bucket is handled separately in the main
 /// configuration.
-#[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
+#[derive(serde::Deserialize, serde::Serialize, Debug, Clone, Default)]
 pub struct S3Config {
     /// S3 Endpoint URL. Defaults to AWS if not given.
     pub endpoint_url: Option<String>,
@@ -184,7 +194,11 @@ pub fn get_config(path: &Path) -> Result<LeapConfig> {
             path.to_str()
                 .context("Parsing configuration path as a str")?,
         ))
-        .add_source(config::Environment::with_prefix("LEAP"))
+        .add_source(
+            config::Environment::with_prefix("LEAP")
+                .prefix_separator("_")
+                .separator("__"),
+        )
         .build()
         .context("Building the configuration of the LEAP from file and environment")?;
 

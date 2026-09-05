@@ -15,8 +15,18 @@ pub use user::ApiData;
 #[cfg(feature = "provision")]
 pub use provision::ProvisionApiData;
 
+/// Returns the current build information.
+///
+/// This endpoint provides information about the current version, git hash, and build profile.
+#[actix_web::get("/health_check")]
+async fn health_check() -> impl actix_web::Responder {
+    actix_web::HttpResponse::Ok()
+}
+
 fn common_api_handlers() -> actix_web::Scope {
-    web::scope("api").service(user::get_version)
+    web::scope("api")
+        .service(user::get_version)
+        .service(health_check)
 }
 
 /// Registers the main API handlers.

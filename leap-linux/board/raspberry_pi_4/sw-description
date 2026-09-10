@@ -15,8 +15,12 @@ software = {
 
             bootenv: (
                 {
-                    name = "bootpart";
-                    value = "3";
+                    name = "boot_slot";
+                    value = "a";
+                },
+                {
+                    name = "boot_retries";
+                    value = "0";
                 }
             );
         };
@@ -34,8 +38,12 @@ software = {
 
             bootenv: (
                 {
-                    name = "bootpart";
-                    value = "4";
+                    name = "boot_slot";
+                    value = "b";
+                },
+                {
+                    name = "boot_retries";
+                    value = "0";
                 }
             );
         };

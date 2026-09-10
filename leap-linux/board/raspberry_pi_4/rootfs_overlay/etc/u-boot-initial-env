@@ -14,6 +14,21 @@ ramdisk_addr_r=0x05700000
 
 boot_targets=mmc
 
-bootpart=3
-boot_slot=if part uuid mmc 0:${bootpart} rootpartuuid; then sysboot mmc 0:${bootpart} any ${pxefile_addr_r} /boot/extlinux/extlinux.conf; fi
-bootcmd=run boot_slot
+ustate=0
+boot_retries=0
+max_boot_retries=5
+boot_slot=a
+
+set_bootpart=if test "${boot_slot}" = "a"; then setenv bootpart 3; else setenv bootpart 4; fi
+reset_bootpart=setenv bootpart
+
+boot_slot_cmd=run set_bootpart; if part uuid mmc 0:${bootpart} rootpartuuid; then sysboot mmc 0:${bootpart} any ${pxefile_addr_r} /boot/extlinux/extlinux.conf; fi; run reset_bootpart
+
+swap_boot_slot=if test "${boot_slot}" = "a"; then setenv boot_slot b; else setenv boot_slot a; fi; saveenv
+
+boot_selected_slot=echo "Booting from slot ${boot_slot}..."; run boot_slot_cmd
+boot_alternate_slot=echo "Boot process for slot ${boot_slot} failed too many times."; setenv ustate 3; setenv boot_retries 0; run swap_boot_slot; echo "Falling back to slot ${boot_slot}"; run boot_slot_cmd
+
+incr_boot_count=if test ${ustate} -eq 1; then setexpr boot_retries ${boot_retries} + 1; saveenv; fi
+
+bootcmd=if test ${ustate} -ne 1 -o ${boot_retries} -lt ${max_boot_retries}; then run incr_boot_count; run boot_selected_slot; else run boot_alternate_slot; fi

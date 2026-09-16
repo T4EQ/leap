@@ -110,6 +110,18 @@ in
             pname = "leap-linux";
             version = "1.0.0";
             targetPkgs = depsForBuildroot;
+            profile = ''
+              # Match buildroot.nix, which disables -Werror=format-security
+              # while Buildroot bootstraps its host toolchain.
+              hardeningFlags=()
+              for flag in $NIX_HARDENING_ENABLE; do
+                if [ "$flag" != format ]; then
+                  hardeningFlags+=("$flag")
+                fi
+              done
+              export NIX_HARDENING_ENABLE="''${hardeningFlags[*]}"
+              unset hardeningFlags flag
+            '';
           }).env;
       };
     };

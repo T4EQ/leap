@@ -30,7 +30,7 @@ jobs:
         github_access_token: ${{ secrets.GITHUB_TOKEN }}
         nix_path: nixpkgs=channel:nixos-unstable
     - run: nix build .#leap-target
-    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+    - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
       with:
         name: leap-server
         path: ./result/bin/leap-server
@@ -82,7 +82,7 @@ jobs:
     - name: 'Install rust-toolchain.toml'
       run: rustup toolchain install
     - run: RUSTDOCFLAGS='-D warnings' cargo doc --document-private-items --all-features
-    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+    - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
       with:
         name: cargo_doc
         path: ./target/doc
@@ -96,7 +96,7 @@ jobs:
       run: rustup toolchain install
     - run: cargo install --locked cargo-llvm-cov
     - run: cargo llvm-cov --html -p leap-server
-    - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+    - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
       with:
         name: coverage_report
         path: ./target/llvm-cov/html

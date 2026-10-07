@@ -4,10 +4,12 @@ on:
   push:
     branches: [ main ]
     paths:
+      - 'flake.lock'
       - 'leap-linux/**'
   pull_request:
     branches: [ main ]
     paths:
+      - 'flake.lock'
       - 'leap-linux/**'
 
 env:

@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "downloader_config": {
+    "concurrent_downloads": 4,
+    "update_interval": "1h",
+    "retry_params": {
+      "initial_backoff": "1s",
+      "backoff_factor": 2.0,
+      "max_backoff": "1h"
+    }
+  },
+  "s3_config": {
+    "bucket": "s3://school-content",
+    "access_key_id": "REPLACE_WITH_ACCESS_KEY_ID",
+    "secret_access_key": "REPLACE_WITH_SECRET_ACCESS_KEY",
+    "endpoint_url": "https://s3.example.org",
+    "force_path_style": false,
+    "region": "us-east-1"
+  }
+}

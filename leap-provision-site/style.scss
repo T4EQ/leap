@@ -64,6 +64,24 @@ h1 {
   gap: 1.2rem;
 }
 
+.config-import {
+  background: var(--card-bg);
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+
+  h2, p { margin: 0; }
+  p { font-size: 0.9rem; line-height: 1.5; }
+  input { max-width: 100%; }
+  video { width: 100%; border-radius: 4px; }
+  video[hidden] { display: none; }
+  button { align-self: flex-start; }
+}
+
 .form-field {
   display: flex;
   flex-direction: column;

@@ -17,9 +17,14 @@ log.workspace = true
 secrecy.workspace = true
 serde.workspace = true
 serde_json.workspace = true
+toml.workspace = true
+quircs = "0.10"
 wasm-bindgen-futures.workspace = true
 wasm-bindgen.workspace = true
 wasm-logger.workspace = true
-web-sys = { workspace = true, features = ["HtmlSelectElement", "Window"] }
+web-sys = { workspace = true, features = ["HtmlSelectElement", "Window", "File", "FileList", "Blob", "ImageBitmap", "HtmlCanvasElement", "CanvasRenderingContext2d", "ImageData", "Navigator", "MediaDevices", "MediaStream", "MediaStreamTrack", "MediaStreamConstraints", "HtmlVideoElement", "Document"] }
 yew-router.workspace = true
 yew.workspace = true
+
+[dev-dependencies]
+qrcode = { version = "0.14", default-features = false }

@@ -9,6 +9,8 @@
 pub mod app;
 
 mod completed;
+mod config_import;
+mod import_controls;
 mod leap_config;
 mod network_config;
 mod storage_config;

@@ -15,6 +15,7 @@ use crate::{
 use gloo_net::http::Request;
 use gloo_timers::future::sleep;
 use leap_api::types::ProvisionStatus;
+use secrecy::ExposeSecret;
 use std::time::Duration;
 use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
@@ -43,6 +44,35 @@ pub fn leap_config_page() -> Html {
     let toast: UseStateHandle<Option<String>> = use_state(|| None);
     let submitting = use_state(|| false);
     let reconnecting = use_state(|| false);
+
+    let onimport = {
+        let concurrent_downloads = concurrent_downloads.clone();
+        let update_interval = update_interval.clone();
+        let initial_backoff = initial_backoff.clone();
+        let backoff_factor = backoff_factor.clone();
+        let max_backoff = max_backoff.clone();
+        let bucket = bucket.clone();
+        let access_key_id = access_key_id.clone();
+        let secret_access_key = secret_access_key.clone();
+        let endpoint_url = endpoint_url.clone();
+        let force_path_style = force_path_style.clone();
+        let region = region.clone();
+        Callback::from(move |config: leap_api::types::LeapConfig| {
+            let d = config.downloader_config;
+            concurrent_downloads.set(d.concurrent_downloads.to_string());
+            update_interval.set(format!("{}s", d.update_interval.as_secs_f64()));
+            initial_backoff.set(format!("{}s", d.retry_params.initial_backoff.as_secs_f64()));
+            backoff_factor.set(d.retry_params.backoff_factor.to_string());
+            max_backoff.set(format!("{}s", d.retry_params.max_backoff.as_secs_f64()));
+            let s = config.s3_config;
+            bucket.set(s.bucket.to_string());
+            access_key_id.set(s.access_key_id.expose_secret().to_string());
+            secret_access_key.set(s.secret_access_key.expose_secret().to_string());
+            endpoint_url.set(s.endpoint_url.unwrap_or_default());
+            force_path_style.set(s.force_path_style.unwrap_or(false));
+            region.set(s.region.unwrap_or_default());
+        })
+    };
 
     let on_force_path_style_change = {
         let force_path_style = force_path_style.clone();
@@ -244,6 +274,7 @@ pub fn leap_config_page() -> Html {
                     <button onclick={on_dismiss_toast}>{ "✕" }</button>
                 </div>
             }
+            <crate::import_controls::ImportControls {onimport} disabled={*submitting} />
             <div class="form">
                 <h2>{ "Downloader" }</h2>
 

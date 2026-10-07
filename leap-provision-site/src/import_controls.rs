@@ -1,4 +1,4 @@
-use crate::config_import::{MAX_CONFIG_BYTES, decode_qr, parse_config};
+use crate::config_import::decode_qr;
 use gloo_timers::future::sleep;
 use leap_api::types::LeapConfig;
 use std::{cell::Cell, rc::Rc, time::Duration};
@@ -45,22 +45,9 @@ fn read_canvas(
     decode_qr(canvas.width() as usize, canvas.height() as usize, &gray)
 }
 
-async fn read_file(file: web_sys::File, image: bool) -> Result<LeapConfig, &'static str> {
-    let limit = if image {
-        10 * 1024 * 1024
-    } else {
-        MAX_CONFIG_BYTES
-    };
-    if file.size() > limit as f64 {
-        return Err("File is too large. Maximum: 10 MiB for images, 64 KiB for configuration.");
-    }
-    if !image {
-        let text = JsFuture::from(file.text())
-            .await
-            .map_err(|_| "Could not read configuration file.")?
-            .as_string()
-            .ok_or("Could not read configuration text.")?;
-        return parse_config(&text, file.name().to_ascii_lowercase().ends_with(".toml"));
+async fn read_file(file: web_sys::File) -> Result<LeapConfig, &'static str> {
+    if file.size() > (10 * 1024 * 1024) as f64 {
+        return Err("This image is too large. Choose an image smaller than 10 MiB.");
     }
     let window = web_sys::window().unwrap();
     let promise = window
@@ -142,7 +129,7 @@ pub fn import_controls(props: &Props) -> Html {
             }
         });
     }
-    let onfile = |image: bool| {
+    let onfile = {
         let message = message.clone();
         let busy = busy.clone();
         let generation = generation.clone();
@@ -161,14 +148,13 @@ pub fn import_controls(props: &Props) -> Html {
             let generation = generation.borrow().clone();
             let current = generation.get();
             spawn_local(async move {
-                let result = read_file(file, image).await;
+                let result = read_file(file).await;
                 if generation.get() != current {
                     return;
                 }
                 match result {
                     Ok(config) => {
                         onimport.emit(config);
-                        message.set(Some("Configuration imported. Review the fields below, then choose Configure to apply.".into()));
                     }
                     Err(error) => message.set(Some(error.into())),
                 }
@@ -198,12 +184,12 @@ pub fn import_controls(props: &Props) -> Html {
         Callback::from(move |_| {
             let window = web_sys::window().unwrap();
             if !window.is_secure_context() {
-                message.set(Some("Live camera scanning requires trusted HTTPS. Import a QR image or configuration file instead.".into()));
+                message.set(Some("Camera scanning isn’t available on this connection. Choose a saved QR image instead.".into()));
                 return;
             }
             scanning.set(true);
             message.set(Some(
-                "Allow camera access and point the camera at a configuration QR code.".into(),
+                "Allow camera access and point your camera at the QR code.".into(),
             ));
             let generation = generation.borrow().clone();
             let current = generation.get();
@@ -220,9 +206,9 @@ pub fn import_controls(props: &Props) -> Html {
                     let video = serde_json::json!({"facingMode": "environment"});
                     let video = web_sys::js_sys::JSON::parse(&video.to_string()).unwrap();
                     constraints.set_video(&video);
-                    let devices = window.navigator().media_devices().map_err(|_| "Camera unavailable. Import a file instead.")?;
+                    let devices = window.navigator().media_devices().map_err(|_| "Your camera isn’t available. Choose a saved QR image instead.")?;
                     let promise = devices.get_user_media_with_constraints(&constraints).map_err(|_| "Could not request camera access.")?;
-                    let media: MediaStream = JsFuture::from(promise).await.map_err(|_| "Camera access denied or unavailable. Import a file or try again.")?
+                    let media: MediaStream = JsFuture::from(promise).await.map_err(|_| "We couldn’t access your camera. Allow camera access and try again, or choose a QR image.")?
                         .dyn_into().map_err(|_| "Could not open camera.")?;
                     if generation.get() != current { stop_stream(&media); return Ok(()); }
                     // MediaStream::clone() clones the tracks; retain the same JS stream instead.
@@ -239,7 +225,7 @@ pub fn import_controls(props: &Props) -> Html {
                             match read_canvas(&canvas, &context) {
                                 Ok(config) => {
                                     onimport.emit(config);
-                                    message.set(Some("Configuration imported. Review the fields below, then choose Configure to apply.".into()));
+                                    message.set(None);
                                     break;
                                 }
                                 Err(error) => message.set(Some(error.into())),
@@ -262,26 +248,47 @@ pub fn import_controls(props: &Props) -> Html {
         })
     };
     let disabled = props.disabled || *busy || *scanning;
+    let camera_available = web_sys::window().is_some_and(|window| {
+        window.is_secure_context() && window.navigator().media_devices().is_ok()
+    });
     html! {
-        <section class="config-import" aria-label="Import configuration">
-            <h2>{"Import configuration"}</h2>
-            <p>{"Use settings supplied by your administrator, or fill in the form below. Files and QR codes contain credentials; keep them private."}</p>
-            <div class="form-field">
-                <label for="config-file">{"Configuration file (JSON or TOML)"}</label>
-                <input id="config-file" type="file" accept=".json,.toml,application/json" onchange={onfile(false)} disabled={disabled} />
+        <section class="qr-options" aria-label="Add settings using a QR code">
+            <div class="qr-choice">
+                <svg class="choice-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true">
+                    <rect x="5" y="6" width="38" height="36" rx="3" />
+                    <circle cx="16" cy="17" r="4" />
+                    <path d="M6 36l11-12 8 8 7-9 11 13" />
+                </svg>
+                <div class="choice-content">
+                    <h2>{"Open a QR image"}</h2>
+                    <p>{"Choose a saved image of your QR code."}</p>
+                    <label class={classes!("btn-primary", "image-picker", disabled.then_some("disabled"))}>
+                        {"Choose image"}
+                        <input id="qr-file" type="file" accept="image/*" aria-label="Choose QR image" onchange={onfile} disabled={disabled} />
+                    </label>
+                </div>
             </div>
-            <div class="form-field">
-                <label for="qr-file">{"QR image (JSON payload)"}</label>
-                <input id="qr-file" type="file" accept="image/*" onchange={onfile(true)} disabled={disabled} />
+            <div class="qr-choice">
+                <svg class="choice-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true">
+                    <path d="M5 14h9l4-6h12l4 6h9v27H5z" />
+                    <circle cx="24" cy="27" r="9" />
+                </svg>
+                <div class="choice-content">
+                    <h2>{"Scan a QR code"}</h2>
+                    <p>{"Use your camera to scan a printed code or a code on another screen."}</p>
+                    if !camera_available {
+                        <p class="camera-unavailable">{"Camera scanning isn’t available on this connection. Choose a saved QR image instead."}</p>
+                    }
+                    if *scanning {
+                        <button class="btn-primary" onclick={onstop}>{"Stop camera"}</button>
+                    } else {
+                        <button class="btn-primary" onclick={onscan} disabled={disabled || !camera_available}>{"Scan with camera"}</button>
+                    }
+                </div>
             </div>
-            if *scanning {
-                <button class="btn-primary" onclick={onstop}>{"Stop camera"}</button>
-            } else {
-                <button class="btn-primary" onclick={onscan} disabled={disabled}>{"Scan with camera"}</button>
-            }
             <video ref={video_ref} hidden={!*scanning} autoplay=true muted=true playsinline=true aria-label="QR camera preview" />
-            if *busy { <p role="status">{"Reading file…"}</p> }
-            if let Some(message) = &*message { <p role="status">{message}</p> }
+            if *busy { <p role="status">{"Reading your QR image…"}</p> }
+            if let Some(message) = &*message { <p class="import-message" role="status">{message}</p> }
         </section>
     }
 }

@@ -44,8 +44,18 @@ pub fn leap_config_page() -> Html {
     let toast: UseStateHandle<Option<String>> = use_state(|| None);
     let submitting = use_state(|| false);
     let reconnecting = use_state(|| false);
+    let imported = use_state(|| false);
+    let advanced_open = use_state(|| false);
+    let on_advanced_toggle = {
+        let advanced_open = advanced_open.clone();
+        Callback::from(move |event: Event| {
+            let element = event.target_unchecked_into::<web_sys::Element>();
+            advanced_open.set(element.has_attribute("open"));
+        })
+    };
 
     let onimport = {
+        let imported = imported.clone();
         let concurrent_downloads = concurrent_downloads.clone();
         let update_interval = update_interval.clone();
         let initial_backoff = initial_backoff.clone();
@@ -71,6 +81,7 @@ pub fn leap_config_page() -> Html {
             endpoint_url.set(s.endpoint_url.unwrap_or_default());
             force_path_style.set(s.force_path_style.unwrap_or(false));
             region.set(s.region.unwrap_or_default());
+            imported.set(true);
         })
     };
 
@@ -267,7 +278,8 @@ pub fn leap_config_page() -> Html {
 
     html! {
         <div class="page leap-config-page">
-            <h1>{ "LEAP Configuration" }</h1>
+            <h1>{ "Set up your content" }</h1>
+            <p class="setup-intro">{"Use the QR code your administrator gave you."}</p>
             if let Some(msg) = (*toast).clone() {
                 <div class="toast toast-error">
                     <span>{ msg }</span>
@@ -275,7 +287,26 @@ pub fn leap_config_page() -> Html {
                 </div>
             }
             <crate::import_controls::ImportControls {onimport} disabled={*submitting} />
-            <div class="form">
+            if *imported {
+                <div class="settings-ready" role="status"><span aria-hidden="true">{"✓"}</span>{"Your settings are ready."}</div>
+            }
+            if *imported || *advanced_open {
+                <button class="btn-primary apply-settings" onclick={on_configure} disabled={*submitting}>
+                    if *submitting { {"Applying settings…"} } else { {"Apply settings"} }
+                </button>
+            }
+            if *reconnecting {
+                <p class="reconnect-notice">{"Waiting for the device to reconnect and check your settings. This may take a couple of minutes…"}</p>
+            }
+            <p class="qr-privacy">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <rect x="5" y="10" width="14" height="11" rx="2" /><path d="M8 10V6a4 4 0 0 1 8 0v4" />
+                </svg>
+                {"Keep your QR code private."}
+            </p>
+            <details class="advanced-settings" ontoggle={on_advanced_toggle}>
+                <summary>{"Advanced: enter settings manually"}</summary>
+                <fieldset class="form" disabled={*submitting}>
                 <h2>{ "Downloader" }</h2>
 
                 <div class="form-field">
@@ -350,19 +381,8 @@ pub fn leap_config_page() -> Html {
                     </label>
                 </div>
 
-                <div class="form-actions">
-                    <button class="btn-primary" onclick={on_configure}
-                        disabled={*submitting}>
-                        if *submitting { { "Please wait…" } } else { { "Configure" } }
-                    </button>
-                </div>
-                if *reconnecting {
-                    <p class="reconnect-notice">
-                        { "Waiting for the device to reconnect and verify the S3 \
-                           configuration. This may take a couple of minutes…" }
-                    </p>
-                }
-            </div>
+                </fieldset>
+            </details>
         </div>
     }
 }

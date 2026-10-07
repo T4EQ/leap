@@ -12,17 +12,13 @@ struct Bundle {
     s3_config: S3Config,
 }
 
-pub fn parse_config(text: &str, is_toml: bool) -> Result<LeapConfig, &'static str> {
+pub fn parse_config(text: &str) -> Result<LeapConfig, &'static str> {
     if text.len() > MAX_CONFIG_BYTES {
         return Err("Configuration exceeds the 64 KiB limit.");
     }
-    let bundle: Bundle = if is_toml {
-        toml::from_str(text)
-            .map_err(|_| "Invalid TOML configuration. Check the documented fields and types.")?
-    } else {
-        serde_json::from_str(text)
-            .map_err(|_| "Invalid JSON configuration. Check the documented fields and types.")?
-    };
+    let bundle: Bundle = serde_json::from_str(text).map_err(
+        |_| "This QR code doesn’t contain valid settings. Ask your administrator for a new code.",
+    )?;
     if bundle.version != 1 {
         return Err("Unsupported configuration version. Expected version 1.");
     }
@@ -71,7 +67,7 @@ pub fn decode_qr(width: usize, height: usize, gray: &[u8]) -> Result<LeapConfig,
         .ok_or("No readable QR code found. Try a clearer, closer image.")?;
     let text =
         std::str::from_utf8(&payload).map_err(|_| "QR configuration must contain UTF-8 JSON.")?;
-    parse_config(text, false)
+    parse_config(text)
 }
 
 #[cfg(test)]
@@ -80,26 +76,13 @@ mod tests {
     const JSON: &str = include_str!("../example-config.json");
 
     #[test]
-    fn imports_json_and_equivalent_toml() {
-        let config = parse_config(JSON, false).unwrap();
+    fn imports_json() {
+        let config = parse_config(JSON).unwrap();
         assert_eq!(config.downloader_config.concurrent_downloads, 4);
         assert_eq!(config.downloader_config.update_interval.as_secs(), 3600);
         assert_eq!(
             config.s3_config.secret_access_key.expose_secret(),
             "REPLACE_WITH_SECRET_ACCESS_KEY"
-        );
-        let mut value = serde_json::to_value(&config).unwrap();
-        value["version"] = 1.into();
-        let toml = toml::to_string(&value).unwrap();
-        let imported = parse_config(&toml, true).unwrap();
-        assert_eq!(imported.s3_config.bucket, config.s3_config.bucket);
-        assert_eq!(
-            imported
-                .downloader_config
-                .retry_params
-                .initial_backoff
-                .as_secs(),
-            1
         );
     }
 
@@ -112,30 +95,16 @@ mod tests {
             ("s3://school-content", "https://school-content"),
             ("\"1h\"", "\"not-a-duration\""),
         ] {
-            let error = parse_config(&JSON.replace(old, new), false).unwrap_err();
+            let error = parse_config(&JSON.replace(old, new)).unwrap_err();
             assert!(!error.contains("REPLACE_WITH_SECRET"));
         }
-        assert!(parse_config(&"x".repeat(MAX_CONFIG_BYTES + 1), false).is_err());
+        assert!(parse_config(&"x".repeat(MAX_CONFIG_BYTES + 1)).is_err());
     }
 
     #[test]
-    fn imports_toml_with_optional_fields_omitted() {
+    fn imports_json_with_optional_fields_omitted() {
         let config = parse_config(
-            r#"
-version = 1
-[downloader_config]
-concurrent_downloads = 7
-update_interval = "23m"
-[downloader_config.retry_params]
-initial_backoff = "250ms"
-backoff_factor = 1.5
-max_backoff = "3m"
-[s3_config]
-bucket = "s3://another-bucket"
-access_key_id = "test-id"
-secret_access_key = "test-secret"
-"#,
-            true,
+            r#"{"version":1,"downloader_config":{"concurrent_downloads":7,"update_interval":"23m","retry_params":{"initial_backoff":"250ms","backoff_factor":1.5,"max_backoff":"3m"}},"s3_config":{"bucket":"s3://another-bucket","access_key_id":"test-id","secret_access_key":"test-secret"}}"#,
         )
         .unwrap();
         assert_eq!(config.downloader_config.concurrent_downloads, 7);

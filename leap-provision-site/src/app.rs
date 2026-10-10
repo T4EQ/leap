@@ -18,10 +18,7 @@
 //! synchronize the client-side route with the actual provisioning status fetched
 //! from the server.
 
-use crate::completed::CompletedPage;
-use crate::leap_config::LeapConfigPage;
-use crate::network_config::NetworkConfigPage;
-use crate::storage_config::StorageConfigPage;
+use crate::pages::{CompletedPage, LeapConfigPage, NetworkConfigPage, StorageConfigPage};
 
 use gloo_net::http::Request;
 use leap_api::types::ProvisionStatus;

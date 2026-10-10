@@ -9,4 +9,5 @@
 pub mod app;
 
 mod components;
+mod network;
 mod pages;

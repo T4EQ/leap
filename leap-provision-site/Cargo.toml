@@ -13,14 +13,27 @@ anyhow.workspace = true
 gloo-net.workspace = true
 gloo-timers = { workspace = true, features = ["futures"] }
 humantime.workspace = true
+image.workspace = true
 leap-api.workspace = true
 log.workspace = true
+quircs.workspace = true
 secrecy.workspace = true
 serde.workspace = true
 thiserror.workspace = true
 wasm-bindgen-futures.workspace = true
 wasm-bindgen.workspace = true
 wasm-logger.workspace = true
-web-sys = { workspace = true, features = ["FormData", "HtmlFormElement", "HtmlSelectElement", "Window"] }
+web-sys = { workspace = true, features = [
+    "FormData",
+    "HtmlFormElement",
+    "HtmlSelectElement",
+    "Window",
+    "File",
+    "FileList",
+] }
 yew-router.workspace = true
 yew.workspace = true
+
+[dev-dependencies]
+qrcode.workspace = true
+rstest.workspace = true

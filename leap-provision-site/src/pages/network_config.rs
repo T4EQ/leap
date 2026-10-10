@@ -10,6 +10,8 @@
 //! state during the device's reconfiguration and potential network switch.
 
 use crate::app::{Route, use_provision_redirect};
+use crate::components::qr_form::{QrData, QrForm};
+
 use gloo_net::http::Request;
 use gloo_timers::future::sleep;
 use leap_api::types::{
@@ -277,6 +279,14 @@ pub fn network_config_page() -> Html {
     let on_dismiss_toast = on_dismiss_toast_callback(toast.clone());
     let on_configure = on_configure_callback(toast.clone(), state.clone(), navigator);
 
+    let qr_cb = Callback::from(|qr_data: QrData| {
+        let payload = qr_data.payload;
+        let wifi_str = std::str::from_utf8(&payload)?;
+        log::info!("Heres the code data: {wifi_str}");
+
+        Ok(())
+    });
+
     html! {
         <div class="page network-config-page">
             <h1>{ "Network Configuration" }</h1>
@@ -286,6 +296,10 @@ pub fn network_config_page() -> Html {
                     <button onclick={on_dismiss_toast}>{ "✕" }</button>
                 </div>
             }
+
+            <QrForm disabled=false callback={qr_cb}>
+            </QrForm>
+
             <form onsubmit={on_configure} class="form">
                 <div class="form-field">
                     <label for={FORM_ITEM_CONNECTION_TYPE}>{ "Connection type" }</label>

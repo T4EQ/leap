@@ -2670,6 +2670,7 @@ dependencies = [
  "anyhow",
  "gloo-net 0.7.0",
  "gloo-timers 0.4.0",
+ "googletest",
  "humantime",
  "image",
  "leap-api",

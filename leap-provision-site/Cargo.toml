@@ -35,5 +35,6 @@ yew-router.workspace = true
 yew.workspace = true
 
 [dev-dependencies]
+googletest.workspace = true
 qrcode.workspace = true
 rstest.workspace = true

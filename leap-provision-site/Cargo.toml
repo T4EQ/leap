@@ -19,6 +19,7 @@ log.workspace = true
 quircs.workspace = true
 secrecy.workspace = true
 serde.workspace = true
+serde_json.workspace = true
 thiserror.workspace = true
 wasm-bindgen-futures.workspace = true
 wasm-bindgen.workspace = true

@@ -10,7 +10,7 @@
 //! state during the device's reconfiguration and potential network switch.
 
 use crate::app::{Route, use_provision_redirect};
-use crate::components::icons::LockIcon;
+use crate::components::icons::{LockIcon, WifiIcon};
 use crate::components::qr_form::{QrData, QrForm};
 use crate::network::parse_wifi_qr_code_settings;
 
@@ -317,7 +317,7 @@ pub fn network_config_page() -> Html {
     let wifi_cfg = imported.1.as_ref();
     html! {
         <div class="page network-config-page">
-            <h1>{ "Connect to the Internet" }</h1>
+            <h1> <WifiIcon/> { "Connect to the Internet" }</h1>
             if let Some(msg) = (*toast).clone() {
                 <div class="toast toast-error">
                     <span>{ msg }</span>

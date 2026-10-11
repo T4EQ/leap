@@ -3,34 +3,34 @@ use thiserror::Error;
 
 #[derive(Error, Debug, Clone, PartialEq)]
 pub enum WirelessQrError {
-    #[error(r#"Missing "WIFI:" prefix"#)]
+    #[error(r#"Error decoding WiFi QR. Missing "WIFI:" prefix"#)]
     MissingPrefix,
 
-    #[error("Missing value for key: {0}")]
+    #[error("Error decoding WiFi QR. Missing value for key: {0}")]
     MissingValue(String),
 
-    #[error("Found empty key in WiFi QR code")]
+    #[error("Error decoding WiFi QR. Found empty key in WiFi QR code")]
     EmptyKey,
 
-    #[error("Unexpected end of the WiFi QR data")]
+    #[error("Error decoding WiFi QR. Unexpected end of the WiFi QR data")]
     UnexpectedEnd,
 
-    #[error("The QR code contains additional trailing text")]
+    #[error("Error decoding WiFi QR. The WiFi QR code contains additional trailing text")]
     TrailingText,
 
     #[error("Missing WiFi SSID")]
     MissingSSID,
 
-    #[error("Missing password")]
+    #[error("Missing WiFi password")]
     MissingPassword,
 
-    #[error("Unsupported wireless password type: {0}")]
-    UnsupportedPasswordType(String),
+    #[error("Unsupported wireless security: {0}")]
+    UnsupportedSecurity(String),
 
-    #[error("Unknown wireless password type: {0}")]
-    UnknownPasswordType(String),
+    #[error("Error decoding WiFi QR. Unknown wireless security: {0}")]
+    UnknownSecurity(String),
 
-    #[error("Extra unsupported keys: {0:?}")]
+    #[error("Error decoding WiFi QR. Extra unsupported keys: {0:?}")]
     ExtraUnsupportedKeys(Vec<String>),
 }
 
@@ -153,12 +153,10 @@ pub fn parse_wifi_qr_code_settings(data: &str) -> Result<WirelessConfig, Wireles
         }
         (Some("WPA") | Some("WPA2"), Some(p)) => p.to_string(),
         (Some(t @ "WPA2-EAP"), _) => {
-            return Err(WirelessQrError::UnsupportedPasswordType(t.to_string()));
+            return Err(WirelessQrError::UnsupportedSecurity(t.to_string()));
         }
         (Some(unkn_method), _) => {
-            return Err(WirelessQrError::UnknownPasswordType(
-                unkn_method.to_string(),
-            ));
+            return Err(WirelessQrError::UnknownSecurity(unkn_method.to_string()));
         }
     };
     let password = password.into();
@@ -252,11 +250,11 @@ mod tests {
     #[rstest]
     #[case::wep(
         "WIFI:T:WEP;S:school;P:secret123;;",
-        WirelessQrError::UnknownPasswordType("WEP".to_string())
+        WirelessQrError::UnknownSecurity("WEP".to_string())
     )]
     #[case::enterprise(
         "WIFI:T:WPA2-EAP;S:school;I:user;P:secret123;;",
-        WirelessQrError::UnsupportedPasswordType("WPA2-EAP".to_string())
+        WirelessQrError::UnsupportedSecurity("WPA2-EAP".to_string())
     )]
     #[case::unsupported_eap_field(
         "WIFI:T:WPA;S:school;P:secret123;E:TLS;;",

@@ -63,6 +63,8 @@
                       cargo-deny
                       diesel-cli
                       bunyan-rs
+                      # Needed by the scripts under `scripts`
+                      (python3.withPackages (ps: [ ps.qrcode ps.pillow ]))
                     ];
                   };
 

@@ -34,3 +34,23 @@ pub fn lock_icon() -> Html {
         </svg>
     }
 }
+
+#[component(WifiIcon)]
+pub fn wifi_icon() -> Html {
+    html! {
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" role="img" aria-hidden="true">
+            <path d="M6 18a25.46 25.46 0 0 1 36 0M12 24a16.97 16.97 0 0 1 24 0M18 30a8.49 8.49 0 0 1 12 0" />
+            <circle cx="24" cy="36" r="2" fill="currentColor" stroke="none" />
+        </svg>
+    }
+}
+
+#[component(BookPlayIcon)]
+pub fn book_play_icon() -> Html {
+    html! {
+        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" role="img" aria-hidden="true">
+          <path d="M24 12C18 7 11 7 5 10v27c6-3 13-3 19 2 6-5 13-5 19-2V10c-6-3-13-3-19 2Z M24 12v27" />
+          <path d="m31 19 7 4.5-7 4.5Z" fill="currentColor" stroke="none" />
+        </svg>
+    }
+}

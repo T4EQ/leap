@@ -9,7 +9,7 @@
 //! state during the device's reconfiguration and potential network switch.
 
 use crate::app::{Route, use_provision_redirect};
-use crate::components::icons::LockIcon;
+use crate::components::icons::{BookPlayIcon, LockIcon};
 use crate::components::qr_form::{QrData, QrForm};
 
 use gloo_net::http::Request;
@@ -295,7 +295,7 @@ pub fn leap_config_page() -> Html {
     // whatever the user typed.
     html! {
         <div class="page leap-config-page">
-            <h1>{ "LEAP Configuration" }</h1>
+            <h1><BookPlayIcon/>{ "LEAP Configuration" }</h1>
             if let Some(msg) = (*toast).clone() {
                 <div class="toast toast-error">
                     <span>{ msg }</span>

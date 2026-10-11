@@ -37,6 +37,8 @@ enum LeapConfigError {
     MaxBackoff,
     #[error("Bucket must be a valid URI such as s3://my-bucket")]
     Bucket,
+    #[error("Unsupported QR code version: {0}")]
+    UnsupportedQrVersion(u64),
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -250,6 +252,12 @@ fn on_qr_loaded_callback(
     Callback::from(move |qr_data: QrData| {
         let payload = qr_data.payload;
         let decoded: LeapConfigQr = serde_json::from_slice(&payload)?;
+        if decoded.version != 1 {
+            return Err(
+                Box::new(LeapConfigError::UnsupportedQrVersion(decoded.version))
+                    as Box<dyn std::error::Error>,
+            );
+        }
 
         let generation = imported.0 + 1;
         imported.set((generation, Some(decoded)));

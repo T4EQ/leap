@@ -1,0 +1,20 @@
+{
+    "version": 1,
+    "downloader_config": {
+        "concurrent_downloads": 4,
+        "update_interval": "1h",
+        "retry_params": {
+            "initial_backoff": "1s",
+            "backoff_factor": 2.0,
+            "max_backoff": "1h"
+        }
+    },
+    "s3_config": {
+        "bucket": "s3://your-bucket-name",
+        "access_key_id": "your-access-key-id",
+        "secret_access_key": "your-secret-access-key",
+        "endpoint_url": "https://your-endpoint-url.com",
+        "force_path_style": true,
+        "region": "us-east-1"
+    }
+}

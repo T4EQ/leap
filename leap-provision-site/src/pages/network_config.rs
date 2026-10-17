@@ -10,12 +10,16 @@
 //! state during the device's reconfiguration and potential network switch.
 
 use crate::app::{Route, use_provision_redirect};
+use crate::components::icons::{LockIcon, WifiIcon};
+use crate::components::qr_form::{QrData, QrForm};
+use crate::network::parse_wifi_qr_code_settings;
+
 use gloo_net::http::Request;
 use gloo_timers::future::sleep;
 use leap_api::types::{
     IpConfig, NetworkConfig, ProvisionStatus, StaticIpConfig, WiredConfig, WirelessConfig,
 };
-use secrecy::SecretString;
+use secrecy::{ExposeSecret, SecretString};
 use std::net::{AddrParseError, Ipv4Addr};
 use std::str::FromStr;
 use std::time::Duration;
@@ -261,99 +265,151 @@ fn on_configure_callback(
     })
 }
 
+fn on_advanced_toggle_callback(advanced_open: UseStateHandle<bool>) -> Callback<Event> {
+    Callback::from(move |event: Event| {
+        let element = event.target_unchecked_into::<web_sys::Element>();
+        advanced_open.set(element.has_attribute("open"));
+    })
+}
+
+fn on_qr_loaded_callback(
+    imported: UseStateHandle<(usize, Option<WirelessConfig>)>,
+    connection_type: UseStateHandle<ConnectionType>,
+) -> Callback<QrData, Result<(), Box<dyn std::error::Error>>> {
+    Callback::from(move |qr_data: QrData| {
+        let payload = qr_data.payload;
+        let wifi_str = std::str::from_utf8(&payload)?;
+        let settings = parse_wifi_qr_code_settings(wifi_str).inspect_err(|e| {
+            log::error!("Failed to parse WiFi QR settings: {e}");
+        })?;
+        log::info!("Settings: {settings:?}");
+
+        let generation = imported.0;
+        imported.set((generation + 1, Some(settings)));
+        connection_type.set(ConnectionType::Wireless);
+
+        Ok(())
+    })
+}
+
 /// The component for configuring network settings.
 #[function_component(NetworkConfigPage)]
 pub fn network_config_page() -> Html {
     use_provision_redirect(Route::NetworkConfig);
 
+    // State variables
     let connection_type = use_state(ConnectionType::default);
     let ip_mode = use_state(IpMode::default);
     let toast: UseStateHandle<Option<String>> = use_state(|| None);
     let state = use_state(|| NetworkState::Idle);
+    let imported = use_state(|| (0usize, None::<WirelessConfig>));
+    let advanced_open = use_state(|| false);
     let navigator = use_navigator().unwrap();
 
+    // Callbacks
     let on_connection_change = on_connection_change_callback(connection_type.clone());
     let on_ip_mode_change = on_ip_mode_change_callback(ip_mode.clone());
     let on_dismiss_toast = on_dismiss_toast_callback(toast.clone());
     let on_configure = on_configure_callback(toast.clone(), state.clone(), navigator);
+    let on_advanced_toggle = on_advanced_toggle_callback(advanced_open.clone());
+    let on_qr_loaded = on_qr_loaded_callback(imported.clone(), connection_type.clone());
 
+    let wifi_cfg = imported.1.as_ref();
     html! {
         <div class="page network-config-page">
-            <h1>{ "Network Configuration" }</h1>
+            <h1> <WifiIcon/> { "Connect to the Internet" }</h1>
             if let Some(msg) = (*toast).clone() {
                 <div class="toast toast-error">
                     <span>{ msg }</span>
                     <button onclick={on_dismiss_toast}>{ "✕" }</button>
                 </div>
             }
-            <form onsubmit={on_configure} class="form">
-                <div class="form-field">
-                    <label for={FORM_ITEM_CONNECTION_TYPE}>{ "Connection type" }</label>
-                    <select id={FORM_ITEM_CONNECTION_TYPE} name={FORM_ITEM_CONNECTION_TYPE} onchange={on_connection_change}>
-                        <option value="wired" selected=true>{ "Wired" }</option>
-                        <option value="wireless">{ "Wireless" }</option>
-                    </select>
+
+            <QrForm disabled=false callback={on_qr_loaded}/>
+
+            if wifi_cfg.is_some() {
+                <div class="settings-ready" role="status">
+                    {"✓ Your Wi-Fi settings are ready."}
                 </div>
+            }
+            if wifi_cfg.is_some() || *advanced_open {
+                <button type="submit" form="network-settings" class="btn-primary apply-settings" disabled={*state != NetworkState::Idle}>
+                    if *state != NetworkState::Idle { {"Applying settings…"} } else { {"Apply settings"} }
+                </button>
+                <p class="connection-notice">{"The device will check the connection. You may briefly lose contact."}</p>
+            }
+            if *state == NetworkState::Reconnecting {
+                <p class="reconnect-notice">{"Waiting for LEAP to reconnect. This may take up to a minute…"}</p>
+            }
 
-                if *connection_type == ConnectionType::Wireless {
-                    <div class="form-field">
-                        <label for={FORM_ITEM_SSID}>{ "SSID" }</label>
-                        <input id={FORM_ITEM_SSID} name={FORM_ITEM_SSID} type="text" placeholder="Network name" required=true />
-                    </div>
-                    <div class="form-field">
-                        <label for={FORM_ITEM_PASSWD}>{ "Password" }</label>
-                        <input id={FORM_ITEM_PASSWD} name={FORM_ITEM_PASSWD} type="password" placeholder="Network password" />
-                    </div>
-                }
+            <p class="qr-privacy"><LockIcon/>{"Do not share your QR code."}</p>
 
-                <div class="form-field">
-                    <label>{ "IP configuration" }</label>
-                    <div class="radio-group">
-                        <label class="radio-label">
-                            <input type="radio" name={FORM_ITEM_IP_MODE} value="dhcp"
-                                checked={*ip_mode == IpMode::Dhcp}
-                                onchange={on_ip_mode_change.clone()} />
-                            { "DHCP" }
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name={FORM_ITEM_IP_MODE} value="static"
-                                checked={*ip_mode == IpMode::Static}
-                                onchange={on_ip_mode_change} />
-                            { "Manual" }
-                        </label>
-                    </div>
-                </div>
+           <details class="advanced-settings" ontoggle={on_advanced_toggle}>
+                <summary>{"Advanced: enter settings manually"}</summary>
 
-                if *ip_mode == IpMode::Static {
-                    <div class="form-field">
-                        <label for={FORM_ITEM_IP_ADDR}>{ "IPv4 address" }</label>
-                        <input id={FORM_ITEM_IP_ADDR} name={FORM_ITEM_IP_ADDR} type="text" placeholder="192.168.1.100"
-                            required=true pattern={IPADDR_PATTERN} />
-                    </div>
-                    <div class="form-field">
-                        <label for={FORM_ITEM_GATEWAY}>{ "Gateway" }</label>
-                        <input id={FORM_ITEM_GATEWAY} name={FORM_ITEM_GATEWAY} type="text" placeholder="192.168.1.1"
-                            required=true pattern={IPADDR_PATTERN} />
-                    </div>
-                    <div class="form-field">
-                        <label for={FORM_ITEM_NET_MASK}>{ "Network mask" }</label>
-                        <input id={FORM_ITEM_NET_MASK} name={FORM_ITEM_NET_MASK} type="text" placeholder="255.255.255.0"
-                            required=true pattern={IPADDR_PATTERN} />
-                    </div>
-                }
+                // The form key is mutated when a new form is imported so that the form is recreated,
+                // reapplying the defaults (which correspond to the imported wifi config)
+                <form onsubmit={on_configure} id="network-settings" key={imported.0.to_string()}>
+                    <fieldset class="form" disabled={*state != NetworkState::Idle}>
+                        <div class="form-field">
+                            <label for={FORM_ITEM_CONNECTION_TYPE}>{ "Connection type" }</label>
+                            <select id={FORM_ITEM_CONNECTION_TYPE} name={FORM_ITEM_CONNECTION_TYPE} onchange={on_connection_change}>
+                                <option value="wired" selected={*connection_type == ConnectionType::Wired}>{ "Wired network" }</option>
+                                <option value="wireless" selected={*connection_type == ConnectionType::Wireless}>{ "Wi-Fi" }</option>
+                            </select>
+                        </div>
 
-                <div class="form-actions">
-                    <button type="submit" class="btn-primary" disabled={*state != NetworkState::Idle}>
-                        if *state != NetworkState::Idle { { "Please wait…" } } else { { "Configure" } }
-                    </button>
-                </div>
-                if *state == NetworkState::Reconnecting {
-                    <p class="reconnect-notice">
-                        { "Waiting for the device to reconnect to the provisioning \
-                           network. This may take up to a minute…" }
-                    </p>
-                }
-            </form>
+                        if *connection_type == ConnectionType::Wireless {
+                            <div class="form-field">
+                                <label for={FORM_ITEM_SSID}>{ "Network name" }</label>
+                                <input id={FORM_ITEM_SSID} name={FORM_ITEM_SSID} type="text" placeholder="Network name" required=true
+                                    ~defaultValue={wifi_cfg.map_or(String::new(), |config| config.ssid.clone())} />
+                            </div>
+                            <div class="form-field">
+                                <label for={FORM_ITEM_PASSWD}>{ "Password" }</label>
+                                <input id={FORM_ITEM_PASSWD} name={FORM_ITEM_PASSWD} type="password" placeholder="Network password (optional)"
+                                     ~defaultValue={wifi_cfg.map_or(String::new(), |config| config.password.expose_secret().to_owned())} />
+                            </div>
+                        }
+
+                        <div class="form-field">
+                            <label>{ "IP settings" }</label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name={FORM_ITEM_IP_MODE} value="dhcp"
+                                        checked={*ip_mode == IpMode::Dhcp}
+                                        onchange={on_ip_mode_change.clone()} />
+                                    { "Automatic" }
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name={FORM_ITEM_IP_MODE} value="static"
+                                        checked={*ip_mode == IpMode::Static}
+                                        onchange={on_ip_mode_change} />
+                                    { "Static" }
+                                </label>
+                            </div>
+                        </div>
+
+                        if *ip_mode == IpMode::Static {
+                            <div class="form-field">
+                                <label for={FORM_ITEM_IP_ADDR}>{ "IPv4 address" }</label>
+                                <input id={FORM_ITEM_IP_ADDR} name={FORM_ITEM_IP_ADDR} type="text" placeholder="192.168.1.100"
+                                    required=true pattern={IPADDR_PATTERN} />
+                            </div>
+                            <div class="form-field">
+                                <label for={FORM_ITEM_GATEWAY}>{ "Gateway" }</label>
+                                <input id={FORM_ITEM_GATEWAY} name={FORM_ITEM_GATEWAY} type="text" placeholder="192.168.1.1"
+                                    required=true pattern={IPADDR_PATTERN} />
+                            </div>
+                            <div class="form-field">
+                                <label for={FORM_ITEM_NET_MASK}>{ "Network mask" }</label>
+                                <input id={FORM_ITEM_NET_MASK} name={FORM_ITEM_NET_MASK} type="text" placeholder="255.255.255.0"
+                                    required=true pattern={IPADDR_PATTERN} />
+                            </div>
+                        }
+                    </fieldset>
+                </form>
+            </details>
         </div>
     }
 }

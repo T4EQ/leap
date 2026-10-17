@@ -9,10 +9,14 @@
 //! state during the device's reconfiguration and potential network switch.
 
 use crate::app::{Route, use_provision_redirect};
+use crate::components::icons::{BookPlayIcon, LockIcon};
+use crate::components::qr_form::{QrData, QrForm};
+
 use gloo_net::http::Request;
 use gloo_timers::future::sleep;
 use leap_api::types::{DownloaderConfig, LeapConfig, ProvisionStatus, RetryParams, S3Config};
-use secrecy::SecretString;
+use secrecy::{ExposeSecret, SecretString};
+use serde::{Deserialize, Serialize};
 use std::time::Duration;
 use wasm_bindgen_futures::spawn_local;
 use web_sys::{FormData, HtmlFormElement};
@@ -33,6 +37,8 @@ enum LeapConfigError {
     MaxBackoff,
     #[error("Bucket must be a valid URI such as s3://my-bucket")]
     Bucket,
+    #[error("Unsupported QR code version: {0}")]
+    UnsupportedQrVersion(u64),
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -233,6 +239,39 @@ fn on_configure_callback(
     })
 }
 
+fn on_toggle_advanced_settings_callback(advanced_open: UseStateHandle<bool>) -> Callback<Event> {
+    Callback::from(move |event: Event| {
+        let element = event.target_unchecked_into::<web_sys::Element>();
+        advanced_open.set(element.has_attribute("open"));
+    })
+}
+
+fn on_qr_loaded_callback(
+    imported: UseStateHandle<(u64, Option<LeapConfigQr>)>,
+) -> Callback<QrData, Result<(), Box<dyn std::error::Error>>> {
+    Callback::from(move |qr_data: QrData| {
+        let payload = qr_data.payload;
+        let decoded: LeapConfigQr = serde_json::from_slice(&payload)?;
+        if decoded.version != 1 {
+            return Err(
+                Box::new(LeapConfigError::UnsupportedQrVersion(decoded.version))
+                    as Box<dyn std::error::Error>,
+            );
+        }
+
+        let generation = imported.0 + 1;
+        imported.set((generation, Some(decoded)));
+        Ok(())
+    })
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct LeapConfigQr {
+    version: u64,
+    #[serde(flatten)]
+    config: LeapConfig,
+}
+
 /// The component for configuring LEAP-specific settings.
 #[function_component(LeapConfigPage)]
 pub fn leap_config_page() -> Html {
@@ -241,98 +280,143 @@ pub fn leap_config_page() -> Html {
     let toast: UseStateHandle<Option<String>> = use_state(|| None);
     let state = use_state(|| LeapConfigState::Idle);
     let navigator = use_navigator().unwrap();
+    let imported: UseStateHandle<(u64, Option<LeapConfigQr>)> = use_state(|| (0u64, None));
+    let advanced_open = use_state(|| false);
 
     let on_dismiss_toast = on_dismiss_toast_callback(&toast);
     let on_configure = on_configure_callback(toast.clone(), state.clone(), navigator);
+    let on_toggle_advanced_settings = on_toggle_advanced_settings_callback(advanced_open.clone());
+    let on_qr_loaded = on_qr_loaded_callback(imported.clone());
+
+    let leap_cfg = imported.1.as_ref();
 
     // The inputs are uncontrolled: defaults are set through the `defaultValue`
     // property, since `value` would be re-applied on every render and discard
     // whatever the user typed.
     html! {
         <div class="page leap-config-page">
-            <h1>{ "LEAP Configuration" }</h1>
+            <h1><BookPlayIcon/>{ "LEAP Configuration" }</h1>
             if let Some(msg) = (*toast).clone() {
                 <div class="toast toast-error">
                     <span>{ msg }</span>
                     <button onclick={on_dismiss_toast}>{ "✕" }</button>
                 </div>
             }
-            <form onsubmit={on_configure} class="form">
-                <h2>{ "Downloader" }</h2>
 
-                <div class="form-field">
-                    <label for={FORM_ITEM_CONCURRENT_DOWNLOADS}>{ "Concurrent downloads" }</label>
-                    <input id={FORM_ITEM_CONCURRENT_DOWNLOADS} name={FORM_ITEM_CONCURRENT_DOWNLOADS}
-                        type="number" min="1" step="1" required=true ~defaultValue="4" />
-                </div>
-                <div class="form-field">
-                    <label for={FORM_ITEM_UPDATE_INTERVAL}>{ "Update interval" }</label>
-                    <input id={FORM_ITEM_UPDATE_INTERVAL} name={FORM_ITEM_UPDATE_INTERVAL}
-                        type="text" placeholder="1h" required=true ~defaultValue="1h" />
-                </div>
-                <div class="form-field">
-                    <label for={FORM_ITEM_INITIAL_BACKOFF}>{ "Initial retry backoff" }</label>
-                    <input id={FORM_ITEM_INITIAL_BACKOFF} name={FORM_ITEM_INITIAL_BACKOFF}
-                        type="text" placeholder="1s" required=true ~defaultValue="1s" />
-                </div>
-                <div class="form-field">
-                    <label for={FORM_ITEM_BACKOFF_FACTOR}>{ "Backoff factor" }</label>
-                    <input id={FORM_ITEM_BACKOFF_FACTOR} name={FORM_ITEM_BACKOFF_FACTOR}
-                        type="number" min="1.01" step="any" required=true ~defaultValue="2" />
-                </div>
-                <div class="form-field">
-                    <label for={FORM_ITEM_MAX_BACKOFF}>{ "Maximum retry backoff" }</label>
-                    <input id={FORM_ITEM_MAX_BACKOFF} name={FORM_ITEM_MAX_BACKOFF}
-                        type="text" placeholder="1h" required=true ~defaultValue="1h" />
-                </div>
+            <QrForm disabled=false callback={on_qr_loaded}/>
 
-                <h2>{ "S3 Storage" }</h2>
+            if leap_cfg.is_some() {
+                <div class="settings-ready" role="status">
+                    {"✓ Your LEAP settings are ready."}
+                </div>
+            }
+            if leap_cfg.is_some() || *advanced_open {
+                <button type="submit"
+                        form="content-settings"
+                        class="btn-primary apply-settings"
+                        disabled={*state != LeapConfigState::Idle}>
+                    if *state != LeapConfigState::Idle { {"Applying settings…"} } else { {"Apply settings"} }
+                </button>
+                <p class="connection-notice">{"The device will check the connection. You may briefly lose contact."}</p>
+            }
+            if *state == LeapConfigState::Reconnecting {
+                <p class="reconnect-notice">{"Waiting for LEAP to reconnect. This may take up to a minute…"}</p>
+            }
 
-                <div class="form-field">
-                    <label for={FORM_ITEM_BUCKET}>{ "Bucket URI" }</label>
-                    <input id={FORM_ITEM_BUCKET} name={FORM_ITEM_BUCKET}
-                        type="text" placeholder="s3://my-bucket" required=true />
-                </div>
-                <div class="form-field">
-                    <label for={FORM_ITEM_ACCESS_KEY_ID}>{ "Access key ID" }</label>
-                    <input id={FORM_ITEM_ACCESS_KEY_ID} name={FORM_ITEM_ACCESS_KEY_ID}
-                        type="text" required=true />
-                </div>
-                <div class="form-field">
-                    <label for={FORM_ITEM_SECRET_ACCESS_KEY}>{ "Secret access key" }</label>
-                    <input id={FORM_ITEM_SECRET_ACCESS_KEY} name={FORM_ITEM_SECRET_ACCESS_KEY}
-                        type="password" required=true />
-                </div>
-                <div class="form-field">
-                    <label for={FORM_ITEM_ENDPOINT_URL}>{ "Endpoint URL" }</label>
-                    <input id={FORM_ITEM_ENDPOINT_URL} name={FORM_ITEM_ENDPOINT_URL}
-                        type="text" placeholder="https://... (optional)" />
-                </div>
-                <div class="form-field">
-                    <label for={FORM_ITEM_REGION}>{ "Region" }</label>
-                    <input id={FORM_ITEM_REGION} name={FORM_ITEM_REGION}
-                        type="text" placeholder="us-east-1 (optional)" />
-                </div>
-                <div class="form-field">
-                    <label class="checkbox-label">
-                        <input id={FORM_ITEM_FORCE_PATH_STYLE} name={FORM_ITEM_FORCE_PATH_STYLE}
-                            type="checkbox" />
-                        { "Force path-style bucket access" }
-                    </label>
-                </div>
+            <p class="qr-privacy"><LockIcon/>{"Do not share your QR code."}</p>
 
-                <div class="form-actions">
-                    <button type="submit" class="btn-primary" disabled={*state != LeapConfigState::Idle}>
-                        if *state != LeapConfigState::Idle { { "Please wait…" } } else { { "Configure" } }
-                    </button>
-                </div>
-                if *state == LeapConfigState::Reconnecting {
-                    <p class="reconnect-notice">
-                        { "Waiting for the device to reconnect and verify the S3 \
-                           configuration. This may take a couple of minutes…" }
-                    </p>
-                }
-            </form>
+            <details class="advanced-settings" ontoggle={on_toggle_advanced_settings} disabled={*state != LeapConfigState::Idle}>
+                <summary> { "Advanced Settings" } </summary>
+                <form onsubmit={on_configure} id="content-settings" key={imported.0.to_string()}>
+                    <fieldset class="form">
+                        <h2>{ "Downloader" }</h2>
+
+                        <div class="form-field">
+                            <label for={FORM_ITEM_CONCURRENT_DOWNLOADS}>{ "Concurrent downloads" }</label>
+                            <input id={FORM_ITEM_CONCURRENT_DOWNLOADS} name={FORM_ITEM_CONCURRENT_DOWNLOADS}
+                                type="number" min="1" step="1" required=true
+                                ~defaultValue={leap_cfg.map_or(4, |v| v.config.downloader_config.concurrent_downloads)} />
+                        </div>
+                        <div class="form-field">
+                            <label for={FORM_ITEM_UPDATE_INTERVAL}>{ "Update interval" }</label>
+                            <input id={FORM_ITEM_UPDATE_INTERVAL} name={FORM_ITEM_UPDATE_INTERVAL}
+                                type="text" placeholder="1h" required=true
+                                ~defaultValue={
+                                    leap_cfg.map_or(
+                                        "1h".to_string(),
+                                        |v| humantime::format_duration(v.config.downloader_config.update_interval).to_string())
+                            } />
+                        </div>
+                        <div class="form-field">
+                            <label for={FORM_ITEM_INITIAL_BACKOFF}>{ "Initial retry backoff" }</label>
+                            <input id={FORM_ITEM_INITIAL_BACKOFF} name={FORM_ITEM_INITIAL_BACKOFF}
+                                type="text" placeholder="1s" required=true
+                                ~defaultValue={
+                                    leap_cfg.map_or(
+                                        "1s".to_string(),
+                                        |v| humantime::format_duration(v.config.downloader_config.retry_params.initial_backoff).to_string())
+                            } />
+                        </div>
+                        <div class="form-field">
+                            <label for={FORM_ITEM_BACKOFF_FACTOR}>{ "Backoff factor" }</label>
+                            <input id={FORM_ITEM_BACKOFF_FACTOR} name={FORM_ITEM_BACKOFF_FACTOR}
+                                type="number" min="1.01" step="any" required=true
+                                ~defaultValue={leap_cfg.map_or(2.0, |v| v.config.downloader_config.retry_params.backoff_factor)} />
+                        </div>
+                        <div class="form-field">
+                            <label for={FORM_ITEM_MAX_BACKOFF}>{ "Maximum retry backoff" }</label>
+                            <input id={FORM_ITEM_MAX_BACKOFF} name={FORM_ITEM_MAX_BACKOFF}
+                                type="text" placeholder="1h" required=true
+                                ~defaultValue={
+                                    leap_cfg.map_or(
+                                        "1h".to_string(),
+                                        |v| humantime::format_duration(v.config.downloader_config.retry_params.max_backoff).to_string())
+                            } />
+                        </div>
+
+                        <h2>{ "S3 Storage" }</h2>
+
+                        <div class="form-field">
+                            <label for={FORM_ITEM_BUCKET}>{ "Bucket URI" }</label>
+                            <input id={FORM_ITEM_BUCKET} name={FORM_ITEM_BUCKET}
+                                type="text" placeholder="s3://my-bucket" required=true
+                                ~defaultValue={leap_cfg.map_or(String::new(), |v| v.config.s3_config.bucket.to_string())} />
+                        </div>
+                        <div class="form-field">
+                            <label for={FORM_ITEM_ACCESS_KEY_ID}>{ "Access key ID" }</label>
+                            <input id={FORM_ITEM_ACCESS_KEY_ID} name={FORM_ITEM_ACCESS_KEY_ID}
+                                type="text" required=true
+                                ~defaultValue={leap_cfg.map_or(String::new(), |v| v.config.s3_config.access_key_id.expose_secret().to_owned())} />
+                        </div>
+                        <div class="form-field">
+                            <label for={FORM_ITEM_SECRET_ACCESS_KEY}>{ "Secret access key" }</label>
+                            <input id={FORM_ITEM_SECRET_ACCESS_KEY} name={FORM_ITEM_SECRET_ACCESS_KEY}
+                                type="password" required=true
+                                ~defaultValue={leap_cfg.map_or(String::new(), |v| v.config.s3_config.secret_access_key.expose_secret().to_owned())} />
+                        </div>
+                        <div class="form-field">
+                            <label for={FORM_ITEM_ENDPOINT_URL}>{ "Endpoint URL" }</label>
+                            <input id={FORM_ITEM_ENDPOINT_URL} name={FORM_ITEM_ENDPOINT_URL}
+                                type="text" placeholder="https://... (optional)"
+                                ~defaultValue={leap_cfg.and_then(|v| v.config.s3_config.endpoint_url.clone()).unwrap_or_default()} />
+                        </div>
+                        <div class="form-field">
+                            <label for={FORM_ITEM_REGION}>{ "Region" }</label>
+                            <input id={FORM_ITEM_REGION} name={FORM_ITEM_REGION}
+                                type="text" placeholder="us-east-1 (optional)"
+                                ~defaultValue={leap_cfg.and_then(|v| v.config.s3_config.region.clone()).unwrap_or_default()} />
+                        </div>
+                        <div class="form-field">
+                            <label class="checkbox-label">
+                                <input id={FORM_ITEM_FORCE_PATH_STYLE} name={FORM_ITEM_FORCE_PATH_STYLE}
+                                    type="checkbox"
+                                    ~defaultChecked={leap_cfg.and_then(|v| v.config.s3_config.force_path_style).unwrap_or(false)} />
+                                { "Force path-style bucket access" }
+                            </label>
+                        </div>
+                    </fieldset>
+                </form>
+            </details>
         </div>
     }
 }

@@ -64,6 +64,22 @@ h1 {
   gap: 1.2rem;
 }
 
+// Groups related form fields without affecting the layout of `.form`.
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: inherit;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-inline-size: 0;
+
+  // `display: flex` above would otherwise override the `hidden` attribute.
+  &[hidden] {
+    display: none;
+  }
+}
+
 .form-field {
   display: flex;
   flex-direction: column;

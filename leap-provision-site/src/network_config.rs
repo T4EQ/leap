@@ -295,7 +295,11 @@ pub fn network_config_page() -> Html {
                     </select>
                 </div>
 
-                if *connection_type == ConnectionType::Wireless {
+                // Inactive groups are hidden rather than removed so their values survive toggling.
+                // Disabling the fieldset excludes its inputs from validation and form data.
+                <fieldset class="form-group"
+                    hidden={*connection_type != ConnectionType::Wireless}
+                    disabled={*connection_type != ConnectionType::Wireless}>
                     <div class="form-field">
                         <label for={FORM_ITEM_SSID}>{ "SSID" }</label>
                         <input id={FORM_ITEM_SSID} name={FORM_ITEM_SSID} type="text" placeholder="Network name" required=true />
@@ -304,7 +308,7 @@ pub fn network_config_page() -> Html {
                         <label for={FORM_ITEM_PASSWD}>{ "Password" }</label>
                         <input id={FORM_ITEM_PASSWD} name={FORM_ITEM_PASSWD} type="password" placeholder="Network password" />
                     </div>
-                }
+                </fieldset>
 
                 <div class="form-field">
                     <label>{ "IP configuration" }</label>
@@ -324,7 +328,9 @@ pub fn network_config_page() -> Html {
                     </div>
                 </div>
 
-                if *ip_mode == IpMode::Static {
+                <fieldset class="form-group"
+                    hidden={*ip_mode != IpMode::Static}
+                    disabled={*ip_mode != IpMode::Static}>
                     <div class="form-field">
                         <label for={FORM_ITEM_IP_ADDR}>{ "IPv4 address" }</label>
                         <input id={FORM_ITEM_IP_ADDR} name={FORM_ITEM_IP_ADDR} type="text" placeholder="192.168.1.100"
@@ -340,7 +346,7 @@ pub fn network_config_page() -> Html {
                         <input id={FORM_ITEM_NET_MASK} name={FORM_ITEM_NET_MASK} type="text" placeholder="255.255.255.0"
                             required=true pattern={IPADDR_PATTERN} />
                     </div>
-                }
+                </fieldset>
 
                 <div class="form-actions">
                     <button type="submit" class="btn-primary" disabled={*state != NetworkState::Idle}>

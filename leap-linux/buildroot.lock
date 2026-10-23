@@ -1,65 +1,56 @@
 {
-  "NetworkManager-1.52.1.tar.xz": {
+  "NetworkManager-1.56.0.tar.xz": {
     "algo": "sha256",
-    "checksum": "8b122c73493a72f2bae527c125cebd87711671b90352dbe2b1788aba9575ac6f",
+    "checksum": "59a32d385cc1e7ae26e43798c6f12d07ff6198abd041ec0620b3a08cfc021ccc",
     "uris": [
-      "https://gitlab.freedesktop.org/NetworkManager/NetworkManager/-/releases/1.52.1/downloads/NetworkManager-1.52.1.tar.xz",
-      "https://sources.buildroot.net/network-manager/NetworkManager-1.52.1.tar.xz",
-      "https://sources.buildroot.net/NetworkManager-1.52.1.tar.xz"
+      "https://gitlab.freedesktop.org/NetworkManager/NetworkManager/-/releases/1.56.0/downloads/NetworkManager-1.56.0.tar.xz",
+      "https://sources.buildroot.net/network-manager/NetworkManager-1.56.0.tar.xz",
+      "https://sources.buildroot.net/NetworkManager-1.56.0.tar.xz"
     ]
   },
-  "Python-3.14.3.tar.xz": {
+  "Python-3.14.8.tar.xz": {
     "algo": "sha256",
-    "checksum": "a97d5549e9ad81fe17159ed02c68774ad5d266c72f8d9a0b5a9c371fe85d902b",
+    "checksum": "c2215904f02b175596dc49351585104f4bc20341e1c47378b26a2c274360ce73",
     "uris": [
-      "https://python.org/ftp/python/3.14.3/Python-3.14.3.tar.xz",
-      "https://sources.buildroot.net/python3/Python-3.14.3.tar.xz",
-      "https://sources.buildroot.net/Python-3.14.3.tar.xz"
+      "https://python.org/ftp/python/3.14.8/Python-3.14.8.tar.xz",
+      "https://sources.buildroot.net/python3/Python-3.14.8.tar.xz",
+      "https://sources.buildroot.net/Python-3.14.8.tar.xz"
     ]
   },
-  "XML-Parser-2.47.tar.gz": {
+  "acl-2.4.0.tar.xz": {
     "algo": "sha256",
-    "checksum": "ad4aae643ec784f489b956abe952432871a622d4e2b5c619e8855accbfc4d1d8",
+    "checksum": "e661131456d2708a01c614a0f400e11d7d1bfaeb6f3e74b75bb980b72f0161a3",
     "uris": [
-      "https://cpan.metacpan.org/authors/id/T/TO/TODDR/XML-Parser-2.47.tar.gz",
-      "https://sources.buildroot.net/libxml-parser-perl/XML-Parser-2.47.tar.gz",
-      "https://sources.buildroot.net/XML-Parser-2.47.tar.gz"
+      "https://download.savannah.nongnu.org/releases/acl/acl-2.4.0.tar.xz",
+      "https://sources.buildroot.net/acl/acl-2.4.0.tar.xz",
+      "https://sources.buildroot.net/acl-2.4.0.tar.xz"
     ]
   },
-  "acl-2.3.2.tar.xz": {
+  "attr-2.6.0.tar.xz": {
     "algo": "sha256",
-    "checksum": "97203a72cae99ab89a067fe2210c1cbf052bc492b479eca7d226d9830883b0bd",
+    "checksum": "6c8a2148a7b85043b68492bce43316b0e2e214fc4e628c7ede078e76e216330b",
     "uris": [
-      "https://download.savannah.nongnu.org/releases/acl/acl-2.3.2.tar.xz",
-      "https://sources.buildroot.net/acl/acl-2.3.2.tar.xz",
-      "https://sources.buildroot.net/acl-2.3.2.tar.xz"
+      "http://download.savannah.gnu.org/releases/attr/attr-2.6.0.tar.xz",
+      "https://sources.buildroot.net/attr/attr-2.6.0.tar.xz",
+      "https://sources.buildroot.net/attr-2.6.0.tar.xz"
     ]
   },
-  "attr-2.5.2.tar.xz": {
+  "autoconf-2.73.tar.xz": {
     "algo": "sha256",
-    "checksum": "f2e97b0ab7ce293681ab701915766190d607a1dba7fae8a718138150b700a70b",
+    "checksum": "9fd672b1c8425fac2fa67fa0477b990987268b90ff36d5f016dae57be0d6b52e",
     "uris": [
-      "http://download.savannah.gnu.org/releases/attr/attr-2.5.2.tar.xz",
-      "https://sources.buildroot.net/attr/attr-2.5.2.tar.xz",
-      "https://sources.buildroot.net/attr-2.5.2.tar.xz"
+      "https://ftpmirror.gnu.org/autoconf/autoconf-2.73.tar.xz",
+      "https://sources.buildroot.net/autoconf/autoconf-2.73.tar.xz",
+      "https://sources.buildroot.net/autoconf-2.73.tar.xz"
     ]
   },
-  "autoconf-2.72.tar.xz": {
+  "autoconf-archive-2024.10.16.tar.xz": {
     "algo": "sha256",
-    "checksum": "ba885c1319578d6c94d46e9b0dceb4014caafe2490e437a0dbca3f270a223f5a",
+    "checksum": "7bcd5d001916f3a50ed7436f4f700e3d2b1bade3ed803219c592d62502a57363",
     "uris": [
-      "https://ftpmirror.gnu.org/autoconf/autoconf-2.72.tar.xz",
-      "https://sources.buildroot.net/autoconf/autoconf-2.72.tar.xz",
-      "https://sources.buildroot.net/autoconf-2.72.tar.xz"
-    ]
-  },
-  "autoconf-archive-2023.02.20.tar.xz": {
-    "algo": "sha256",
-    "checksum": "71d4048479ae28f1f5794619c3d72df9c01df49b1c628ef85fde37596dc31a33",
-    "uris": [
-      "https://ftpmirror.gnu.org/autoconf-archive/autoconf-archive-2023.02.20.tar.xz",
-      "https://sources.buildroot.net/autoconf-archive/autoconf-archive-2023.02.20.tar.xz",
-      "https://sources.buildroot.net/autoconf-archive-2023.02.20.tar.xz"
+      "https://ftpmirror.gnu.org/autoconf-archive/autoconf-archive-2024.10.16.tar.xz",
+      "https://sources.buildroot.net/autoconf-archive/autoconf-archive-2024.10.16.tar.xz",
+      "https://sources.buildroot.net/autoconf-archive-2024.10.16.tar.xz"
     ]
   },
   "automake-1.16.5.tar.xz": {
@@ -80,13 +71,13 @@
       "https://sources.buildroot.net/bash-5.2.37.tar.gz"
     ]
   },
-  "binutils-2.44.tar.xz": {
+  "binutils-2.45.1.tar.xz": {
     "algo": "sha512",
-    "checksum": "b85d3bbc0e334cf67a96219d3c7c65fbf3e832b2c98a7417bf131f3645a0307057ec81cd2b29ff2563cec53e3d42f73e2c60cc5708e80d4a730efdcc6ae14ad7",
+    "checksum": "ea030419eba387579ab717be7e3223fc99e93b586860b06003c12489f93441640d4082736f76aa5e98233db4f46e232f536a45e471486de1f5b64e1b827c167e",
     "uris": [
-      "https://ftpmirror.gnu.org/binutils/binutils-2.44.tar.xz",
-      "https://sources.buildroot.net/binutils/binutils-2.44.tar.xz",
-      "https://sources.buildroot.net/binutils-2.44.tar.xz"
+      "https://ftpmirror.gnu.org/binutils/binutils-2.45.1.tar.xz",
+      "https://sources.buildroot.net/binutils/binutils-2.45.1.tar.xz",
+      "https://sources.buildroot.net/binutils-2.45.1.tar.xz"
     ]
   },
   "bison-3.8.2.tar.xz": {
@@ -116,31 +107,40 @@
       "https://sources.buildroot.net/build-1.3.0.tar.gz"
     ]
   },
-  "busybox-1.37.0.tar.bz2": {
+  "busybox-1.38.0.tar.bz2": {
     "algo": "sha256",
-    "checksum": "3311dff32e746499f4df0d5df04d7eb396382d7e108bb9250e7b519b837043a4",
+    "checksum": "34f9ea6ff8636f2c9241153b9114eefa9e65674a45318ae1ef95bb5f31c53bb2",
     "uris": [
-      "https://www.busybox.net/downloads/busybox-1.37.0.tar.bz2",
-      "https://sources.buildroot.net/busybox/busybox-1.37.0.tar.bz2",
-      "https://sources.buildroot.net/busybox-1.37.0.tar.bz2"
+      "https://www.busybox.net/downloads/busybox-1.38.0.tar.bz2",
+      "https://sources.buildroot.net/busybox/busybox-1.38.0.tar.bz2",
+      "https://sources.buildroot.net/busybox-1.38.0.tar.bz2"
     ]
   },
-  "ca-certificates_20250419.tar.xz": {
+  "c-ares-1.34.6.tar.gz": {
     "algo": "sha256",
-    "checksum": "33b44ef78653ecd3f0f2f13e5bba6be466be2e7da72182f737912b81798ba5d2",
+    "checksum": "912dd7cc3b3e8a79c52fd7fb9c0f4ecf0aaa73e45efda880266a2d6e26b84ef5",
     "uris": [
-      "https://snapshot.debian.org/archive/debian/20250419T084132Z/pool/main/c/ca-certificates/ca-certificates_20250419.tar.xz",
-      "https://sources.buildroot.net/ca-certificates/ca-certificates_20250419.tar.xz",
-      "https://sources.buildroot.net/ca-certificates_20250419.tar.xz"
+      "https://github.com/c-ares/c-ares/releases/download/v1.34.6/c-ares-1.34.6.tar.gz",
+      "https://sources.buildroot.net/c-ares/c-ares-1.34.6.tar.gz",
+      "https://sources.buildroot.net/c-ares-1.34.6.tar.gz"
     ]
   },
-  "cmake-4.2.3.tar.gz": {
+  "ca-certificates_20260816+nmu1.tar.xz": {
     "algo": "sha256",
-    "checksum": "7efaccde8c5a6b2968bad6ce0fe60e19b6e10701a12fce948c2bf79bac8a11e9",
+    "checksum": "914416a1e44a25733aff51092fe4e27fdec1c9f6e8d1db0b8364922486153134",
     "uris": [
-      "https://cmake.org/files/v4.2/cmake-4.2.3.tar.gz",
-      "https://sources.buildroot.net/cmake/cmake-4.2.3.tar.gz",
-      "https://sources.buildroot.net/cmake-4.2.3.tar.gz"
+      "https://snapshot.debian.org/archive/debian/20261020T202723Z/pool/main/c/ca-certificates/ca-certificates_20260816+nmu1.tar.xz",
+      "https://sources.buildroot.net/ca-certificates/ca-certificates_20260816+nmu1.tar.xz",
+      "https://sources.buildroot.net/ca-certificates_20260816+nmu1.tar.xz"
+    ]
+  },
+  "cmake-4.4.0.tar.gz": {
+    "algo": "sha256",
+    "checksum": "65757f442fdd242e27f1728fc26dc0cba4164f7a0791a5c788631c00080369bc",
+    "uris": [
+      "https://cmake.org/files/v4.4/cmake-4.4.0.tar.gz",
+      "https://sources.buildroot.net/cmake/cmake-4.4.0.tar.gz",
+      "https://sources.buildroot.net/cmake-4.4.0.tar.gz"
     ]
   },
   "confuse-3.3.tar.xz": {
@@ -152,31 +152,31 @@
       "https://sources.buildroot.net/confuse-3.3.tar.xz"
     ]
   },
-  "curl-8.18.0.tar.xz": {
+  "curl-8.22.0.tar.xz": {
     "algo": "sha256",
-    "checksum": "40df79166e74aa20149365e11ee4c798a46ad57c34e4f68fd13100e2c9a91946",
+    "checksum": "f7ef3ae8a22e521f289803fe93543eb64c329b58aa73a9e224dfd915a2a5f4f7",
     "uris": [
-      "https://curl.se/download/curl-8.18.0.tar.xz",
-      "https://sources.buildroot.net/libcurl/curl-8.18.0.tar.xz",
-      "https://sources.buildroot.net/curl-8.18.0.tar.xz"
+      "https://curl.se/download/curl-8.22.0.tar.xz",
+      "https://sources.buildroot.net/libcurl/curl-8.22.0.tar.xz",
+      "https://sources.buildroot.net/curl-8.22.0.tar.xz"
     ]
   },
-  "dbus-1.14.10.tar.xz": {
+  "dbus-1.16.2.tar.xz": {
     "algo": "sha256",
-    "checksum": "ba1f21d2bd9d339da2d4aa8780c09df32fea87998b73da24f49ab9df1e36a50f",
+    "checksum": "0ba2a1a4b16afe7bceb2c07e9ce99a8c2c3508e5dec290dbb643384bd6beb7e2",
     "uris": [
-      "https://dbus.freedesktop.org/releases/dbus/dbus-1.14.10.tar.xz",
-      "https://sources.buildroot.net/dbus/dbus-1.14.10.tar.xz",
-      "https://sources.buildroot.net/dbus-1.14.10.tar.xz"
+      "https://dbus.freedesktop.org/releases/dbus/dbus-1.16.2.tar.xz",
+      "https://sources.buildroot.net/dbus/dbus-1.16.2.tar.xz",
+      "https://sources.buildroot.net/dbus-1.16.2.tar.xz"
     ]
   },
-  "dnsmasq-2.92.tar.xz": {
+  "dnsmasq-2.93.tar.xz": {
     "algo": "sha256",
-    "checksum": "4bf50c2c1018f9fbc26037df51b90ecea0cb73d46162846763b92df0d6c3a458",
+    "checksum": "0c00d4e5c97c8306e5fb932b348b34269c9c29a0e7df0e8e82958b407092bc19",
     "uris": [
-      "https://thekelleys.org.uk/dnsmasq/dnsmasq-2.92.tar.xz",
-      "https://sources.buildroot.net/dnsmasq/dnsmasq-2.92.tar.xz",
-      "https://sources.buildroot.net/dnsmasq-2.92.tar.xz"
+      "https://thekelleys.org.uk/dnsmasq/dnsmasq-2.93.tar.xz",
+      "https://sources.buildroot.net/dnsmasq/dnsmasq-2.93.tar.xz",
+      "https://sources.buildroot.net/dnsmasq-2.93.tar.xz"
     ]
   },
   "dosfstools-4.2.tar.gz": {
@@ -188,13 +188,13 @@
       "https://sources.buildroot.net/dosfstools-4.2.tar.gz"
     ]
   },
-  "e2fsprogs-1.47.3.tar.xz": {
+  "e2fsprogs-1.47.4.tar.xz": {
     "algo": "sha256",
-    "checksum": "857e6ef800feaa2bb4578fbc810214be5d3c88b072ea53c5384733a965737329",
+    "checksum": "fd5bf388cbdbe006a3d3b318d983b2948382440acc85a87f1e7d108653e8db0b",
     "uris": [
-      "https://cdn.kernel.org/pub/linux/kernel/people/tytso/e2fsprogs/v1.47.3/e2fsprogs-1.47.3.tar.xz",
-      "https://sources.buildroot.net/e2fsprogs/e2fsprogs-1.47.3.tar.xz",
-      "https://sources.buildroot.net/e2fsprogs-1.47.3.tar.xz"
+      "https://cdn.kernel.org/pub/linux/kernel/people/tytso/e2fsprogs/v1.47.4/e2fsprogs-1.47.4.tar.xz",
+      "https://sources.buildroot.net/e2fsprogs/e2fsprogs-1.47.4.tar.xz",
+      "https://sources.buildroot.net/e2fsprogs-1.47.4.tar.xz"
     ]
   },
   "e2tools-0.1.2.tar.gz": {
@@ -206,22 +206,22 @@
       "https://sources.buildroot.net/e2tools-0.1.2.tar.gz"
     ]
   },
-  "expat-2.7.4.tar.xz": {
+  "expat-2.9.0.tar.xz": {
     "algo": "sha256",
-    "checksum": "9e9cabb457c1e09de91db2706d8365645792638eb3be1f94dbb2149301086ac0",
+    "checksum": "1e6371862cc31999b368c3b89b49994f0677e1bab5f1b2b85ae3741f5d803051",
     "uris": [
-      "https://github.com/libexpat/libexpat/releases/download/R_2_7_4/expat-2.7.4.tar.xz",
-      "https://sources.buildroot.net/expat/expat-2.7.4.tar.xz",
-      "https://sources.buildroot.net/expat-2.7.4.tar.xz"
+      "https://github.com/libexpat/libexpat/releases/download/R_2_9_0/expat-2.9.0.tar.xz",
+      "https://sources.buildroot.net/expat/expat-2.9.0.tar.xz",
+      "https://sources.buildroot.net/expat-2.9.0.tar.xz"
     ]
   },
-  "fakeroot_1.37.1.2.orig.tar.gz": {
+  "fakeroot_1.37.2.orig.tar.gz": {
     "algo": "sha256",
-    "checksum": "959496928c8a676ec8377f665ff6a19a707bfad693325f9cc4a4126642f53224",
+    "checksum": "0eea60fbe89771b88fcf415c8f2f0a6ccfe9edebbcf3ba5dc0212718d98884db",
     "uris": [
-      "https://snapshot.debian.org/archive/debian/20250513T025019Z/pool/main/f/fakeroot/fakeroot_1.37.1.2.orig.tar.gz",
-      "https://sources.buildroot.net/fakeroot/fakeroot_1.37.1.2.orig.tar.gz",
-      "https://sources.buildroot.net/fakeroot_1.37.1.2.orig.tar.gz"
+      "https://snapshot.debian.org/archive/debian/20260401T000000Z/pool/main/f/fakeroot/fakeroot_1.37.2.orig.tar.gz",
+      "https://sources.buildroot.net/fakeroot/fakeroot_1.37.2.orig.tar.gz",
+      "https://sources.buildroot.net/fakeroot_1.37.2.orig.tar.gz"
     ]
   },
   "flex-2.6.4.tar.gz": {
@@ -242,31 +242,31 @@
       "https://sources.buildroot.net/flit_core-3.12.0.tar.gz"
     ]
   },
-  "gawk-5.3.2.tar.xz": {
+  "gawk-5.4.0.tar.xz": {
     "algo": "sha256",
-    "checksum": "f8c3486509de705192138b00ef2c00bbbdd0e84c30d5c07d23fc73a9dc4cc9cc",
+    "checksum": "3dd430f0cd3b4428c6c3f6afc021b9cd3c1f8c93f7a688dc268ca428a90b4ac1",
     "uris": [
-      "https://ftpmirror.gnu.org/gawk/gawk-5.3.2.tar.xz",
-      "https://sources.buildroot.net/gawk/gawk-5.3.2.tar.xz",
-      "https://sources.buildroot.net/gawk-5.3.2.tar.xz"
+      "https://ftpmirror.gnu.org/gawk/gawk-5.4.0.tar.xz",
+      "https://sources.buildroot.net/gawk/gawk-5.4.0.tar.xz",
+      "https://sources.buildroot.net/gawk-5.4.0.tar.xz"
     ]
   },
-  "gcc-14.3.0.tar.xz": {
+  "gcc-15.3.0.tar.xz": {
     "algo": "sha512",
-    "checksum": "cb4e3259640721bbd275c723fe4df53d12f9b1673afb3db274c22c6aa457865dccf2d6ea20b4fd4c591f6152e6d4b87516c402015900f06ce9d43af66d3b7a93",
+    "checksum": "0de9e296153b52c021b1c7e63c9c62151d7a0ac03f23ce6e9f772c1b0eb783f6acdd81cc4567bfe4128a6f64968c2cfc8eff40b36229cba7425349f7d637c654",
     "uris": [
-      "https://ftpmirror.gnu.org/gcc/gcc-14.3.0/gcc-14.3.0.tar.xz",
-      "https://sources.buildroot.net/gcc/gcc-14.3.0.tar.xz",
-      "https://sources.buildroot.net/gcc-14.3.0.tar.xz"
+      "https://ftpmirror.gnu.org/gcc/gcc-15.3.0/gcc-15.3.0.tar.xz",
+      "https://sources.buildroot.net/gcc/gcc-15.3.0.tar.xz",
+      "https://sources.buildroot.net/gcc-15.3.0.tar.xz"
     ]
   },
-  "genimage-19.tar.xz": {
+  "genimage-20.tar.xz": {
     "algo": "sha256",
-    "checksum": "7ec4fcb865662a8b2ff20284819044ffa84137bf3ca16fb749701291bc01f108",
+    "checksum": "397545be2fa52d482c5fba9a11897c61324bfc559ea0efb700b9edba7a807b55",
     "uris": [
-      "https://github.com/pengutronix/genimage/releases/download/v19/genimage-19.tar.xz",
-      "https://sources.buildroot.net/genimage/genimage-19.tar.xz",
-      "https://sources.buildroot.net/genimage-19.tar.xz"
+      "https://github.com/pengutronix/genimage/releases/download/v20/genimage-20.tar.xz",
+      "https://sources.buildroot.net/genimage/genimage-20.tar.xz",
+      "https://sources.buildroot.net/genimage-20.tar.xz"
     ]
   },
   "gettext-0.22.4.tar.xz": {
@@ -278,30 +278,30 @@
       "https://sources.buildroot.net/gettext-0.22.4.tar.xz"
     ]
   },
-  "gettext-tiny-0.3.2.tar.gz": {
+  "gettext-tiny-0.3.3.tar.gz": {
     "algo": "sha256",
-    "checksum": "29cc165e27e83d2bb3760118c2368eadab550830d962d758e51bd36eb860f383",
+    "checksum": "daff8b4a7863745710ec0b02657fd20bda2d90398f54945751259bb94d6ebffd",
     "uris": [
-      "https://github.com/sabotage-linux/gettext-tiny/archive/v0.3.2/gettext-tiny-0.3.2.tar.gz",
-      "https://sources.buildroot.net/gettext-tiny/gettext-tiny-0.3.2.tar.gz",
-      "https://sources.buildroot.net/gettext-tiny-0.3.2.tar.gz"
+      "https://github.com/sabotage-linux/gettext-tiny/archive/v0.3.3/gettext-tiny-0.3.3.tar.gz",
+      "https://sources.buildroot.net/gettext-tiny/gettext-tiny-0.3.3.tar.gz",
+      "https://sources.buildroot.net/gettext-tiny-0.3.3.tar.gz"
     ]
   },
-  "glib-2.86.2.tar.xz": {
+  "glib-2.88.3.tar.xz": {
     "algo": "sha256",
-    "checksum": "8a724e970855357ea8101e27727202392a0ffd5410a98336aed54ec59113e611",
+    "checksum": "ab24d24e698dfa1e408b7bcdb508f4aafc906185a8b8ce72fdf79bbbdc9b383b",
     "uris": [
-      "https://download.gnome.org/sources/glib/2.86/glib-2.86.2.tar.xz",
-      "https://sources.buildroot.net/libglib2/glib-2.86.2.tar.xz",
-      "https://sources.buildroot.net/glib-2.86.2.tar.xz"
+      "https://download.gnome.org/sources/glib/2.88/glib-2.88.3.tar.xz",
+      "https://sources.buildroot.net/libglib2/glib-2.88.3.tar.xz",
+      "https://sources.buildroot.net/glib-2.88.3.tar.xz"
     ]
   },
-  "glibc-2.42-51-gcbf39c26b25801e9bc88499b4fd361ac172d4125-git4.tar.gz": {
+  "glibc-2.44-57-g34106fee698c83eb0af71d4d0381e66b399be746-git4.tar.gz": {
     "algo": "sha256",
-    "checksum": "737e3b2bfee2e3e209e514133f4ff7d2bef0d0dc903fd46b4e2244f6c998f7b2",
+    "checksum": "902d628994c2f3b30af4a7f507835079852cc8ed21d8a7f340e45dc5dae148bf",
     "uris": [
-      "https://sources.buildroot.net/glibc/glibc-2.42-51-gcbf39c26b25801e9bc88499b4fd361ac172d4125-git4.tar.gz",
-      "https://sources.buildroot.net/glibc-2.42-51-gcbf39c26b25801e9bc88499b4fd361ac172d4125-git4.tar.gz"
+      "https://sources.buildroot.net/glibc/glibc-2.44-57-g34106fee698c83eb0af71d4d0381e66b399be746-git4.tar.gz",
+      "https://sources.buildroot.net/glibc-2.44-57-g34106fee698c83eb0af71d4d0381e66b399be746-git4.tar.gz"
     ]
   },
   "gmp-6.3.0.tar.xz": {
@@ -313,13 +313,13 @@
       "https://sources.buildroot.net/gmp-6.3.0.tar.xz"
     ]
   },
-  "gnutls-3.8.12.tar.xz": {
+  "gnutls-3.8.13.tar.xz": {
     "algo": "sha256",
-    "checksum": "a7b341421bfd459acf7a374ca4af3b9e06608dcd7bd792b2bf470bea012b8e51",
+    "checksum": "ffed8ec1bf09c2426d4f14aae377de4753b53e537d685e604e99a8b16ca9c97e",
     "uris": [
-      "https://www.gnupg.org/ftp/gcrypt/gnutls/v3.8/gnutls-3.8.12.tar.xz",
-      "https://sources.buildroot.net/gnutls/gnutls-3.8.12.tar.xz",
-      "https://sources.buildroot.net/gnutls-3.8.12.tar.xz"
+      "https://www.gnupg.org/ftp/gcrypt/gnutls/v3.8/gnutls-3.8.13.tar.xz",
+      "https://sources.buildroot.net/gnutls/gnutls-3.8.13.tar.xz",
+      "https://sources.buildroot.net/gnutls-3.8.13.tar.xz"
     ]
   },
   "gperf-3.3.tar.gz": {
@@ -340,31 +340,22 @@
       "https://sources.buildroot.net/gzip-1.14.tar.xz"
     ]
   },
-  "htop-3.4.1.tar.xz": {
+  "htop-3.5.1.tar.xz": {
     "algo": "sha256",
-    "checksum": "904f7d4580fc11cffc7e0f06895a4789e0c1c054435752c151e812fead9f6220",
+    "checksum": "526cecd62870aa8d14d2a79a35ea197e4e2b5317d275b567cee0574b2ddb2e9a",
     "uris": [
-      "https://github.com/htop-dev/htop/releases/download/3.4.1/htop-3.4.1.tar.xz",
-      "https://sources.buildroot.net/htop/htop-3.4.1.tar.xz",
-      "https://sources.buildroot.net/htop-3.4.1.tar.xz"
+      "https://github.com/htop-dev/htop/releases/download/3.5.1/htop-3.5.1.tar.xz",
+      "https://sources.buildroot.net/htop/htop-3.5.1.tar.xz",
+      "https://sources.buildroot.net/htop-3.5.1.tar.xz"
     ]
   },
-  "installer-0.7.0.tar.gz": {
+  "installer-1.0.0.tar.gz": {
     "algo": "sha256",
-    "checksum": "a26d3e3116289bb08216e0d0f7d925fcef0b0194eedfa0c944bcaaa106c4b631",
+    "checksum": "c6d691331621cf3fec4822f5c6f83cab3705f79b316225dc454127411677c71f",
     "uris": [
-      "https://files.pythonhosted.org/packages/05/18/ceeb4e3ab3aa54495775775b38ae42b10a92f42ce42dfa44da684289b8c8/installer-0.7.0.tar.gz",
-      "https://sources.buildroot.net/python-installer/installer-0.7.0.tar.gz",
-      "https://sources.buildroot.net/installer-0.7.0.tar.gz"
-    ]
-  },
-  "intltool-0.51.0.tar.gz": {
-    "algo": "sha256",
-    "checksum": "67c74d94196b153b774ab9f89b2fa6c6ba79352407037c8c14d5aeb334e959cd",
-    "uris": [
-      "https://launchpad.net/intltool/trunk/0.51.0/+download/intltool-0.51.0.tar.gz",
-      "https://sources.buildroot.net/intltool/intltool-0.51.0.tar.gz",
-      "https://sources.buildroot.net/intltool-0.51.0.tar.gz"
+      "https://files.pythonhosted.org/packages/5f/ef/230b70e66db6ab01d5cbb93329688ed1f06b2b0618a74925e36384ff0fba/installer-1.0.0.tar.gz",
+      "https://sources.buildroot.net/python-installer/installer-1.0.0.tar.gz",
+      "https://sources.buildroot.net/installer-1.0.0.tar.gz"
     ]
   },
   "jinja2-3.1.6.tar.gz": {
@@ -394,22 +385,31 @@
       "https://sources.buildroot.net/kbd-2.9.0.tar.xz"
     ]
   },
-  "kmod-33.tar.xz": {
+  "kmod-34.2.tar.xz": {
     "algo": "sha256",
-    "checksum": "dc768b3155172091f56dc69430b5481f2d76ecd9ccb54ead8c2540dbcf5ea9bc",
+    "checksum": "5a5d5073070cc7e0c7a7a3c6ec2a0e1780850c8b47b3e3892226b93ffcb9cb54",
     "uris": [
-      "https://cdn.kernel.org/pub/linux/utils/kernel/kmod/kmod-33.tar.xz",
-      "https://sources.buildroot.net/kmod/kmod-33.tar.xz",
-      "https://sources.buildroot.net/kmod-33.tar.xz"
+      "https://cdn.kernel.org/pub/linux/utils/kernel/kmod/kmod-34.2.tar.xz",
+      "https://sources.buildroot.net/kmod/kmod-34.2.tar.xz",
+      "https://sources.buildroot.net/kmod-34.2.tar.xz"
     ]
   },
-  "libcap-2.77.tar.xz": {
+  "libarchive-3.8.9.tar.xz": {
     "algo": "sha256",
-    "checksum": "897bc18b44afc26c70e78cead3dbb31e154acc24bee085a5a09079a88dbf6f52",
+    "checksum": "888c934f9d95648ecb9163dc8e23ab80a476ecb81a8f1154704a227b5b676dde",
     "uris": [
-      "https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-2.77.tar.xz",
-      "https://sources.buildroot.net/libcap/libcap-2.77.tar.xz",
-      "https://sources.buildroot.net/libcap-2.77.tar.xz"
+      "https://www.libarchive.de/downloads/libarchive-3.8.9.tar.xz",
+      "https://sources.buildroot.net/libarchive/libarchive-3.8.9.tar.xz",
+      "https://sources.buildroot.net/libarchive-3.8.9.tar.xz"
+    ]
+  },
+  "libcap-2.78.tar.xz": {
+    "algo": "sha256",
+    "checksum": "0d621e562fd932ccf67b9660fb018e468a683d7b827541df27813228c996bb11",
+    "uris": [
+      "https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-2.78.tar.xz",
+      "https://sources.buildroot.net/libcap/libcap-2.78.tar.xz",
+      "https://sources.buildroot.net/libcap-2.78.tar.xz"
     ]
   },
   "libconf-2.0.1.tar.gz": {
@@ -430,22 +430,40 @@
       "https://sources.buildroot.net/libconfig-1.8.2.tar.gz"
     ]
   },
-  "libevent-2.1.12-stable.tar.gz": {
+  "libevent-2.1.13-stable.tar.gz": {
     "algo": "sha256",
-    "checksum": "92e6de1be9ec176428fd2367677e61ceffc2ee1cb119035037a27d346b0403bb",
+    "checksum": "f7e9383b8c0baa81b687e5b5eecc01beefaf1b19b64151d95ed61647fe7a315c",
     "uris": [
-      "https://github.com/libevent/libevent/releases/download/release-2.1.12-stable/libevent-2.1.12-stable.tar.gz",
-      "https://sources.buildroot.net/libevent/libevent-2.1.12-stable.tar.gz",
-      "https://sources.buildroot.net/libevent-2.1.12-stable.tar.gz"
+      "https://github.com/libevent/libevent/releases/download/release-2.1.13-stable/libevent-2.1.13-stable.tar.gz",
+      "https://sources.buildroot.net/libevent/libevent-2.1.13-stable.tar.gz",
+      "https://sources.buildroot.net/libevent-2.1.13-stable.tar.gz"
     ]
   },
-  "libffi-3.4.8.tar.gz": {
+  "libffi-3.8.0.tar.gz": {
     "algo": "sha256",
-    "checksum": "bc9842a18898bfacb0ed1252c4febcc7e78fa139fd27fdc7a3e30d9d9356119b",
+    "checksum": "7da3e2d9a171eb0a038f592ecad3ff2bb2550f3496d87b3b29ad0cf4430c0db4",
     "uris": [
-      "https://github.com/libffi/libffi/releases/download/v3.4.8/libffi-3.4.8.tar.gz",
-      "https://sources.buildroot.net/libffi/libffi-3.4.8.tar.gz",
-      "https://sources.buildroot.net/libffi-3.4.8.tar.gz"
+      "https://github.com/libffi/libffi/releases/download/v3.8.0/libffi-3.8.0.tar.gz",
+      "https://sources.buildroot.net/libffi/libffi-3.8.0.tar.gz",
+      "https://sources.buildroot.net/libffi-3.8.0.tar.gz"
+    ]
+  },
+  "libgcrypt-1.12.2.tar.bz2": {
+    "algo": "sha256",
+    "checksum": "7ce33c2492221a0436f96a8500215e9f3e3dcb5fd26a757cd415e7a843babd5e",
+    "uris": [
+      "https://gnupg.org/ftp/gcrypt/libgcrypt/libgcrypt-1.12.2.tar.bz2",
+      "https://sources.buildroot.net/libgcrypt/libgcrypt-1.12.2.tar.bz2",
+      "https://sources.buildroot.net/libgcrypt-1.12.2.tar.bz2"
+    ]
+  },
+  "libgpg-error-1.61.tar.bz2": {
+    "algo": "sha256",
+    "checksum": "7a85413f2bc354f4f8aa832b718af122e48965e9e0eb9012ee659c13c6385c93",
+    "uris": [
+      "https://www.gnupg.org/ftp/gcrypt/libgpg-error/libgpg-error-1.61.tar.bz2",
+      "https://sources.buildroot.net/libgpg-error/libgpg-error-1.61.tar.bz2",
+      "https://sources.buildroot.net/libgpg-error-1.61.tar.bz2"
     ]
   },
   "libndp-1.9.tar.gz": {
@@ -457,13 +475,22 @@
       "https://sources.buildroot.net/libndp-1.9.tar.gz"
     ]
   },
-  "libnl-3.11.0.tar.gz": {
+  "libnl-3.12.0.tar.gz": {
     "algo": "sha256",
-    "checksum": "2a56e1edefa3e68a7c00879496736fdbf62fc94ed3232c0baba127ecfa76874d",
+    "checksum": "fc51ca7196f1a3f5fdf6ffd3864b50f4f9c02333be28be4eeca057e103c0dd18",
     "uris": [
-      "https://github.com/thom311/libnl/releases/download/libnl3_11_0/libnl-3.11.0.tar.gz",
-      "https://sources.buildroot.net/libnl/libnl-3.11.0.tar.gz",
-      "https://sources.buildroot.net/libnl-3.11.0.tar.gz"
+      "https://github.com/thom311/libnl/releases/download/libnl3_12_0/libnl-3.12.0.tar.gz",
+      "https://sources.buildroot.net/libnl/libnl-3.12.0.tar.gz",
+      "https://sources.buildroot.net/libnl-3.12.0.tar.gz"
+    ]
+  },
+  "libpcap-1.10.7.tar.gz": {
+    "algo": "sha256",
+    "checksum": "0b394ac90dbc0a9838ff97468e05c9c9a3e873dec2514cd58db65d859d296e31",
+    "uris": [
+      "https://www.tcpdump.org/release/libpcap-1.10.7.tar.gz",
+      "https://sources.buildroot.net/libpcap/libpcap-1.10.7.tar.gz",
+      "https://sources.buildroot.net/libpcap-1.10.7.tar.gz"
     ]
   },
   "libtasn1-4.21.0.tar.gz": {
@@ -475,13 +502,13 @@
       "https://sources.buildroot.net/libtasn1-4.21.0.tar.gz"
     ]
   },
-  "libtool-2.4.6.tar.xz": {
+  "libtool-2.5.4.tar.xz": {
     "algo": "sha256",
-    "checksum": "7c87a8c2c8c0fc9cd5019e402bed4292462d00a718a7cd5f11218153bf28b26f",
+    "checksum": "f81f5860666b0bc7d84baddefa60d1cb9fa6fceb2398cc3baca6afaa60266675",
     "uris": [
-      "https://ftpmirror.gnu.org/libtool/libtool-2.4.6.tar.xz",
-      "https://sources.buildroot.net/libtool/libtool-2.4.6.tar.xz",
-      "https://sources.buildroot.net/libtool-2.4.6.tar.xz"
+      "https://ftpmirror.gnu.org/libtool/libtool-2.5.4.tar.xz",
+      "https://sources.buildroot.net/libtool/libtool-2.5.4.tar.xz",
+      "https://sources.buildroot.net/libtool-2.5.4.tar.xz"
     ]
   },
   "libubootenv-0.3.7.tar.gz": {
@@ -511,13 +538,13 @@
       "https://sources.buildroot.net/libxcrypt-4.5.2.tar.xz"
     ]
   },
-  "libxml2-2.15.1.tar.xz": {
+  "libxml2-2.15.4.tar.xz": {
     "algo": "sha256",
-    "checksum": "c008bac08fd5c7b4a87f7b8a71f283fa581d80d80ff8d2efd3b26224c39bc54c",
+    "checksum": "98087fd181d9070724f3fbc65c7377db03038eb92bd882374daff44940138821",
     "uris": [
-      "https://download.gnome.org/sources/libxml2/2.15/libxml2-2.15.1.tar.xz",
-      "https://sources.buildroot.net/libxml2/libxml2-2.15.1.tar.xz",
-      "https://sources.buildroot.net/libxml2-2.15.1.tar.xz"
+      "https://download.gnome.org/sources/libxml2/2.15/libxml2-2.15.4.tar.xz",
+      "https://sources.buildroot.net/libxml2/libxml2-2.15.4.tar.xz",
+      "https://sources.buildroot.net/libxml2-2.15.4.tar.xz"
     ]
   },
   "libxslt-1.1.45.tar.xz": {
@@ -538,13 +565,13 @@
       "https://sources.buildroot.net/linux-21b410140c47ffab5668399f6f143c7d7b935c8b.tar.gz"
     ]
   },
-  "linux-6.12.74.tar.xz": {
+  "linux-6.12.112.tar.xz": {
     "algo": "sha256",
-    "checksum": "3b56eeb1dc9a437f189ca56b823be3769994f59a4ea0895b08ec0d20acaca13e",
+    "checksum": "164dc9d1f6c93c61a15e1f071c48379b467f2b17c469cce7223471968208ed03",
     "uris": [
-      "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.12.74.tar.xz",
-      "https://sources.buildroot.net/linux/linux-6.12.74.tar.xz",
-      "https://sources.buildroot.net/linux-6.12.74.tar.xz"
+      "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.12.112.tar.xz",
+      "https://sources.buildroot.net/linux/linux-6.12.112.tar.xz",
+      "https://sources.buildroot.net/linux-6.12.112.tar.xz"
     ]
   },
   "lzip-1.25.tar.gz": {
@@ -574,40 +601,40 @@
       "https://sources.buildroot.net/markupsafe-3.0.3.tar.gz"
     ]
   },
-  "meson-1.10.1.tar.gz": {
+  "meson-1.11.1.tar.gz": {
     "algo": "sha256",
-    "checksum": "c42296f12db316a4515b9375a5df330f2e751ccdd4f608430d41d7d6210e4317",
+    "checksum": "6788ae299979643f8d841bcaf64352558436cae45a0355148a3aeeccf7913866",
     "uris": [
-      "https://github.com/mesonbuild/meson/releases/download/1.10.1/meson-1.10.1.tar.gz",
-      "https://sources.buildroot.net/meson/meson-1.10.1.tar.gz",
-      "https://sources.buildroot.net/meson-1.10.1.tar.gz"
+      "https://github.com/mesonbuild/meson/releases/download/1.11.1/meson-1.11.1.tar.gz",
+      "https://sources.buildroot.net/meson/meson-1.11.1.tar.gz",
+      "https://sources.buildroot.net/meson-1.11.1.tar.gz"
     ]
   },
-  "mpc-1.3.1.tar.gz": {
+  "mpc-1.4.1.tar.xz": {
     "algo": "sha256",
-    "checksum": "ab642492f5cf882b74aa0cb730cd410a81edcdbec895183ce930e706c1c759b8",
+    "checksum": "91204cd32f164bd3b7c992d4a6a8ce6519511aadab30f78b6982d0bf8d73e931",
     "uris": [
-      "https://ftpmirror.gnu.org/mpc/mpc-1.3.1.tar.gz",
-      "https://sources.buildroot.net/mpc/mpc-1.3.1.tar.gz",
-      "https://sources.buildroot.net/mpc-1.3.1.tar.gz"
+      "https://ftpmirror.gnu.org/mpc/mpc-1.4.1.tar.xz",
+      "https://sources.buildroot.net/mpc/mpc-1.4.1.tar.xz",
+      "https://sources.buildroot.net/mpc-1.4.1.tar.xz"
     ]
   },
-  "mpfr-4.1.1.tar.xz": {
+  "mpfr-4.2.2.tar.xz": {
     "algo": "sha256",
-    "checksum": "ffd195bd567dbaffc3b98b23fd00aad0537680c9896171e44fe3ff79e28ac33d",
+    "checksum": "b67ba0383ef7e8a8563734e2e889ef5ec3c3b898a01d00fa0a6869ad81c6ce01",
     "uris": [
-      "http://www.mpfr.org/mpfr-4.1.1/mpfr-4.1.1.tar.xz",
-      "https://sources.buildroot.net/mpfr/mpfr-4.1.1.tar.xz",
-      "https://sources.buildroot.net/mpfr-4.1.1.tar.xz"
+      "http://www.mpfr.org/mpfr-4.2.2/mpfr-4.2.2.tar.xz",
+      "https://sources.buildroot.net/mpfr/mpfr-4.2.2.tar.xz",
+      "https://sources.buildroot.net/mpfr-4.2.2.tar.xz"
     ]
   },
-  "mtools-4.0.48.tar.lz": {
+  "mtools-4.0.49.tar.lz": {
     "algo": "sha256",
-    "checksum": "7d57f14a2482dc4658e4b386180793ef50f0de89ee3a9a28f0a371630baac7c4",
+    "checksum": "76dfea98d923dfc9806ce34bd1786aa9b5a39d70f56f26c0670a348c664f1d2a",
     "uris": [
-      "https://ftpmirror.gnu.org/mtools/mtools-4.0.48.tar.lz",
-      "https://sources.buildroot.net/mtools/mtools-4.0.48.tar.lz",
-      "https://sources.buildroot.net/mtools-4.0.48.tar.lz"
+      "https://ftpmirror.gnu.org/mtools/mtools-4.0.49.tar.lz",
+      "https://sources.buildroot.net/mtools/mtools-4.0.49.tar.lz",
+      "https://sources.buildroot.net/mtools-4.0.49.tar.lz"
     ]
   },
   "ncurses-6.6-20251231.tar.gz": {
@@ -628,13 +655,13 @@
       "https://sources.buildroot.net/nettle-3.10.2.tar.gz"
     ]
   },
-  "newt-0.52.23.tar.gz": {
+  "newt-0.52.25.tar.gz": {
     "algo": "sha512",
-    "checksum": "c845d03946f72a6b46301152d7dc308f71d17b03d255d73d02ea7deb5392e22522dc8504f941fcffe5309c6c10f1b56742dac8585a16b0dc7e0c463f18871dda",
+    "checksum": "23f239ff599f63fdfec83ba32256a4b4e081d84fe7844a32a9770a0776df7e200315f794d031bca0f7c3526a9730fb3f62973bad40bf96618de6e336e97a8096",
     "uris": [
-      "https://pagure.io/releases/newt/newt-0.52.23.tar.gz",
-      "https://sources.buildroot.net/newt/newt-0.52.23.tar.gz",
-      "https://sources.buildroot.net/newt-0.52.23.tar.gz"
+      "https://releases.pagure.org/newt/newt-0.52.25.tar.gz",
+      "https://sources.buildroot.net/newt/newt-0.52.25.tar.gz",
+      "https://sources.buildroot.net/newt-0.52.25.tar.gz"
     ]
   },
   "ninja-1.13.2.tar.gz": {
@@ -655,31 +682,40 @@
       "https://sources.buildroot.net/ntp-4.2.8p18.tar.gz"
     ]
   },
-  "openssh-10.2p1.tar.gz": {
+  "openssh-10.6p1.tar.gz": {
     "algo": "sha256",
-    "checksum": "ccc42c0419937959263fa1dbd16dafc18c56b984c03562d2937ce56a60f798b2",
+    "checksum": "a9dc9565dffe8640f64d863cd29a32bc4a3dbdec0566a7fc44c5d6ee767d5f39",
     "uris": [
-      "http://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-10.2p1.tar.gz",
-      "https://sources.buildroot.net/openssh/openssh-10.2p1.tar.gz",
-      "https://sources.buildroot.net/openssh-10.2p1.tar.gz"
+      "https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-10.6p1.tar.gz",
+      "https://sources.buildroot.net/openssh/openssh-10.6p1.tar.gz",
+      "https://sources.buildroot.net/openssh-10.6p1.tar.gz"
     ]
   },
-  "openssl-3.6.1.tar.gz": {
+  "openssl-3.6.5.tar.gz": {
     "algo": "sha256",
-    "checksum": "b1bfedcd5b289ff22aee87c9d600f515767ebf45f77168cb6d64f231f518a82e",
+    "checksum": "a2157c2830efdec3788939b00c9b0638306d3f0bbb76dc4832ee503bb397df98",
     "uris": [
-      "https://github.com/openssl/openssl/releases/download/openssl-3.6.1/openssl-3.6.1.tar.gz",
-      "https://sources.buildroot.net/libopenssl/openssl-3.6.1.tar.gz",
-      "https://sources.buildroot.net/openssl-3.6.1.tar.gz"
+      "https://github.com/openssl/openssl/releases/download/openssl-3.6.5/openssl-3.6.5.tar.gz",
+      "https://sources.buildroot.net/libopenssl/openssl-3.6.5.tar.gz",
+      "https://sources.buildroot.net/openssl-3.6.5.tar.gz"
     ]
   },
-  "packaging-25.0.tar.gz": {
+  "p11-kit-0.26.2.tar.xz": {
     "algo": "sha256",
-    "checksum": "d443872c98d677bf60f6a1f2f8c1cb748e8fe762d2bf9d3148b5599295b0fc4f",
+    "checksum": "09fd9f44da4813a3141e73d5e7cf7008e5660d0405f13d56c15e1da9dcecf828",
     "uris": [
-      "https://files.pythonhosted.org/packages/a1/d4/1fc4078c65507b51b96ca8f8c3ba19e6a61c8253c72794544580a7b6c24d/packaging-25.0.tar.gz",
-      "https://sources.buildroot.net/python-packaging/packaging-25.0.tar.gz",
-      "https://sources.buildroot.net/packaging-25.0.tar.gz"
+      "https://github.com/p11-glue/p11-kit/releases/download/0.26.2/p11-kit-0.26.2.tar.xz",
+      "https://sources.buildroot.net/p11-kit/p11-kit-0.26.2.tar.xz",
+      "https://sources.buildroot.net/p11-kit-0.26.2.tar.xz"
+    ]
+  },
+  "packaging-26.2.tar.gz": {
+    "algo": "sha256",
+    "checksum": "ff452ff5a3e828ce110190feff1178bb1f2ea2281fa2075aadb987c2fb221661",
+    "uris": [
+      "https://files.pythonhosted.org/packages/d7/f1/e7a6dd94a8d4a5626c03e4e99c87f241ba9e350cd9e6d75123f992427270/packaging-26.2.tar.gz",
+      "https://sources.buildroot.net/python-packaging/packaging-26.2.tar.gz",
+      "https://sources.buildroot.net/packaging-26.2.tar.gz"
     ]
   },
   "patchelf-0.13.tar.bz2": {
@@ -691,13 +727,13 @@
       "https://sources.buildroot.net/patchelf-0.13.tar.bz2"
     ]
   },
-  "pcre2-10.47.tar.bz2": {
+  "pcre2-10.49.tar.bz2": {
     "algo": "sha256",
-    "checksum": "47fe8c99461250d42f89e6e8fdaeba9da057855d06eb7fc08d9ca03fd08d7bc7",
+    "checksum": "53c156e1ba416a20da8e65395daa132da0d80e76910424caca3fcdae7831d384",
     "uris": [
-      "https://github.com/PCRE2Project/pcre2/releases/download/pcre2-10.47/pcre2-10.47.tar.bz2",
-      "https://sources.buildroot.net/pcre2/pcre2-10.47.tar.bz2",
-      "https://sources.buildroot.net/pcre2-10.47.tar.bz2"
+      "https://github.com/PCRE2Project/pcre2/releases/download/pcre2-10.49/pcre2-10.49.tar.bz2",
+      "https://sources.buildroot.net/pcre2/pcre2-10.49.tar.bz2",
+      "https://sources.buildroot.net/pcre2-10.49.tar.bz2"
     ]
   },
   "pefile-2024.8.26.tar.gz": {
@@ -772,13 +808,22 @@
       "https://sources.buildroot.net/slang-2.3.3.tar.bz2"
     ]
   },
-  "sudo-1.9.17p1.tar.gz": {
+  "speexdsp-1.2.1.tar.gz": {
     "algo": "sha256",
-    "checksum": "ff607ea717072197738a78f778692cd6df9a7e3e404565f51de063ca27455d32",
+    "checksum": "8c777343e4a6399569c72abc38a95b24db56882c83dbdb6c6424a5f4aeb54d3d",
     "uris": [
-      "https://www.sudo.ws/sudo/dist/sudo-1.9.17p1.tar.gz",
-      "https://sources.buildroot.net/sudo/sudo-1.9.17p1.tar.gz",
-      "https://sources.buildroot.net/sudo-1.9.17p1.tar.gz"
+      "https://downloads.xiph.org/releases/speex/speexdsp-1.2.1.tar.gz",
+      "https://sources.buildroot.net/speexdsp/speexdsp-1.2.1.tar.gz",
+      "https://sources.buildroot.net/speexdsp-1.2.1.tar.gz"
+    ]
+  },
+  "sudo-1.9.17p2.tar.gz": {
+    "algo": "sha256",
+    "checksum": "4a38a1ab3adb1199257edc2a7c4a2bd714665eb605b04368843b06dada2cfcfb",
+    "uris": [
+      "https://www.sudo.ws/sudo/dist/sudo-1.9.17p2.tar.gz",
+      "https://sources.buildroot.net/sudo/sudo-1.9.17p2.tar.gz",
+      "https://sources.buildroot.net/sudo-1.9.17p2.tar.gz"
     ]
   },
   "swugenerator-0.6.tar.gz": {
@@ -790,103 +835,112 @@
       "https://sources.buildroot.net/swugenerator-0.6.tar.gz"
     ]
   },
-  "swupdate-2025.05.tar.gz": {
+  "swupdate-2026.05.1.tar.gz": {
     "algo": "sha256",
-    "checksum": "678b47fd2419727c4d0abf5c9f3bc0dc4b67e95951132bd1c8f5603e88947779",
+    "checksum": "26236a354e8cf21806d20a76728b3805ae49c23cfb2eb794fe91d1f0b280298e",
     "uris": [
-      "https://github.com/sbabic/swupdate/archive/2025.05/swupdate-2025.05.tar.gz",
-      "https://sources.buildroot.net/swupdate/swupdate-2025.05.tar.gz",
-      "https://sources.buildroot.net/swupdate-2025.05.tar.gz"
+      "https://github.com/sbabic/swupdate/archive/2026.05.1/swupdate-2026.05.1.tar.gz",
+      "https://sources.buildroot.net/swupdate/swupdate-2026.05.1.tar.gz",
+      "https://sources.buildroot.net/swupdate-2026.05.1.tar.gz"
     ]
   },
-  "systemd-258.4.tar.gz": {
+  "systemd-258.7.tar.gz": {
     "algo": "sha256",
-    "checksum": "5c95e54e555b21594ab11e76f91a092c6383553ed725292eb0a929bf2fe028ae",
+    "checksum": "6bd311c25f00d634ae3b4544d582e27df0d4166e6ba3d403b18b3129d7f44cae",
     "uris": [
-      "https://github.com/systemd/systemd/archive/v258.4/systemd-258.4.tar.gz",
-      "https://sources.buildroot.net/systemd/systemd-258.4.tar.gz",
-      "https://sources.buildroot.net/systemd-258.4.tar.gz"
+      "https://github.com/systemd/systemd/archive/v258.7/systemd-258.7.tar.gz",
+      "https://sources.buildroot.net/systemd/systemd-258.7.tar.gz",
+      "https://sources.buildroot.net/systemd-258.7.tar.gz"
     ]
   },
-  "tmux-3.6a.tar.gz": {
+  "tmux-3.6b.tar.gz": {
     "algo": "sha256",
-    "checksum": "b6d8d9c76585db8ef5fa00d4931902fa4b8cbe8166f528f44fc403961a3f3759",
+    "checksum": "390759d25fdba016887ec982b808927e637070fd7d03a8021f8ef3102b9ae3c7",
     "uris": [
-      "https://github.com/tmux/tmux/releases/download/3.6a/tmux-3.6a.tar.gz",
-      "https://sources.buildroot.net/tmux/tmux-3.6a.tar.gz",
-      "https://sources.buildroot.net/tmux-3.6a.tar.gz"
+      "https://github.com/tmux/tmux/releases/download/3.6b/tmux-3.6b.tar.gz",
+      "https://sources.buildroot.net/tmux/tmux-3.6b.tar.gz",
+      "https://sources.buildroot.net/tmux-3.6b.tar.gz"
     ]
   },
-  "tzcode2025c.tar.gz": {
+  "tzcode2026b.tar.gz": {
     "algo": "sha512",
-    "checksum": "d14bc0680b9cb33d6526a2c0e483f2abafc2593cfe5fbfe7dcab940aafdc1baaec065dbaa1bb58b03586a8631ffdf43ebb22ff5a70503298b6ea2cf061d82c16",
+    "checksum": "55b44d52a83c9db151be32c3d78376ea7f9d4311ef15ed6fe34b855b08fc546531e51309d178d9c175a6d5d7d0b058440e45a55d200ca8925e3798dac9bc739f",
     "uris": [
-      "https://www.iana.org/time-zones/repository/releases/tzcode2025c.tar.gz",
-      "https://sources.buildroot.net/zic/tzcode2025c.tar.gz",
-      "https://sources.buildroot.net/tzcode2025c.tar.gz"
+      "https://www.iana.org/time-zones/repository/releases/tzcode2026b.tar.gz",
+      "https://sources.buildroot.net/zic/tzcode2026b.tar.gz",
+      "https://sources.buildroot.net/tzcode2026b.tar.gz"
     ]
   },
-  "tzdata2025c.tar.gz": {
+  "tzdata2026e.tar.gz": {
     "algo": "sha512",
-    "checksum": "1e33f7212fd0ae2ad3c16e68f0c1fc7a6ad26a126b8406c379a5768d79604c6a816054bd0fe3a63228d70cd6a1fc2b1bae2a9f8014e102d3727eb9d21affa1f1",
+    "checksum": "5be2f875f73b75e5783c474bf7a6c768e433cc90283f8fc6a75e3d05bd92aec97936e8a55ccca5e880b5dacc18ba65932bab0e783e1ed5d2af4a3a4df95512be",
     "uris": [
-      "https://www.iana.org/time-zones/repository/releases/tzdata2025c.tar.gz",
-      "https://sources.buildroot.net/tzdata/tzdata2025c.tar.gz",
-      "https://sources.buildroot.net/tzdata2025c.tar.gz"
+      "https://www.iana.org/time-zones/repository/releases/tzdata2026e.tar.gz",
+      "https://sources.buildroot.net/tzdata/tzdata2026e.tar.gz",
+      "https://sources.buildroot.net/tzdata2026e.tar.gz"
     ]
   },
-  "u-boot-2026.01.tar.bz2": {
+  "u-boot-2026.07.tar.bz2": {
     "algo": "sha256",
-    "checksum": "b60d5865cefdbc75da8da4156c56c458e00de75a49b80c1a2e58a96e30ad0d54",
+    "checksum": "78e8bfc382fe388f9b55aa1daf8c563522a037779b5d4c349d1415e381f1243e",
     "uris": [
-      "https://ftp.denx.de/pub/u-boot/u-boot-2026.01.tar.bz2",
-      "https://sources.buildroot.net/uboot/u-boot-2026.01.tar.bz2",
-      "https://sources.buildroot.net/u-boot-2026.01.tar.bz2"
+      "https://ftp.denx.de/pub/u-boot/u-boot-2026.07.tar.bz2",
+      "https://sources.buildroot.net/uboot/u-boot-2026.07.tar.bz2",
+      "https://sources.buildroot.net/u-boot-2026.07.tar.bz2"
     ]
   },
-  "util-linux-2.41.3.tar.xz": {
+  "util-linux-2.41.5.tar.xz": {
     "algo": "sha256",
-    "checksum": "3330d873f0fceb5560b89a7dc14e4f3288bbd880e96903ed9b50ec2b5799e58b",
+    "checksum": "f586e35d320ff537aab3ffeca37e9ecd482ccbe013590db4429a414d8aa6a728",
     "uris": [
-      "https://cdn.kernel.org/pub/linux/utils/util-linux/v2.41/util-linux-2.41.3.tar.xz",
-      "https://sources.buildroot.net/util-linux/util-linux-2.41.3.tar.xz",
-      "https://sources.buildroot.net/util-linux-2.41.3.tar.xz"
+      "https://cdn.kernel.org/pub/linux/utils/util-linux/v2.41/util-linux-2.41.5.tar.xz",
+      "https://sources.buildroot.net/util-linux/util-linux-2.41.5.tar.xz",
+      "https://sources.buildroot.net/util-linux-2.41.5.tar.xz"
     ]
   },
-  "vim-9.1.2148.tar.gz": {
+  "vim-9.2.0943.tar.gz": {
     "algo": "sha256",
-    "checksum": "f9ec31df8f1a78e130dd06c395e6626c2a8a8ec2705d8e7b7667bd3ecd499c6b",
+    "checksum": "9b90b23241007b20ba89b7b00e6202008f4ff5b5278974d42aa199867c2eada5",
     "uris": [
-      "https://github.com/vim/vim/archive/v9.1.2148/vim-9.1.2148.tar.gz",
-      "https://sources.buildroot.net/vim/vim-9.1.2148.tar.gz",
-      "https://sources.buildroot.net/vim-9.1.2148.tar.gz"
+      "https://github.com/vim/vim/archive/v9.2.0943/vim-9.2.0943.tar.gz",
+      "https://sources.buildroot.net/vim/vim-9.2.0943.tar.gz",
+      "https://sources.buildroot.net/vim-9.2.0943.tar.gz"
     ]
   },
-  "wheel-0.45.1.tar.gz": {
+  "wheel-0.47.0.tar.gz": {
     "algo": "sha256",
-    "checksum": "661e1abd9198507b1409a20c02106d9670b2576e916d58f520316666abca6729",
+    "checksum": "cc72bd1009ba0cf63922e28f94d9d83b920aa2bb28f798a31d0691b02fa3c9b3",
     "uris": [
-      "https://files.pythonhosted.org/packages/8a/98/2d9906746cdc6a6ef809ae6338005b3f21bb568bea3165cfc6a243fdc25c/wheel-0.45.1.tar.gz",
-      "https://sources.buildroot.net/python-wheel/wheel-0.45.1.tar.gz",
-      "https://sources.buildroot.net/wheel-0.45.1.tar.gz"
+      "https://files.pythonhosted.org/packages/39/62/75f18a0f03b4219c456652c7780e4d749b929eb605c098ce3a5b6b6bc081/wheel-0.47.0.tar.gz",
+      "https://sources.buildroot.net/python-wheel/wheel-0.47.0.tar.gz",
+      "https://sources.buildroot.net/wheel-0.47.0.tar.gz"
     ]
   },
-  "wpa_supplicant-2.11.tar.gz": {
+  "wireshark-4.4.19.tar.xz": {
     "algo": "sha256",
-    "checksum": "912ea06f74e30a8e36fbb68064d6cdff218d8d591db0fc5d75dee6c81ac7fc0a",
+    "checksum": "0499dddc0aeea500bc65196714e1e01097742efbc479a2d67a9a8b5dd57d6d04",
     "uris": [
-      "http://w1.fi/releases/wpa_supplicant-2.11.tar.gz",
-      "https://sources.buildroot.net/wpa_supplicant/wpa_supplicant-2.11.tar.gz",
-      "https://sources.buildroot.net/wpa_supplicant-2.11.tar.gz"
+      "https://www.wireshark.org/download/src/all-versions/wireshark-4.4.19.tar.xz",
+      "https://sources.buildroot.net/wireshark/wireshark-4.4.19.tar.xz",
+      "https://sources.buildroot.net/wireshark-4.4.19.tar.xz"
     ]
   },
-  "xz-5.8.1.tar.bz2": {
+  "wpa_supplicant-2.12.tar.gz": {
     "algo": "sha256",
-    "checksum": "5965c692c4c8800cd4b33ce6d0f6ac9ac9d6ab227b17c512b6561bce4f08d47e",
+    "checksum": "08e23937e16d0155e55cab2b51f51fbe10d80a1aa91c4e15442645059b737ef6",
     "uris": [
-      "https://github.com/tukaani-project/xz/releases/download/v5.8.1/xz-5.8.1.tar.bz2",
-      "https://sources.buildroot.net/xz/xz-5.8.1.tar.bz2",
-      "https://sources.buildroot.net/xz-5.8.1.tar.bz2"
+      "http://w1.fi/releases/wpa_supplicant-2.12.tar.gz",
+      "https://sources.buildroot.net/wpa_supplicant/wpa_supplicant-2.12.tar.gz",
+      "https://sources.buildroot.net/wpa_supplicant-2.12.tar.gz"
+    ]
+  },
+  "xz-5.8.4.tar.bz2": {
+    "algo": "sha256",
+    "checksum": "3340ae48f88665abc78d71dc43446fb3f7e70b48fd59844ac0e14958cef6e00b",
+    "uris": [
+      "https://github.com/tukaani-project/xz/releases/download/v5.8.4/xz-5.8.4.tar.bz2",
+      "https://sources.buildroot.net/xz/xz-5.8.4.tar.bz2",
+      "https://sources.buildroot.net/xz-5.8.4.tar.bz2"
     ]
   },
   "yaml-0.2.5.tar.gz": {

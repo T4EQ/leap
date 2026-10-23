@@ -39,6 +39,7 @@ let
       expat.dev
       python3
       xxd
+      iconv.dev
 
     ];
 in
@@ -76,8 +77,8 @@ in
             src = pkgs.fetchFromGitLab {
               owner = "buildroot.org";
               repo = "buildroot";
-              rev = "2026.02";
-              hash = "sha256-rzi1p2xi4k33b6mMJB/DDhaTQmUnHAzkx9qRYHKuGVI=";
+              rev = "2026.08.1";
+              hash = "sha256-WSWIsAR+Mr4CLO/XSR5udWD44NqoRpsmLQy9sDofVa4=";
             };
 
             externalSrc = leapBuildrootSrc;

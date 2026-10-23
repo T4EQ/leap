@@ -2,7 +2,6 @@
 
 use googletest::OrFail as _;
 use googletest::prelude::*;
-use http::Uri;
 use leap_server::cfg::DbConfig;
 use leap_server::cfg::DownloaderConfig;
 use leap_server::cfg::LeapConfig;
@@ -19,7 +18,7 @@ static EXPECTED_CONFIG: LazyLock<LeapConfig> = LazyLock::new(|| LeapConfig {
     downloader_config: DownloaderConfig {
         concurrent_downloads: 8,
         content_path: PathBuf::from_str("/tmp/leap/content_path").unwrap(),
-        remote_server: Uri::from_static("s3://bucket"),
+        remote_server: url::Url::from_str("s3://bucket").unwrap(),
         update_interval: Duration::from_secs(20),
         retry_params: RetryParams {
             initial_backoff: Duration::from_secs(5),

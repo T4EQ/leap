@@ -2636,10 +2636,10 @@ name = "leap-api"
 version = "0.2.0"
 dependencies = [
  "chrono",
- "http 1.5.0",
  "humantime-serde",
  "secrecy",
  "serde",
+ "url",
 ]
 
 [[package]]
@@ -2690,7 +2690,6 @@ dependencies = [
  "diesel_migrations",
  "dotenvy",
  "googletest",
- "http 1.5.0",
  "humantime-serde",
  "leap-api",
  "libsqlite3-sys",
@@ -2714,6 +2713,7 @@ dependencies = [
  "tracing-actix-web",
  "tracing-bunyan-formatter",
  "tracing-subscriber",
+ "url",
  "uuid",
 ]
 
@@ -2776,9 +2776,9 @@ dependencies = [
 
 [[package]]
 name = "libz-sys"
-version = "1.1.30"
+version = "1.1.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f710a23e6dbf193214fd46ca56a9d6864e550abe86202184532ae7275e46de19"
+checksum = "ff20308ecabd635a2dc1dd5834a86c462cca20efba1d5d3ddab1f8aea3455cb2"
 dependencies = [
  "cc",
  "libc",
@@ -4665,6 +4665,7 @@ dependencies = [
  "idna",
  "percent-encoding",
  "serde",
+ "serde_derive",
 ]
 
 [[package]]

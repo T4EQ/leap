@@ -2658,10 +2658,10 @@ name = "leap-api"
 version = "0.2.0"
 dependencies = [
  "chrono",
- "http 1.5.0",
  "humantime-serde",
  "secrecy",
  "serde",
+ "url",
 ]
 
 [[package]]
@@ -2712,7 +2712,6 @@ dependencies = [
  "diesel_migrations",
  "dotenvy",
  "googletest",
- "http 1.5.0",
  "humantime-serde",
  "leap-api",
  "libsqlite3-sys",
@@ -2736,6 +2735,7 @@ dependencies = [
  "tracing-actix-web",
  "tracing-bunyan-formatter",
  "tracing-subscriber",
+ "url",
  "uuid",
 ]
 
@@ -4684,6 +4684,7 @@ dependencies = [
  "idna",
  "percent-encoding",
  "serde",
+ "serde_derive",
 ]
 
 [[package]]

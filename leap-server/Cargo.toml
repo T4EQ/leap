@@ -29,7 +29,6 @@ deadpool-diesel.workspace = true
 diesel.workspace = true
 diesel_migrations.workspace = true
 dotenvy.workspace = true
-http.workspace = true
 humantime-serde.workspace = true
 leap-api.workspace = true
 libsqlite3-sys.workspace = true
@@ -48,6 +47,7 @@ tracing-actix-web.workspace = true
 tracing-bunyan-formatter.workspace = true
 tracing-subscriber.workspace = true
 tracing.workspace = true
+url.workspace = true
 uuid.workspace = true
 rstest.workspace = true
 

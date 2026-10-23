@@ -3,7 +3,6 @@
 //!   guaranteed randomized directories.
 
 use googletest::prelude::*;
-use http::Uri;
 use leap_server::{
     cfg::{DbConfig, DownloaderConfig, LeapConfig, RetryParams, S3Config},
     manifest::{self},
@@ -58,7 +57,7 @@ impl TestResources {
             downloader_config: DownloaderConfig {
                 concurrent_downloads: 1,
                 content_path: self.content_path(),
-                remote_server: Uri::from_str(uri).or_fail()?,
+                remote_server: url::Url::from_str(uri).or_fail()?,
                 // By default no automatic update of the manifest, leave it up to the test to trigger
                 // updates.
                 update_interval: Duration::MAX,
@@ -118,7 +117,7 @@ impl TestResources {
             id,
             name: name.to_owned(),
             file_size: data.len().try_into().or_fail()?,
-            uri: Uri::from_str(uri).or_fail()?,
+            uri: url::Url::from_str(uri).or_fail()?,
             sha256,
         };
 

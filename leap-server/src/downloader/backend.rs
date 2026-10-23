@@ -35,7 +35,7 @@ pub trait Backend: Sync + Send {
     /// `Err(crate::downloader::Error::IoError(..))` in the stream.
     fn fetch_resource<'a, 'b>(
         &'a self,
-        uri: &'b http::Uri,
+        uri: &'b url::Url,
     ) -> Pin<Box<dyn Stream<Item = ChunkResult> + Send + 'a>>
     where
         'b: 'a;
@@ -82,14 +82,15 @@ impl Backend for FileBackend {
     /// in the stream.
     fn fetch_resource<'a, 'b>(
         &'a self,
-        uri: &'b http::Uri,
+        uri: &'b url::Url,
     ) -> Pin<Box<dyn Stream<Item = ChunkResult> + Send + 'a>>
     where
         'b: 'a,
     {
         Box::pin(stream! {
-            let relpath = uri.path().trim_start_matches(std::path::MAIN_SEPARATOR);
-            let path = self.base_path.join(relpath);
+            let encoded_relpath = uri.path().trim_start_matches(std::path::MAIN_SEPARATOR);
+            let relpath = percent_encoding::percent_decode_str(encoded_relpath).decode_utf8_lossy();
+            let path = self.base_path.join(&*relpath);
             let mut file = tokio::fs::File::open(path).await?;
 
             loop {
@@ -117,24 +118,22 @@ impl Backend for FileBackend {
 
 #[cfg(test)]
 mod test {
-    use googletest::OrFail;
-    use http::Uri;
-
     use super::*;
-
+    use googletest::OrFail;
+    use std::str::FromStr;
     use tokio_stream::StreamExt;
 
     #[googletest::test]
     #[tokio::test]
     async fn read_resource_using_file_backend() -> googletest::Result<()> {
         let temp_dir = tempfile::TempDir::new().or_fail()?;
-        let resource_filepath = temp_dir.path().join("video.mp4");
+        let resource_filepath = temp_dir.path().join("a video.mp4");
         let v = vec![123; 8321];
 
         std::fs::write(&resource_filepath, &v[..]).or_fail()?;
 
         let backend = FileBackend::new(temp_dir.path());
-        let uri = Uri::from_static("/video.mp4");
+        let uri = url::Url::from_str("file:///a%20video.mp4").or_fail()?;
         let mut stream = backend.fetch_resource(&uri);
 
         let mut n_chunks = 0;

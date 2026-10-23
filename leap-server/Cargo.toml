@@ -29,12 +29,13 @@ deadpool-diesel.workspace = true
 diesel.workspace = true
 diesel_migrations.workspace = true
 dotenvy.workspace = true
-http.workspace = true
 humantime-serde.workspace = true
 leap-api.workspace = true
 libsqlite3-sys.workspace = true
 nix.workspace = true
+percent-encoding.workspace = true
 regex.workspace = true
+rstest.workspace = true
 secrecy.workspace = true
 serde.workspace = true
 serde_json.workspace = true
@@ -48,8 +49,8 @@ tracing-actix-web.workspace = true
 tracing-bunyan-formatter.workspace = true
 tracing-subscriber.workspace = true
 tracing.workspace = true
+url.workspace = true
 uuid.workspace = true
-rstest.workspace = true
 
 [dev-dependencies]
 googletest.workspace = true

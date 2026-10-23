@@ -1,46 +1,7 @@
 //! Common data types used by the APIs
 //!
-use http::Uri;
 use secrecy::{ExposeSecret, SecretString};
 use std::{fmt::Display, net::Ipv4Addr};
-
-mod parse_uri {
-    //! Parses an [`http::Uri`] type using serde
-
-    use http::Uri;
-
-    pub fn deserialize<'de, D: serde::Deserializer<'de>>(
-        d: D,
-    ) -> std::result::Result<Uri, D::Error> {
-        d.deserialize_str(Visitor {})
-    }
-
-    pub fn serialize<S>(data: &Uri, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        let s = format!("{data}");
-        serializer.serialize_str(&s)
-    }
-
-    struct Visitor {}
-
-    impl<'de> serde::de::Visitor<'de> for Visitor {
-        type Value = Uri;
-
-        fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-            writeln!(formatter, "A valid URI")
-        }
-
-        fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
-        where
-            E: serde::de::Error,
-        {
-            v.try_into()
-                .map_err(|e| E::custom(format!("{v} is an invalid URI: {e}")))
-        }
-    }
-}
 
 pub fn serialize_secret_str<S>(data: &SecretString, serializer: S) -> Result<S::Ok, S::Error>
 where
@@ -151,8 +112,7 @@ pub struct DownloaderConfig {
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct S3Config {
     /// URI of the bucket
-    #[serde(with = "parse_uri")]
-    pub bucket: Uri,
+    pub bucket: url::Url,
 
     /// Access key ID.
     #[serde(serialize_with = "serialize_secret_str")]

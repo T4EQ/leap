@@ -320,7 +320,7 @@ pub fn leap_config_page() -> Html {
                 <p class="connection-notice">{"The device will check the connection. You may briefly lose contact."}</p>
             }
             if *state == LeapConfigState::Reconnecting {
-                <p class="reconnect-notice">{"Waiting for LEAP to reconnect. This may take up to a minute…"}</p>
+                <p class="reconnect-notice">{"Waiting for LEAP to reconnect. This may take a couple of minutes…"}</p>
             }
 
             <p class="qr-privacy"><LockIcon/>{"Do not share your QR code."}</p>

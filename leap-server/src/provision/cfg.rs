@@ -89,7 +89,7 @@ pub async fn provision_configuration(
             let bucket = config
                 .downloader_config
                 .remote_server
-                .host()
+                .host_str()
                 .ok_or_else(|| {
                     tracing::error!("Invalid S3 URI");
                     anyhow::anyhow!("S3 URI must specify a bucket name")

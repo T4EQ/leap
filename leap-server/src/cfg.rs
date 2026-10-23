@@ -33,7 +33,6 @@ use std::path::{Path, PathBuf};
 
 use anyhow::{Context, Result};
 use config::Config;
-use http::Uri;
 use secrecy::{ExposeSecret, SecretString};
 
 /// Default location of the LEAP configuration file. The assumption is that `/var/lib/leap` is a
@@ -94,8 +93,7 @@ pub struct DownloaderConfig {
     pub content_path: PathBuf,
 
     /// URI of the remote server providing the manifest and content cached by the LEAP.
-    #[serde(with = "parse_uri")]
-    pub remote_server: Uri,
+    pub remote_server: url::Url,
 
     /// The interval at which the remote is queried for new content.
     #[serde(with = "humantime_serde")]
@@ -205,40 +203,4 @@ pub fn get_config(path: &Path) -> Result<LeapConfig> {
     config
         .try_deserialize()
         .context("Deserializing the configuration as LeapConfig")
-}
-
-mod parse_uri {
-    use http::Uri;
-
-    pub fn deserialize<'de, D: serde::Deserializer<'de>>(
-        d: D,
-    ) -> std::result::Result<Uri, D::Error> {
-        d.deserialize_str(Visitor {})
-    }
-
-    pub fn serialize<S>(data: &Uri, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        let s = format!("{data}");
-        serializer.serialize_str(&s)
-    }
-
-    struct Visitor {}
-
-    impl<'de> serde::de::Visitor<'de> for Visitor {
-        type Value = Uri;
-
-        fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-            writeln!(formatter, "A valid URI")
-        }
-
-        fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
-        where
-            E: serde::de::Error,
-        {
-            v.try_into()
-                .map_err(|e| E::custom(format!("{v} is an invalid URI: {e}")))
-        }
-    }
 }

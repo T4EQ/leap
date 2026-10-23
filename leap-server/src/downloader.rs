@@ -157,23 +157,23 @@ pub async fn run_downloader(
 
     // The backend can be either a local file path or an S3 bucket. We allow local filepaths
     // for simple testing of the server.
-    let backend: Arc<dyn backend::Backend> = match config.remote_server.scheme_str() {
+    let backend: Arc<dyn backend::Backend> = match config.remote_server.scheme() {
         // If we don't have a scheme, we assume it is a file path
-        None | Some("file") => {
+        "file" => {
             let path: PathBuf = config.remote_server.path().into();
             tracing::info!("Using file backend located at {path:?}");
             Arc::new(FileBackend::new(&path))
         }
-        Some("s3") => {
+        "s3" => {
             let bucket = config
                 .remote_server
-                .host()
+                .host_str()
                 .ok_or_else(|| anyhow::anyhow!("S3 URI must specify a bucket name"))?;
             tracing::info!("Using S3 backend with bucket: {bucket}");
 
             Arc::new(S3Backend::new(bucket, &s3_config).await?)
         }
-        Some(scheme) => {
+        scheme => {
             anyhow::bail!("Unknown remote server URI scheme: {scheme}");
         }
     };

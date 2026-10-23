@@ -355,7 +355,6 @@ pub mod test {
     };
 
     use googletest::prelude::*;
-    use http::Uri;
 
     use super::*;
 
@@ -483,7 +482,7 @@ pub mod test {
                 backoff_factor: 1.0,
                 max_backoff: Duration::from_millis(100),
             },
-            remote_server: "/Invalid".try_into().unwrap(),
+            remote_server: "s3://Invalid".try_into().unwrap(),
             update_interval: Duration::from_secs(300),
         });
 
@@ -514,7 +513,7 @@ pub mod test {
     }
 
     struct BackendFile {
-        uri: Uri,
+        uri: url::Url,
         content: Vec<u8>,
     }
 
@@ -541,7 +540,7 @@ pub mod test {
     impl Backend for DummyBackend {
         fn fetch_resource<'a, 'b>(
             &'a self,
-            uri: &'b http::Uri,
+            uri: &'b url::Url,
         ) -> std::pin::Pin<Box<dyn tokio_stream::Stream<Item = backend::ChunkResult> + Send + 'a>>
         where
             'b: 'a,
@@ -721,7 +720,7 @@ pub mod test {
         let ctx = create_context().await;
         let name = "Quadratic equations".to_string();
         let id = uuid::Uuid::from_str("5eb9e089-79cf-478d-9121-9ca3e7bb1d4a").or_fail()?;
-        let uri: Uri = "s3://bucket/quadratic-equations.mp4".parse().or_fail()?;
+        let uri: url::Url = "s3://bucket/quadratic-equations.mp4".parse().or_fail()?;
 
         ctx.dummy_backend
             .add_file(BackendFile {
@@ -782,7 +781,7 @@ pub mod test {
         let ctx = create_context().await;
         let name = "Quadratic equations".to_string();
         let id = uuid::Uuid::from_str("5eb9e089-79cf-478d-9121-9ca3e7bb1d4a").or_fail()?;
-        let uri: Uri = "s3://bucket/quadratic-equations.mp4".parse().or_fail()?;
+        let uri: url::Url = "s3://bucket/quadratic-equations.mp4".parse().or_fail()?;
 
         ctx.dummy_backend
             .add_file(BackendFile {

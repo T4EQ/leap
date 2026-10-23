@@ -10,10 +10,10 @@
         }
     },
     "s3_config": {
-        "bucket": "s3://your-bucket-name",
-        "access_key_id": "your-access-key-id",
-        "secret_access_key": "your-secret-access-key",
-        "endpoint_url": "https://your-endpoint-url.com",
+        "bucket": "s3://vds-test-bucket",
+        "access_key_id": "B9HOFYEF37EHH6X00BSW",
+        "secret_access_key": "LrEIpnir6qjddMY0R3wigRnoKnnO3q6EibRT4t1T",
+        "endpoint_url": "https://storage.allthingsembedded.online",
         "force_path_style": true,
         "region": "us-east-1"
     }

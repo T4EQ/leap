@@ -99,9 +99,7 @@ pub struct Video {
     pub id: uuid::Uuid,
 
     /// Unique resource identifier from which the video can be downloaded
-    #[serde(deserialize_with = "deserialize_uri")]
-    #[serde(serialize_with = "serialize_uri")]
-    pub uri: http::Uri,
+    pub uri: url::Url,
 
     /// SHA-256 of the video file
     pub sha256: Sha256,
@@ -134,21 +132,6 @@ pub struct ManifestFile {
 
     /// Sections in the manifest. Ordered as displayed
     pub sections: Vec<Section>,
-}
-
-fn serialize_uri<S>(uri: &http::Uri, serializer: S) -> Result<S::Ok, S::Error>
-where
-    S: serde::Serializer,
-{
-    let s = uri.to_string();
-    serializer.serialize_str(&s)
-}
-
-fn deserialize_uri<'de, D>(deserializer: D) -> Result<http::Uri, D::Error>
-where
-    D: serde::Deserializer<'de>,
-{
-    deserializer.deserialize_str(uri::Visitor {})
 }
 
 impl<'de> serde::Deserialize<'de> for Version {
@@ -184,25 +167,6 @@ impl serde::Serialize for Sha256 {
         S: serde::Serializer,
     {
         serializer.serialize_str(self)
-    }
-}
-
-mod uri {
-    pub struct Visitor {}
-
-    impl<'de> serde::de::Visitor<'de> for Visitor {
-        type Value = http::Uri;
-
-        fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-            formatter.write_str("A URI")
-        }
-
-        fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
-        where
-            E: serde::de::Error,
-        {
-            v.parse().map_err(E::custom)
-        }
     }
 }
 

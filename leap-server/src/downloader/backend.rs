@@ -35,7 +35,7 @@ pub trait Backend: Sync + Send {
     /// `Err(crate::downloader::Error::IoError(..))` in the stream.
     fn fetch_resource<'a, 'b>(
         &'a self,
-        uri: &'b http::Uri,
+        uri: &'b url::Url,
     ) -> Pin<Box<dyn Stream<Item = ChunkResult> + Send + 'a>>
     where
         'b: 'a;
@@ -82,7 +82,7 @@ impl Backend for FileBackend {
     /// in the stream.
     fn fetch_resource<'a, 'b>(
         &'a self,
-        uri: &'b http::Uri,
+        uri: &'b url::Url,
     ) -> Pin<Box<dyn Stream<Item = ChunkResult> + Send + 'a>>
     where
         'b: 'a,
@@ -117,11 +117,9 @@ impl Backend for FileBackend {
 
 #[cfg(test)]
 mod test {
-    use googletest::OrFail;
-    use http::Uri;
-
     use super::*;
-
+    use googletest::OrFail;
+    use std::str::FromStr;
     use tokio_stream::StreamExt;
 
     #[googletest::test]
@@ -134,7 +132,7 @@ mod test {
         std::fs::write(&resource_filepath, &v[..]).or_fail()?;
 
         let backend = FileBackend::new(temp_dir.path());
-        let uri = Uri::from_static("/video.mp4");
+        let uri = url::Url::from_str("file:///video.mp4").or_fail()?;
         let mut stream = backend.fetch_resource(&uri);
 
         let mut n_chunks = 0;

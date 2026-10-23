@@ -196,9 +196,10 @@ impl Backend for S3Backend {
         'b: 'a,
     {
         Box::pin(stream! {
-            let key = uri.path().trim_start_matches('/');
+            let key = uri.path().trim_start_matches(std::path::MAIN_SEPARATOR);
+            let key = percent_encoding::percent_decode_str(key).decode_utf8_lossy();
 
-            let object = match self.get_s3_object(key).await {
+            let object = match self.get_s3_object(&key).await {
                 Ok(obj) => {
                     tracing::info!("Successfully initiated download of s3://{}/{}", self.bucket, key);
                     obj

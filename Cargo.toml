@@ -38,6 +38,7 @@ image = { version = "0.25.10", default-features = false, features = ["png", "jpe
 libsqlite3-sys = { version = "0.38", features = ["bundled"] }
 log = "0.4"
 nix = { version = "0.31.2", features = ["mount", "reboot", "fs"] }
+percent-encoding = "2.3.2"
 qrcode = { version = "0.14", default-features = false }
 quircs = "0.10"
 rand = "0.10.2"

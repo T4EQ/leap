@@ -239,10 +239,10 @@ mod sha256 {
 
 #[cfg(test)]
 pub mod test {
-    use std::str::FromStr;
-
     use super::*;
     use googletest::prelude::*;
+    use rstest::rstest;
+    use std::str::FromStr;
 
     pub fn new_version(major: u32, minor: u32, revision: u32) -> Version {
         Version {
@@ -339,29 +339,42 @@ pub mod test {
         Ok(())
     }
 
+    /// Spaces must be allowed in the path component of the url. This is not strict with the URI
+    /// format, but makes it more ergonomic for consumers to use any video names, as well as reuse
+    /// the s3 URI given as links by amazon, which contain spaces.
+    #[rstest]
+    #[case::percent_encoded_url("s3://bucket/a%20video.mp4")]
+    #[case::url_with_spaces("s3://bucket/a video.mp4")]
     #[googletest::gtest]
-    fn deserialize_video() -> googletest::Result<()> {
-        let serialized = r#"{
+    fn deserialize_video(#[case] url: &str) -> googletest::Result<()> {
+        let serialized = format!(
+            r#"{{
             "name": "Linear equations",
             "id": "bf978778-1c5d-44b3-b2c1-1cc253563799",
-            "uri": "s3://bucket/linear-equations.mp4",
+            "uri": "{url}",
             "sha256": "0b88b2dec2be5e2ef74022ef6a8023232e28374d67e917b76f9bb607e691f327",
             "file_size": 123456
-        }"#;
+        }}"#
+        );
 
-        let video: Video = serde_json::from_str(serialized).unwrap();
+        let video: Video = serde_json::from_str(&serialized).unwrap();
         expect_that!(
             video,
             eq(&Video {
                 name: "Linear equations".to_string(),
                 id: uuid::Uuid::from_str("bf978778-1c5d-44b3-b2c1-1cc253563799").or_fail()?,
-                uri: "s3://bucket/linear-equations.mp4".parse().or_fail()?,
+                uri: "s3://bucket/a%20video.mp4".parse().or_fail()?,
                 sha256: Sha256(
                     "0b88b2dec2be5e2ef74022ef6a8023232e28374d67e917b76f9bb607e691f327".to_string()
                 ),
                 file_size: 123456,
             })
         );
+
+        // check the returned URI components
+        expect_that!(video.uri.host_str(), some(eq("bucket")));
+        expect_eq!(video.uri.scheme(), "s3");
+        expect_eq!(video.uri.path(), "/a%20video.mp4");
         Ok(())
     }
 

@@ -2694,6 +2694,7 @@ dependencies = [
  "leap-api",
  "libsqlite3-sys",
  "nix",
+ "percent-encoding",
  "rand",
  "regex",
  "reqwest",

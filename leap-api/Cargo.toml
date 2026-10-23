@@ -10,7 +10,7 @@ repository = "https://github.com/t4eq/leap"
 
 [dependencies]
 chrono.workspace = true
-http.workspace = true
 humantime-serde.workspace = true
 secrecy.workspace = true
 serde.workspace = true
+url.workspace = true

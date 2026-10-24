@@ -6,11 +6,14 @@ on:
     paths:
       - 'flake.lock'
       - 'leap-linux/**'
+      - '.github/workflows/linux.yaml'
   pull_request:
     branches: [ main ]
     paths:
       - 'flake.lock'
       - 'leap-linux/**'
+      - '.github/workflows/linux.yaml'
+  workflow_dispatch:
 
 env:
   CARGO_TERM_COLOR: always

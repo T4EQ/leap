@@ -82,7 +82,6 @@ in
             };
 
             externalSrc = leapBuildrootSrc;
-            patchSrc = ./patches;
             nativeBuildInputs = depsForBuildroot pkgs;
           };
         in

@@ -6,3 +6,4 @@ result
 /leap-linux/output
 .env
 /leap-linux/package/leap/src/leap-server
+*.swu

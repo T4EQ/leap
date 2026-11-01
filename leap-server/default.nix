@@ -15,6 +15,10 @@ top@{ inputs, ... }:
 
           cargoLock = {
             lockFile = ./../Cargo.lock;
+
+            outputHashes = {
+              "quircs-0.10.3" = "sha256-EfqYIk94LBmQOyROOOtbT6N13CkNv/dqlUK5/svRyX4=";
+            };
           };
 
           nativeBuildInputs = with pkgs; [

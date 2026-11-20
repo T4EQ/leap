@@ -200,7 +200,7 @@ impl Provision<LeapConfigStep> {
 
 impl Provision<CompleteStep> {
     /// Completes the provisioning process, triggering a reboot.
-    pub async fn finish(self) -> anyhow::Result<()> {
+    pub async fn finish(self) -> anyhow::Result<!> {
         // Save a record of the provisioning process
         tokio::fs::write(PROVISION_FILE_PATH, &serde_json::to_vec(&self.inner)?).await?;
 
@@ -358,7 +358,6 @@ impl DynProvision {
         match self.0.take() {
             Some(DynProvisionImpl::Complete(p)) => {
                 p.finish().await?;
-                unreachable!("Finish should have rebooted the system");
             }
             Some(v) => {
                 self.0.replace(v);

@@ -20,6 +20,7 @@ async-stream.workspace = true
 async-trait.workspace = true
 aws-config.workspace = true
 aws-sdk-s3.workspace = true
+base64.workspace = true
 jiff.workspace = true
 clap.workspace = true
 config.workspace = true
@@ -48,6 +49,7 @@ tracing-subscriber.workspace = true
 tracing.workspace = true
 url.workspace = true
 uuid.workspace = true
+itertools = "0.15.0"
 
 [dev-dependencies]
 googletest.workspace = true

@@ -64,6 +64,7 @@ pub mod downloader;
 pub mod manifest;
 #[cfg(feature = "provision")]
 pub mod provision;
+pub mod types;
 pub mod utils;
 
 mod api;

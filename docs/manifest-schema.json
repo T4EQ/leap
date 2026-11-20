@@ -42,7 +42,7 @@
                 },
                 "sha256": {
                     "type": "string",
-                    "description": "The SHA-256 hash of the video file."
+                    "description": "The base64 encoded SHA-256 hash of the video file."
                 },
                 "file_size": {
                     "type": "number",

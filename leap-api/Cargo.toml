@@ -5,7 +5,6 @@ edition = "2024"
 description = "Shared API used between frontend and backend of the LEAP project"
 license = "MIT OR Apache-2.0"
 authors = ["Javier Alvarez <javier.alvarez@allthingsembedded.net>", "Johannes Frohnhofen <johannes@frohnhofen.com>", "Sivaranjini Chithambaram <sichitha@microsoft.com>"]
-homepage = "https://github.com/t4eq/leap"
 repository = "https://github.com/t4eq/leap"
 
 [dependencies]

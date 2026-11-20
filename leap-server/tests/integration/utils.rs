@@ -5,7 +5,7 @@
 use googletest::prelude::*;
 use leap_server::{
     cfg::{DbConfig, DownloaderConfig, LeapConfig, RetryParams, S3Config},
-    manifest::{self},
+    manifest, types,
 };
 use sha2::Digest;
 use std::{
@@ -112,7 +112,7 @@ impl TestResources {
         let mut sha256_gen = sha2::Sha256::new();
         sha256_gen.update(&data);
         let sha256 = sha256_gen.finalize().to_vec();
-        let sha256 = manifest::Sha256::try_from(sha256.as_slice()).or_fail()?;
+        let sha256 = types::sha256::Sha256::try_from(sha256.as_slice()).or_fail()?;
         let video = manifest::Video {
             id,
             name: name.to_owned(),

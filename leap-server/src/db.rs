@@ -436,6 +436,8 @@ impl Database {
 
 #[cfg(test)]
 mod test {
+    use crate::types::sha256::Sha256;
+
     use super::*;
 
     use core::str::FromStr;
@@ -641,10 +643,10 @@ mod test {
                             id: uuid::Uuid::from_str("bf978778-1c5d-44b3-b2c1-1cc253563799")
                                 .or_fail()?,
                             uri: "s3://bucket/linear-equations.mp4".parse().or_fail()?,
-                            sha256:
-                                "0b88b2dec2be5e2ef74022ef6a8023232e28374d67e917b76f9bb607e691f327"
-                                    .try_into()
-                                    .or_fail()?,
+                            sha256: Sha256::try_from_base64(
+                                "C4iy3sK+Xi73QCLvaoAjIy4oN01n6Re3b5u2B+aR8yc=",
+                            )
+                            .or_fail()?,
                             file_size: 123456,
                         },
                         crate::manifest::Video {
@@ -652,10 +654,10 @@ mod test {
                             id: uuid::Uuid::from_str("5eb9e089-79cf-478d-9121-9ca3e7bb1d4a")
                                 .or_fail()?,
                             uri: "s3://bucket/quadratic-equations.mp4".parse().or_fail()?,
-                            sha256:
-                                "8f9e3a4ae7d86c4abdf731a947fc90b607b82a0362da0b312e3b644defedb81f"
-                                    .try_into()
-                                    .or_fail()?,
+                            sha256: Sha256::try_from_base64(
+                                "j546SufYbEq99zGpR/yQtge4KgNi2gsxLjtkTe/tuB8=",
+                            )
+                            .or_fail()?,
                             file_size: 123457,
                         },
                     ],
@@ -668,10 +670,10 @@ mod test {
                             id: uuid::Uuid::from_str("eddb4450-a9ff-4a4b-ad81-2a8b78998405")
                                 .or_fail()?,
                             uri: "s3://bucket/riemann-sum.mp4".parse().or_fail()?,
-                            sha256:
-                                "a6d3b80cd14f78b21ffbf5995bbda38ad8834459557782d245ed720134d36fc4"
-                                    .try_into()
-                                    .or_fail()?,
+                            sha256: Sha256::try_from_base64(
+                                "ptO4DNFPeLIf+/WZW72jitiDRFlVd4LSRe1yATTTb8Q=",
+                            )
+                            .or_fail()?,
                             file_size: 123459,
                         },
                         crate::manifest::Video {
@@ -679,10 +681,10 @@ mod test {
                             id: uuid::Uuid::from_str("f47e6cdc-1bcf-439a-9ea4-038dc7153648")
                                 .or_fail()?,
                             uri: "s3://bucket/list-of-integrals.mp4".parse().or_fail()?,
-                            sha256:
-                                "98780990e94fb55d0b88ebcd78fe82f069eac547731a4b0822332d826c970aec"
-                                    .try_into()
-                                    .or_fail()?,
+                            sha256: Sha256::try_from_base64(
+                                "mHgJkOlPtV0LiOvNeP6C8GnqxUdzGksIIjMtgmyXCuw=",
+                            )
+                            .or_fail()?,
                             file_size: 123460,
                         },
                     ],

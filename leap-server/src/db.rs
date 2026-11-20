@@ -64,7 +64,7 @@ pub type Result<T> = core::result::Result<T, Error>;
 #[derive(Clone, Debug)]
 pub struct ManifestMetadata {
     pub name: String,
-    pub date: chrono::NaiveDate,
+    pub date: jiff::civil::Date,
     pub sections: Vec<(String, Vec<Video>)>,
 }
 
@@ -626,7 +626,7 @@ mod test {
     fn manifest_for_test() -> googletest::Result<ManifestFile> {
         Ok(ManifestFile {
             name: "manifest".to_string(),
-            date: chrono::NaiveDate::from_str("2025-10-10").or_fail()?,
+            date: jiff::civil::Date::from_str("2025-10-10").or_fail()?,
             version: crate::manifest::Version {
                 major: 2,
                 minor: 0,
@@ -741,7 +741,7 @@ mod test {
                 field!(ManifestMetadata.name, eq("manifest")),
                 field!(
                     &ManifestMetadata.date,
-                    eq(chrono::NaiveDate::from_str("2025-10-10").unwrap())
+                    eq(jiff::civil::Date::from_str("2025-10-10").unwrap())
                 )
             ))
         );

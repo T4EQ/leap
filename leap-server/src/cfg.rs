@@ -61,7 +61,7 @@ where
 #[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
 pub struct RetryParams {
     /// The initial backoff time after a download failure.
-    #[serde(with = "humantime_serde")]
+    #[serde(with = "jiff::fmt::serde::unsigned_duration::friendly::compact::required")]
     pub initial_backoff: std::time::Duration,
 
     /// The adjustement factor for the backoff after a failure. Must be larger than 1 so that
@@ -69,7 +69,7 @@ pub struct RetryParams {
     pub backoff_factor: f64,
 
     /// The maximum backoff time after a download failure.
-    #[serde(with = "humantime_serde")]
+    #[serde(with = "jiff::fmt::serde::unsigned_duration::friendly::compact::required")]
     pub max_backoff: std::time::Duration,
 }
 
@@ -96,7 +96,7 @@ pub struct DownloaderConfig {
     pub remote_server: url::Url,
 
     /// The interval at which the remote is queried for new content.
-    #[serde(with = "humantime_serde")]
+    #[serde(with = "jiff::fmt::serde::unsigned_duration::friendly::compact::required")]
     pub update_interval: std::time::Duration,
 
     /// Retry parameters when a download fails.
@@ -109,7 +109,7 @@ pub struct DbConfig {
     /// The maximum amount of time that the DB thread will wait until the DB is available for its
     /// operation. Sqlite does not allow concurrent reads and writes, and therefore, it might block
     /// until one completes
-    #[serde(with = "humantime_serde")]
+    #[serde(with = "jiff::fmt::serde::unsigned_duration::friendly::compact::required")]
     pub busy_timeout: std::time::Duration,
 
     /// The number of connections that are created for the database. Limits the amount of

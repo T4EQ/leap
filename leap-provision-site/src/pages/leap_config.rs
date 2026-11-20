@@ -60,6 +60,10 @@ const FORM_ITEM_ENDPOINT_URL: &str = "endpoint-url";
 const FORM_ITEM_REGION: &str = "region";
 const FORM_ITEM_FORCE_PATH_STYLE: &str = "force-path-style";
 
+fn format_duration(d: Duration) -> String {
+    jiff::fmt::friendly::SpanPrinter::new().unsigned_duration_to_string(&d)
+}
+
 /// Builds the [`LeapConfig`] to submit from the values currently held by the form.
 fn leap_config_from_form(form: HtmlFormElement) -> Result<LeapConfig, LeapConfigError> {
     let form = FormData::new_with_form(&form).unwrap();
@@ -67,7 +71,10 @@ fn leap_config_from_form(form: HtmlFormElement) -> Result<LeapConfig, LeapConfig
     let extract_optional_form_value =
         |name| Some(extract_form_value(name)).filter(|v| !v.is_empty());
     let extract_duration = |name: &'static str, error: LeapConfigError| {
-        humantime::parse_duration(&extract_form_value(name)).map_err(|_| error)
+        let parser = jiff::fmt::friendly::SpanParser::new();
+        parser
+            .parse_unsigned_duration(extract_form_value(name))
+            .map_err(|_| error)
     };
 
     let concurrent_downloads = extract_form_value(FORM_ITEM_CONCURRENT_DOWNLOADS)
@@ -344,7 +351,7 @@ pub fn leap_config_page() -> Html {
                                 ~defaultValue={
                                     leap_cfg.map_or(
                                         "1h".to_string(),
-                                        |v| humantime::format_duration(v.config.downloader_config.update_interval).to_string())
+                                        |v| format_duration(v.config.downloader_config.update_interval))
                             } />
                         </div>
                         <div class="form-field">
@@ -354,7 +361,7 @@ pub fn leap_config_page() -> Html {
                                 ~defaultValue={
                                     leap_cfg.map_or(
                                         "1s".to_string(),
-                                        |v| humantime::format_duration(v.config.downloader_config.retry_params.initial_backoff).to_string())
+                                        |v| format_duration(v.config.downloader_config.retry_params.initial_backoff))
                             } />
                         </div>
                         <div class="form-field">
@@ -370,7 +377,7 @@ pub fn leap_config_page() -> Html {
                                 ~defaultValue={
                                     leap_cfg.map_or(
                                         "1h".to_string(),
-                                        |v| humantime::format_duration(v.config.downloader_config.retry_params.max_backoff).to_string())
+                                        |v| format_duration(v.config.downloader_config.retry_params.max_backoff))
                             } />
                         </div>
 

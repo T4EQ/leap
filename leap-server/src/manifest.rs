@@ -125,7 +125,7 @@ pub struct ManifestFile {
     pub name: String,
 
     /// Date in which this manifest was released
-    pub date: chrono::NaiveDate,
+    pub date: jiff::civil::Date,
 
     /// Version of the manifest. At the moment only version 1.0.0 is supported
     pub version: Version,
@@ -512,7 +512,7 @@ pub mod test {
             manifest,
             eq(&ManifestFile {
                 name: "High school video distribution list".to_string(),
-                date: chrono::NaiveDate::from_str("2025-10-10").or_fail()?,
+                date: jiff::civil::Date::from_str("2025-10-10").or_fail()?,
                 version: new_version(1, 0, 0),
                 sections: vec![
                     Section {

@@ -60,7 +60,7 @@ pub struct ManifestMeta {
     pub name: String,
 
     /// Date of the manifest.
-    pub date: chrono::NaiveDate,
+    pub date: jiff::civil::Date,
 
     /// Sections ordered as displayed.
     pub content: Vec<GroupedSection>,
@@ -83,7 +83,7 @@ pub struct BuildInfo {
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct RetryParams {
     /// The initial backoff time after a download failure.
-    #[serde(with = "humantime_serde")]
+    #[serde(with = "jiff::fmt::serde::unsigned_duration::friendly::compact::required")]
     pub initial_backoff: std::time::Duration,
 
     /// The adjustement factor for the backoff after a failure. Must be larger than 1 so that
@@ -91,7 +91,7 @@ pub struct RetryParams {
     pub backoff_factor: f64,
 
     /// The maximum backoff time after a download failure.
-    #[serde(with = "humantime_serde")]
+    #[serde(with = "jiff::fmt::serde::unsigned_duration::friendly::compact::required")]
     pub max_backoff: std::time::Duration,
 }
 
@@ -101,7 +101,7 @@ pub struct DownloaderConfig {
     pub concurrent_downloads: usize,
 
     /// The interval at which the remote is queried for new content.
-    #[serde(with = "humantime_serde")]
+    #[serde(with = "jiff::fmt::serde::unsigned_duration::friendly::compact::required")]
     pub update_interval: std::time::Duration,
 
     /// Retry parameters when a download fails.

@@ -75,7 +75,7 @@ impl TestResources {
 
     pub async fn save_manifest_to_remote_server(
         &self,
-        date: chrono::NaiveDate,
+        date: jiff::civil::Date,
         videos: &[(String, Vec<manifest::Video>)],
     ) -> googletest::Result<()> {
         let manifest = manifest::ManifestFile {
@@ -129,7 +129,7 @@ impl TestResources {
     /// Saves the videos to the remote file server and publishes a manifest with them.
     pub async fn save_videos_and_publish_manifest(
         &self,
-        date: chrono::NaiveDate,
+        date: jiff::civil::Date,
         sections: &[(String, Vec<(String, usize)>)],
     ) -> googletest::Result<Vec<(manifest::Video, Vec<u8>)>> {
         let mut all_videos = vec![];

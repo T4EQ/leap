@@ -101,7 +101,7 @@ async fn manifest_and_video_fetching() -> googletest::Result<()> {
     // Step 1: Save videos and publish a new manifest with them
     let all_videos = test_resources
         .save_videos_and_publish_manifest(
-            chrono::NaiveDate::from_str("2026-08-14").or_fail()?,
+            jiff::civil::Date::from_str("2026-08-14").or_fail()?,
             &TEST_SECTIONS,
         )
         .await
@@ -137,7 +137,7 @@ async fn serve_video_content() -> googletest::Result<()> {
     // Step 1: Save videos and publish a new manifest with them
     let all_videos = test_resources
         .save_videos_and_publish_manifest(
-            chrono::NaiveDate::from_str("2026-08-14").or_fail()?,
+            jiff::civil::Date::from_str("2026-08-14").or_fail()?,
             &TEST_SECTIONS,
         )
         .await
@@ -186,7 +186,7 @@ async fn serve_partial_video_content() -> googletest::Result<()> {
     // Step 1: Save videos and publish a new manifest with them
     let all_videos = test_resources
         .save_videos_and_publish_manifest(
-            chrono::NaiveDate::from_str("2026-08-14").or_fail()?,
+            jiff::civil::Date::from_str("2026-08-14").or_fail()?,
             &TEST_SECTIONS,
         )
         .await
@@ -246,7 +246,7 @@ async fn fetch_not_downloaded_content() -> googletest::Result<()> {
     tokio::time::sleep(Duration::from_millis(200)).await;
     let all_videos = test_resources
         .save_videos_and_publish_manifest(
-            chrono::NaiveDate::from_str("2026-08-14").or_fail()?,
+            jiff::civil::Date::from_str("2026-08-14").or_fail()?,
             &TEST_SECTIONS,
         )
         .await
@@ -293,7 +293,7 @@ async fn fetch_invalid_video_id() -> googletest::Result<()> {
 #[gtest]
 async fn return_video_meta() -> googletest::Result<()> {
     let test_resources = TestResources::try_new_for_test().or_fail()?;
-    let manifest_date = chrono::NaiveDate::from_str("2026-08-14").or_fail()?;
+    let manifest_date = jiff::civil::Date::from_str("2026-08-14").or_fail()?;
 
     // Step 1: Save videos and publish a new manifest with them
     let all_videos = test_resources
@@ -376,7 +376,7 @@ async fn return_video_meta() -> googletest::Result<()> {
 #[gtest]
 async fn return_specific_video_meta() -> googletest::Result<()> {
     let test_resources = TestResources::try_new_for_test().or_fail()?;
-    let manifest_date = chrono::NaiveDate::from_str("2026-08-14").or_fail()?;
+    let manifest_date = jiff::civil::Date::from_str("2026-08-14").or_fail()?;
 
     // Step 1: Save videos and publish a new manifest with them
     let all_videos = test_resources
@@ -431,7 +431,7 @@ async fn return_specific_video_meta() -> googletest::Result<()> {
 #[gtest]
 async fn view_count_increments() -> googletest::Result<()> {
     let test_resources = TestResources::try_new_for_test().or_fail()?;
-    let manifest_date = chrono::NaiveDate::from_str("2026-08-14").or_fail()?;
+    let manifest_date = jiff::civil::Date::from_str("2026-08-14").or_fail()?;
 
     // Step 1: Save videos and publish a new manifest with them
     let all_videos = test_resources
@@ -508,7 +508,7 @@ async fn view_count_increments() -> googletest::Result<()> {
 #[gtest]
 async fn manifest_updates_after_first_sync() -> googletest::Result<()> {
     let test_resources = TestResources::try_new_for_test().or_fail()?;
-    let first_manifest_date = chrono::NaiveDate::from_str("2026-08-14").or_fail()?;
+    let first_manifest_date = jiff::civil::Date::from_str("2026-08-14").or_fail()?;
 
     // Step 1: Save videos and publish a new manifest with them
     let first_manifest_videos = test_resources
@@ -529,7 +529,7 @@ async fn manifest_updates_after_first_sync() -> googletest::Result<()> {
     .or_fail()?;
 
     // Step 4: Set new manifest
-    let second_manifest_date = chrono::NaiveDate::from_str("2026-08-15").or_fail()?;
+    let second_manifest_date = jiff::civil::Date::from_str("2026-08-15").or_fail()?;
     let second_manifest_videos = test_resources
         .save_videos_and_publish_manifest(second_manifest_date, &TEST_SECTIONS_2)
         .await
@@ -572,7 +572,7 @@ async fn manifest_updates_after_first_sync() -> googletest::Result<()> {
 #[gtest]
 async fn manifest_does_not_update_with_same_date() -> googletest::Result<()> {
     let test_resources = TestResources::try_new_for_test().or_fail()?;
-    let first_manifest_date = chrono::NaiveDate::from_str("2026-08-14").or_fail()?;
+    let first_manifest_date = jiff::civil::Date::from_str("2026-08-14").or_fail()?;
 
     // Step 1: Save videos and publish a new manifest with them
     let first_manifest_videos = test_resources
@@ -593,7 +593,7 @@ async fn manifest_does_not_update_with_same_date() -> googletest::Result<()> {
     .or_fail()?;
 
     // Step 4: Set new manifest
-    let second_manifest_date = chrono::NaiveDate::from_str("2026-08-14").or_fail()?;
+    let second_manifest_date = jiff::civil::Date::from_str("2026-08-14").or_fail()?;
     let second_manifest_videos = test_resources
         .save_videos_and_publish_manifest(second_manifest_date, &TEST_SECTIONS_2)
         .await
@@ -637,7 +637,7 @@ async fn manifest_does_not_update_with_same_date() -> googletest::Result<()> {
 #[gtest]
 async fn fetch_current_manifest() -> googletest::Result<()> {
     let test_resources = TestResources::try_new_for_test().or_fail()?;
-    let first_manifest_date = chrono::NaiveDate::from_str("2026-08-14").or_fail()?;
+    let first_manifest_date = jiff::civil::Date::from_str("2026-08-14").or_fail()?;
 
     // Step 1: Save videos and publish a new manifest with them
     let first_manifest_videos = test_resources

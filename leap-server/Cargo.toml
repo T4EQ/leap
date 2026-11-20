@@ -21,7 +21,7 @@ async-stream.workspace = true
 async-trait.workspace = true
 aws-config.workspace = true
 aws-sdk-s3.workspace = true
-chrono.workspace = true
+jiff.workspace = true
 clap.workspace = true
 config.workspace = true
 dbus = { workspace = true, optional = true }
@@ -29,7 +29,6 @@ deadpool-diesel.workspace = true
 diesel.workspace = true
 diesel_migrations.workspace = true
 dotenvy.workspace = true
-humantime-serde.workspace = true
 leap-api.workspace = true
 libsqlite3-sys.workspace = true
 nix.workspace = true

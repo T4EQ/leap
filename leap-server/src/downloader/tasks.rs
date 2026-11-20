@@ -361,7 +361,7 @@ pub mod test {
     fn manifest_for_test() -> googletest::Result<ManifestFile> {
         Ok(ManifestFile {
             name: "manifest".to_string(),
-            date: chrono::NaiveDate::from_str("2025-10-10").or_fail()?,
+            date: jiff::civil::Date::from_str("2025-10-10").or_fail()?,
             version: Version {
                 major: 2,
                 minor: 0,
@@ -429,7 +429,7 @@ pub mod test {
     fn manifest_for_test2() -> googletest::Result<ManifestFile> {
         Ok(ManifestFile {
             name: "manifest 2".to_string(),
-            date: chrono::NaiveDate::from_str("2025-10-11").or_fail()?,
+            date: jiff::civil::Date::from_str("2025-10-11").or_fail()?,
             version: Version {
                 major: 2,
                 minor: 0,

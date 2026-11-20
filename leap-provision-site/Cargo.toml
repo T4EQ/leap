@@ -8,7 +8,6 @@ authors = ["Javier Alvarez <javier.alvarez@allthingsembedded.net>", "Johannes Fr
 repository = "https://github.com/t4eq/leap"
 
 [dependencies]
-anyhow.workspace = true
 gloo-net.workspace = true
 gloo-timers = { workspace = true, features = ["futures"] }
 image.workspace = true

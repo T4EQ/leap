@@ -2644,7 +2644,6 @@ dependencies = [
 name = "leap-provision-site"
 version = "0.2.0"
 dependencies = [
- "anyhow",
  "gloo-net 0.8.0",
  "gloo-timers 0.4.1",
  "googletest",

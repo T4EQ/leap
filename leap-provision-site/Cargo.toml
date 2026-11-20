@@ -12,8 +12,8 @@ repository = "https://github.com/t4eq/leap"
 anyhow.workspace = true
 gloo-net.workspace = true
 gloo-timers = { workspace = true, features = ["futures"] }
-humantime.workspace = true
 image.workspace = true
+jiff.workspace = true
 leap-api.workspace = true
 log.workspace = true
 quircs.workspace = true

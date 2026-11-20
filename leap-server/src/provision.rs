@@ -212,9 +212,7 @@ impl Provision<CompleteStep> {
         tokio::time::sleep(std::time::Duration::from_millis(500)).await;
         nix::unistd::sync();
         tokio::time::sleep(std::time::Duration::from_millis(500)).await;
-        loop {
-            nix::sys::reboot::reboot(nix::sys::reboot::RebootMode::RB_AUTOBOOT)?;
-        }
+        nix::sys::reboot::reboot(nix::sys::reboot::RebootMode::RB_AUTOBOOT)?;
     }
 }
 

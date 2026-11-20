@@ -24,6 +24,12 @@ top@{ inputs, ... }:
           nativeBuildInputs = with pkgs; [
             cacert # needed by the tests in this package.
             lld
+            pkg-config
+          ];
+
+          buildInputs = with pkgs; [
+            aws-lc
+            zstd
           ];
 
           buildPhase = ''
@@ -52,7 +58,7 @@ top@{ inputs, ... }:
     in
     {
       packages = {
-        leap = leapPackageWithPkgs pkgs pkgs {};
+        leap = leapPackageWithPkgs pkgs pkgs { };
         leap-target = leapPackageWithPkgs pkgs targetPkgs { extra-cflags = "-mno-outline-atomics"; };
       };
     };

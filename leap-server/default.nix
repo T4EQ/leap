@@ -53,8 +53,14 @@ top@{ inputs, ... }:
           '';
         };
 
+      pkgsWithRustOverlay = import inputs.nixpkgs {
+        inherit (pkgs.stdenv.hostPlatform) system;
+        overlays = [ inputs.rust-overlay.overlays.default ];
+      };
+
       targetPkgs = import inputs.nixpkgs {
         inherit (pkgs.stdenv.hostPlatform) system;
+        overlays = [ inputs.rust-overlay.overlays.default ];
         crossSystem = {
           isStatic = true;
           config = "aarch64-unknown-linux-musl";
@@ -63,8 +69,8 @@ top@{ inputs, ... }:
     in
     {
       packages = {
-        leap = leapPackageWithPkgs pkgs pkgs { };
-        leap-target = leapPackageWithPkgs pkgs targetPkgs { extra-cflags = "-mno-outline-atomics"; };
+        leap = leapPackageWithPkgs pkgsWithRustOverlay pkgsWithRustOverlay { };
+        leap-target = leapPackageWithPkgs pkgsWithRustOverlay targetPkgs { extra-cflags = "-mno-outline-atomics"; };
       };
     };
 }

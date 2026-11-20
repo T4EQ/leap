@@ -10,7 +10,7 @@ repository = "https://github.com/t4eq/leap"
 [features]
 default = ["git2"]
 git2 = ["built/git2"]
-provision = ["dbus"]
+provision = ["dbus", "nix"]
 
 [dependencies]
 actix-web-static-files.workspace = true
@@ -30,10 +30,9 @@ diesel_migrations.workspace = true
 dotenvy.workspace = true
 leap-api.workspace = true
 libsqlite3-sys.workspace = true
-nix.workspace = true
+nix = { workspace = true, optional = true }
 percent-encoding.workspace = true
 regex.workspace = true
-rstest.workspace = true
 secrecy.workspace = true
 serde.workspace = true
 serde_json.workspace = true

@@ -41,8 +41,24 @@
           git-rev = "${self.rev or self.dirtyRev or "Unknown"}";
 
           perSystem =
-            { config,pkgs, ... }:
+            { config, pkgs, ... }:
+            let
+              rustToolchainFor =
+                pkgs:
+                (inputs.rust-overlay.lib.mkRustBin { } pkgs.buildPackages).fromRustupToolchainFile
+                  ./rust-toolchain.toml;
+              rustPlatformFor =
+                pkgs:
+                pkgs.makeRustPlatform {
+                  cargo = rustToolchainFor pkgs;
+                  rustc = rustToolchainFor pkgs;
+                };
+            in
             {
+              _module.args = {
+                inherit rustToolchainFor rustPlatformFor;
+              };
+
               packages.default = config.packages.leap;
 
               devShells = rec {
@@ -64,7 +80,10 @@
                       diesel-cli
                       bunyan-rs
                       # Needed by the scripts under `scripts`
-                      (python3.withPackages (ps: [ ps.qrcode ps.pillow ]))
+                      (python3.withPackages (ps: [
+                        ps.qrcode
+                        ps.pillow
+                      ]))
                     ];
                   };
 

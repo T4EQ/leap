@@ -1,14 +1,18 @@
 { inputs, ... }:
 {
   perSystem =
-    { config, pkgs, ... }:
+    {
+      config,
+      pkgs,
+      rustPlatformFor,
+      ...
+    }:
+    let
+      rustPlatform = rustPlatformFor pkgs;
+    in
     {
       packages = {
-        # The site is always cross compiled using trunk and wasm. That's why we can build it with the
-        # host toolchain, which already has support for wasm. However, the same is not true for
-        # the target toolchain (aarch64-unknown-linux-musl), so we need to use a nix cross-compilation
-        # strategy there
-        leap-site = pkgs.rustPlatform.buildRustPackage {
+        leap-site = rustPlatform.buildRustPackage {
           pname = "leap-site";
           version = "0.1.0";
           src = inputs.self;

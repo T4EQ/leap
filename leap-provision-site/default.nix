@@ -1,35 +1,39 @@
 { inputs, ... }:
 {
   perSystem =
-    { config, pkgs, ... }:
     {
-      packages = {
-        # The site is always cross compiled using trunk and wasm. That's why we can build it with the
-        # host toolchain, which already has support for wasm. However, the same is not true for
-        # the target toolchain (aarch64-unknown-linux-musl), so we need to use a nix cross-compilation
-        # strategy there
-        leap-provision-site = pkgs.rustPlatform.buildRustPackage {
-          pname = "leap-provision-site";
-          version = "0.1.0";
-          src = inputs.self;
+      config,
+      pkgs,
+      rustPlatformFor,
+      ...
+    }:
+    {
+      packages =
+        let
+          rustPlatform = rustPlatformFor pkgs;
+        in
+        {
+          leap-provision-site = rustPlatform.buildRustPackage {
+            pname = "leap-provision-site";
+            version = "0.1.0";
+            src = inputs.self;
 
-          cargoLock = {
-            lockFile = ./../Cargo.lock;
+            cargoLock = {
+              lockFile = ./../Cargo.lock;
 
-            outputHashes = {
-              "quircs-0.10.3" = "sha256-EfqYIk94LBmQOyROOOtbT6N13CkNv/dqlUK5/svRyX4=";
+              outputHashes = {
+                "quircs-0.10.3" = "sha256-EfqYIk94LBmQOyROOOtbT6N13CkNv/dqlUK5/svRyX4=";
+              };
             };
-          };
 
+            nativeBuildInputs = with pkgs; [
+              trunk
+              config.packages.wasm-bindgen-cli_0_2_130
+              dart-sass
+              lld
+            ];
 
-          nativeBuildInputs = with pkgs; [
-            trunk
-            config.packages.wasm-bindgen-cli_0_2_130
-            dart-sass
-            lld
-          ];
-
-          buildPhase = "
+            buildPhase = "
               runHook preBuild
               pushd leap-provision-site
               trunk build --release --offline
@@ -37,11 +41,11 @@
               runHook postBuild
             ";
 
-          checkPhase = "
+            checkPhase = "
               # No tests for this package
             ";
 
-          installPhase = "
+            installPhase = "
               runHook preInstall
               pushd leap-provision-site
               mkdir -p $out
@@ -49,7 +53,7 @@
               popd
               runHook postInstall
             ";
+          };
         };
-      };
     };
 }

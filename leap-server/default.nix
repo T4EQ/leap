@@ -1,14 +1,19 @@
 top@{ inputs, ... }:
 {
   perSystem =
-    { config, pkgs, ... }:
+    {
+      config,
+      pkgs,
+      rustPlatformFor,
+      ...
+    }:
     let
-      # Note that these pacakges do not obey the rust-toolchain.toml. Unfortunately, building the
-      # toolchains from the rust-toolchain.toml files would take way too long. Maybe we could
-      # do this if we setup a nix cache, but for now this will do.
       leapPackageWithPkgs =
         pkgs: targetPkgs: opts:
-        targetPkgs.rustPlatform.buildRustPackage {
+        let
+          rustPlatform = rustPlatformFor targetPkgs;
+        in
+        rustPlatform.buildRustPackage {
           pname = "leap-server";
           version = "0.1.0";
           src = inputs.self;
@@ -24,13 +29,13 @@ top@{ inputs, ... }:
           nativeBuildInputs = with pkgs; [
             cacert # needed by the tests in this package.
             lld
-            pkg-config
           ];
 
-          buildInputs = with pkgs; [
-            aws-lc
-            zstd
-          ];
+          dontCargoUseSystemLibs = true;
+
+          # Test the same feature set as the Nix binary, which gets its revision from Nix.
+          checkNoDefaultFeatures = true;
+          checkFeatures = [ "provision" ];
 
           buildPhase = ''
             runHook preBuild

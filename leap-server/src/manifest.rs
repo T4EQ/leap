@@ -4,7 +4,7 @@
 //! The manifest includes versioning, metadata for each video, and groups videos into sections.
 //! It provides serialization and deserialization support for JSON.
 
-use std::{fmt::Display, ops::Deref};
+use crate::types::sha256::Sha256;
 
 /// Version data type made of major, minor and revision numbers.
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -15,78 +15,6 @@ pub struct Version {
     pub minor: u32,
     /// Revision number.
     pub revision: u32,
-}
-
-/// A SHA-256 hash represented as a hex string.
-#[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Sha256(String);
-
-impl Display for Sha256 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
-impl Sha256 {
-    /// Returns the 32-byte representation of the SHA-256 hash.
-    pub fn as_bytes(&self) -> [u8; 32] {
-        (0..32)
-            .map(|byte_idx| {
-                u8::from_str_radix(&self.0[2 * byte_idx..2 * byte_idx + 2], 16)
-                    .expect("Sha256 should be a valid hex string of 64 chars")
-            })
-            .collect::<Vec<u8>>()
-            .try_into()
-            .expect("Sha256 can only be constructed with 64 characters")
-    }
-}
-
-impl TryFrom<&[u8]> for Sha256 {
-    type Error = String;
-
-    fn try_from(v: &[u8]) -> Result<Self, String> {
-        if v.len() != 32 {
-            return Err(format!(
-                "Sha256 can only be constructed from a 32-byte slice. Got {} bytes",
-                v.len()
-            ));
-        }
-
-        Ok(Sha256(
-            v.iter()
-                .flat_map(|byte| {
-                    let msb = char::from_digit((byte >> 4) as u32, 16).unwrap();
-                    let lsb = char::from_digit((byte & 0x0f) as u32, 16).unwrap();
-                    std::iter::once(msb).chain(std::iter::once(lsb))
-                })
-                .collect(),
-        ))
-    }
-}
-
-impl TryFrom<&str> for Sha256 {
-    type Error = String;
-
-    fn try_from(v: &str) -> Result<Self, String> {
-        use regex::Regex;
-        use std::sync::LazyLock;
-        static SHA_REGEX: LazyLock<Regex> = std::sync::LazyLock::new(|| {
-            regex::Regex::new("^[0-9a-f]{64}$").expect("Invalid sha256 regex")
-        });
-
-        if !SHA_REGEX.is_match(v) {
-            return Err(format!("\"{v}\" is not a valid SHA-256"));
-        };
-
-        Ok(Self(v.to_string()))
-    }
-}
-
-impl Deref for Sha256 {
-    type Target = str;
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
 }
 
 /// Metadata for a single video entry
@@ -152,24 +80,6 @@ impl serde::Serialize for Version {
     }
 }
 
-impl<'de> serde::Deserialize<'de> for Sha256 {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        deserializer.deserialize_str(sha256::Visitor {})
-    }
-}
-
-impl serde::Serialize for Sha256 {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        serializer.serialize_str(self)
-    }
-}
-
 mod version {
     pub struct Visitor {}
 
@@ -214,25 +124,6 @@ mod version {
                 minor: components[1],
                 revision: components[2],
             })
-        }
-    }
-}
-
-mod sha256 {
-    pub struct Visitor {}
-
-    impl<'de> serde::de::Visitor<'de> for Visitor {
-        type Value = super::Sha256;
-
-        fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-            formatter.write_str("A Sha256 hash with 64 alfanumeric characters.")
-        }
-
-        fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
-        where
-            E: serde::de::Error,
-        {
-            v.try_into().map_err(|e| E::custom(e))
         }
     }
 }
@@ -292,53 +183,6 @@ pub mod test {
         Ok(())
     }
 
-    #[googletest::gtest]
-    fn deserialize_sha256() -> googletest::Result<()> {
-        let sha256 = serde_json::from_str::<Sha256>(
-            r#""0b88b2dec2be5e2ef74022ef6a8023232e28374d67e917b76f9bb607e691f327""#,
-        )
-        .or_fail()?;
-        expect_that!(
-            sha256,
-            eq(&Sha256(
-                "0b88b2dec2be5e2ef74022ef6a8023232e28374d67e917b76f9bb607e691f327".to_string()
-            ))
-        );
-
-        Ok(())
-    }
-
-    #[googletest::gtest]
-    fn deserialize_sha256_incorrect_format() -> googletest::Result<()> {
-        let testcases = [
-            // Too short
-            r#""b88b2dec2be5e2ef74022ef6a8023232e28374d67e917b76f9bb607e691f327""#,
-            // Too long
-            r#""0b88b2dec2be5e2ef74022ef6a8023232e28374d67e917b76f9bb607e691f3274""#,
-            // Empty
-            r#""""#,
-            // Invalid characters
-            r#""0b88b2dec2be5e2ef74022ef6a8023232e28374d67e917g76f9bb607e691f327""#,
-        ];
-
-        for testcase in testcases {
-            expect_that!(serde_json::from_str::<Version>(testcase), err(anything()));
-        }
-
-        Ok(())
-    }
-
-    #[googletest::gtest]
-    fn serialize_sha256() -> googletest::Result<()> {
-        let expected = r#""0b88b2dec2be5e2ef74022ef6a8023232e28374d67e917b76f9bb607e691f327""#;
-        let sha256 = serde_json::to_string(&Sha256(
-            "0b88b2dec2be5e2ef74022ef6a8023232e28374d67e917b76f9bb607e691f327".to_string(),
-        ))
-        .or_fail()?;
-        expect_that!(sha256, eq(expected));
-        Ok(())
-    }
-
     /// Spaces must be allowed in the path component of the url. This is not strict with the URI
     /// format, but makes it more ergonomic for consumers to use any video names, as well as reuse
     /// the s3 URI given as links by amazon, which contain spaces.
@@ -352,7 +196,7 @@ pub mod test {
             "name": "Linear equations",
             "id": "bf978778-1c5d-44b3-b2c1-1cc253563799",
             "uri": "{url}",
-            "sha256": "0b88b2dec2be5e2ef74022ef6a8023232e28374d67e917b76f9bb607e691f327",
+            "sha256": "C4iy3sK+Xi73QCLvaoAjIy4oN01n6Re3b5u2B+aR8yc=",
             "file_size": 123456
         }}"#
         );
@@ -364,9 +208,10 @@ pub mod test {
                 name: "Linear equations".to_string(),
                 id: uuid::Uuid::from_str("bf978778-1c5d-44b3-b2c1-1cc253563799").or_fail()?,
                 uri: "s3://bucket/a%20video.mp4".parse().or_fail()?,
-                sha256: Sha256(
-                    "0b88b2dec2be5e2ef74022ef6a8023232e28374d67e917b76f9bb607e691f327".to_string()
-                ),
+                sha256: Sha256::try_from_human_string(
+                    "0b88b2dec2be5e2ef74022ef6a8023232e28374d67e917b76f9bb607e691f327"
+                )
+                .or_fail()?,
                 file_size: 123456,
             })
         );
@@ -387,21 +232,21 @@ pub mod test {
                     "name": "Linear equations",
                     "id": "bf978778-1c5d-44b3-b2c1-1cc253563799",
                     "uri": "s3://bucket/linear-equations.mp4",
-                    "sha256": "0b88b2dec2be5e2ef74022ef6a8023232e28374d67e917b76f9bb607e691f327",
+                    "sha256": "C4iy3sK+Xi73QCLvaoAjIy4oN01n6Re3b5u2B+aR8yc=",
                     "file_size": 123456
                 },
                 {
                     "name": "Quadratic equations",
                     "id": "5eb9e089-79cf-478d-9121-9ca3e7bb1d4a",
                     "uri": "s3://bucket/quadratic-equations.mp4",
-                    "sha256": "8f9e3a4ae7d86c4abdf731a947fc90b607b82a0362da0b312e3b644defedb81f",
+                    "sha256": "j546SufYbEq99zGpR/yQtge4KgNi2gsxLjtkTe/tuB8=",
                     "file_size": 123457
                 },
                 {
                     "name": "Cubic equations",
                     "id": "9e0f44b6-3dc6-4f56-8c9f-7e28feac1d03",
                     "uri": "s3://bucket/cubic-equations.mp4",
-                    "sha256": "8b9522ce42fb02dd100b575714d935a4502872afccee80f7a65d466389a5bef8",
+                    "sha256": "i5UizkL7At0QC1dXFNk1pFAocq/M7oD3pl1GY4mlvvg=",
                     "file_size": 123458
                 }
             ]
@@ -418,10 +263,10 @@ pub mod test {
                         id: uuid::Uuid::from_str("bf978778-1c5d-44b3-b2c1-1cc253563799")
                             .or_fail()?,
                         uri: "s3://bucket/linear-equations.mp4".parse().or_fail()?,
-                        sha256: Sha256(
+                        sha256: Sha256::try_from_human_string(
                             "0b88b2dec2be5e2ef74022ef6a8023232e28374d67e917b76f9bb607e691f327"
-                                .to_string()
-                        ),
+                        )
+                        .or_fail()?,
                         file_size: 123456,
                     },
                     Video {
@@ -429,10 +274,10 @@ pub mod test {
                         id: uuid::Uuid::from_str("5eb9e089-79cf-478d-9121-9ca3e7bb1d4a")
                             .or_fail()?,
                         uri: "s3://bucket/quadratic-equations.mp4".parse().or_fail()?,
-                        sha256: Sha256(
+                        sha256: Sha256::try_from_human_string(
                             "8f9e3a4ae7d86c4abdf731a947fc90b607b82a0362da0b312e3b644defedb81f"
-                                .to_string()
-                        ),
+                        )
+                        .or_fail()?,
                         file_size: 123457,
                     },
                     Video {
@@ -440,10 +285,10 @@ pub mod test {
                         id: uuid::Uuid::from_str("9e0f44b6-3dc6-4f56-8c9f-7e28feac1d03")
                             .or_fail()?,
                         uri: "s3://bucket/cubic-equations.mp4".parse().or_fail()?,
-                        sha256: Sha256(
+                        sha256: Sha256::try_from_human_string(
                             "8b9522ce42fb02dd100b575714d935a4502872afccee80f7a65d466389a5bef8"
-                                .to_string()
-                        ),
+                        )
+                        .or_fail()?,
                         file_size: 123458,
                     },
                 ]
@@ -466,21 +311,21 @@ pub mod test {
                     "name": "Linear equations",
                     "id": "bf978778-1c5d-44b3-b2c1-1cc253563799",
                     "uri": "s3://bucket/linear-equations.mp4",
-                    "sha256": "0b88b2dec2be5e2ef74022ef6a8023232e28374d67e917b76f9bb607e691f327",
+                    "sha256": "C4iy3sK+Xi73QCLvaoAjIy4oN01n6Re3b5u2B+aR8yc=",
                     "file_size": 123456
                 },
                 {
                     "name": "Quadratic equations",
                     "id": "5eb9e089-79cf-478d-9121-9ca3e7bb1d4a",
                     "uri": "s3://bucket/quadratic-equations.mp4",
-                    "sha256": "8f9e3a4ae7d86c4abdf731a947fc90b607b82a0362da0b312e3b644defedb81f",
+                    "sha256": "j546SufYbEq99zGpR/yQtge4KgNi2gsxLjtkTe/tuB8=",
                     "file_size": 123457
                 },
                 {
                     "name": "Cubic equations",
                     "id": "9e0f44b6-3dc6-4f56-8c9f-7e28feac1d03",
                     "uri": "s3://bucket/cubic-equations.mp4",
-                    "sha256": "8b9522ce42fb02dd100b575714d935a4502872afccee80f7a65d466389a5bef8",
+                    "sha256": "i5UizkL7At0QC1dXFNk1pFAocq/M7oD3pl1GY4mlvvg=",
                     "file_size": 123458
                 }
             ]
@@ -492,14 +337,14 @@ pub mod test {
                     "name": "Riemann sum",
                     "id": "eddb4450-a9ff-4a4b-ad81-2a8b78998405",
                     "uri": "s3://bucket/riemann-sum.mp4",
-                    "sha256": "a6d3b80cd14f78b21ffbf5995bbda38ad8834459557782d245ed720134d36fc4",
+                    "sha256": "ptO4DNFPeLIf+/WZW72jitiDRFlVd4LSRe1yATTTb8Q=",
                     "file_size": 123459
                 },
                 {
                     "name": "List of integrals",
                     "id": "f47e6cdc-1bcf-439a-9ea4-038dc7153648",
                     "uri": "s3://bucket/list-of-integrals.mp4",
-                    "sha256": "98780990e94fb55d0b88ebcd78fe82f069eac547731a4b0822332d826c970aec",
+                    "sha256": "mHgJkOlPtV0LiOvNeP6C8GnqxUdzGksIIjMtgmyXCuw=",
                     "file_size": 123460
                 }
             ]
@@ -524,8 +369,7 @@ pub mod test {
                                 .or_fail()?,
                             uri: "s3://bucket/linear-equations.mp4".parse().or_fail()?,
                             sha256:
-                                Sha256("0b88b2dec2be5e2ef74022ef6a8023232e28374d67e917b76f9bb607e691f327"
-                                    .to_string()),
+                                Sha256::try_from_human_string("0b88b2dec2be5e2ef74022ef6a8023232e28374d67e917b76f9bb607e691f327").or_fail()?,
                             file_size: 123456,
                         },
                         Video {
@@ -534,8 +378,7 @@ pub mod test {
                                 .or_fail()?,
                             uri: "s3://bucket/quadratic-equations.mp4".parse().or_fail()?,
                             sha256:
-                                Sha256("8f9e3a4ae7d86c4abdf731a947fc90b607b82a0362da0b312e3b644defedb81f"
-                                    .to_string()),
+                                Sha256::try_from_human_string("8f9e3a4ae7d86c4abdf731a947fc90b607b82a0362da0b312e3b644defedb81f").or_fail()?,
                             file_size: 123457,
                         },
                         Video {
@@ -544,8 +387,7 @@ pub mod test {
                                 .or_fail()?,
                             uri: "s3://bucket/cubic-equations.mp4".parse().or_fail()?,
                             sha256:
-                                Sha256("8b9522ce42fb02dd100b575714d935a4502872afccee80f7a65d466389a5bef8"
-                                    .to_string()),
+                                Sha256::try_from_human_string("8b9522ce42fb02dd100b575714d935a4502872afccee80f7a65d466389a5bef8").or_fail()?,
                             file_size: 123458,
                         },
                     ]
@@ -559,8 +401,7 @@ pub mod test {
                                 .or_fail()?,
                             uri: "s3://bucket/riemann-sum.mp4".parse().or_fail()?,
                             sha256:
-                                Sha256("a6d3b80cd14f78b21ffbf5995bbda38ad8834459557782d245ed720134d36fc4"
-                                    .to_string()),
+                                Sha256::try_from_human_string("a6d3b80cd14f78b21ffbf5995bbda38ad8834459557782d245ed720134d36fc4").or_fail()?,
                             file_size: 123459,
                         },
                         Video {
@@ -569,8 +410,7 @@ pub mod test {
                                 .or_fail()?,
                             uri: "s3://bucket/list-of-integrals.mp4".parse().or_fail()?,
                             sha256:
-                                Sha256("98780990e94fb55d0b88ebcd78fe82f069eac547731a4b0822332d826c970aec"
-                                    .to_string()),
+                                Sha256::try_from_human_string("98780990e94fb55d0b88ebcd78fe82f069eac547731a4b0822332d826c970aec").or_fail()?,
                             file_size: 123460,
                         },
                     ]

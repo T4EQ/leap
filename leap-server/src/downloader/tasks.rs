@@ -331,8 +331,8 @@ async fn download_job_task(ctx: DownloadContext, job: Job) -> Result<(), Downloa
     let hash = hasher.finalize();
     let hash = hash.as_slice();
     let expected_hash = video.sha256.as_bytes();
-    if hash != &expected_hash[..] {
-        let hash: crate::manifest::Sha256 = hash.try_into().expect("Should have 32 bytes");
+    if hash != expected_hash {
+        let hash: crate::types::sha256::Sha256 = hash.try_into().expect("Should have 32 bytes");
         let err_msg = &format!("Got hash: {hash}. Expected: {}", video.sha256);
         translate_error(ctx.db.set_download_failed(video.id, err_msg).await)?;
         tracing::error!("{}", err_msg);
@@ -346,6 +346,7 @@ async fn download_job_task(ctx: DownloadContext, job: Job) -> Result<(), Downloa
 
 #[cfg(test)]
 pub mod test {
+    use crate::types::sha256::Sha256;
     use std::{str::FromStr, sync::Arc, time::Duration};
 
     use crate::{
@@ -376,10 +377,10 @@ pub mod test {
                             id: uuid::Uuid::from_str("bf978778-1c5d-44b3-b2c1-1cc253563799")
                                 .or_fail()?,
                             uri: "s3://bucket/linear-equations.mp4".parse().or_fail()?,
-                            sha256:
-                                "0b88b2dec2be5e2ef74022ef6a8023232e28374d67e917b76f9bb607e691f327"
-                                    .try_into()
-                                    .or_fail()?,
+                            sha256: Sha256::try_from_base64(
+                                "C4iy3sK+Xi73QCLvaoAjIy4oN01n6Re3b5u2B+aR8yc=",
+                            )
+                            .or_fail()?,
                             file_size: 123456,
                         },
                         Video {
@@ -387,10 +388,10 @@ pub mod test {
                             id: uuid::Uuid::from_str("5eb9e089-79cf-478d-9121-9ca3e7bb1d4a")
                                 .or_fail()?,
                             uri: "s3://bucket/quadratic-equations.mp4".parse().or_fail()?,
-                            sha256:
-                                "8f9e3a4ae7d86c4abdf731a947fc90b607b82a0362da0b312e3b644defedb81f"
-                                    .try_into()
-                                    .or_fail()?,
+                            sha256: Sha256::try_from_base64(
+                                "j546SufYbEq99zGpR/yQtge4KgNi2gsxLjtkTe/tuB8=",
+                            )
+                            .or_fail()?,
                             file_size: 123457,
                         },
                     ],
@@ -403,10 +404,10 @@ pub mod test {
                             id: uuid::Uuid::from_str("eddb4450-a9ff-4a4b-ad81-2a8b78998405")
                                 .or_fail()?,
                             uri: "s3://bucket/riemann-sum.mp4".parse().or_fail()?,
-                            sha256:
-                                "a6d3b80cd14f78b21ffbf5995bbda38ad8834459557782d245ed720134d36fc4"
-                                    .try_into()
-                                    .or_fail()?,
+                            sha256: Sha256::try_from_base64(
+                                "ptO4DNFPeLIf+/WZW72jitiDRFlVd4LSRe1yATTTb8Q=",
+                            )
+                            .or_fail()?,
                             file_size: 123459,
                         },
                         Video {
@@ -414,10 +415,10 @@ pub mod test {
                             id: uuid::Uuid::from_str("f47e6cdc-1bcf-439a-9ea4-038dc7153648")
                                 .or_fail()?,
                             uri: "s3://bucket/list-of-integrals.mp4".parse().or_fail()?,
-                            sha256:
-                                "98780990e94fb55d0b88ebcd78fe82f069eac547731a4b0822332d826c970aec"
-                                    .try_into()
-                                    .or_fail()?,
+                            sha256: Sha256::try_from_base64(
+                                "mHgJkOlPtV0LiOvNeP6C8GnqxUdzGksIIjMtgmyXCuw=",
+                            )
+                            .or_fail()?,
                             file_size: 123460,
                         },
                     ],
@@ -443,9 +444,10 @@ pub mod test {
                         id: uuid::Uuid::from_str("5eb9e089-79cf-478d-9121-9ca3e7bb1d4a")
                             .or_fail()?,
                         uri: "s3://bucket/quadratic-equations.mp4".parse().or_fail()?,
-                        sha256: "8f9e3a4ae7d86c4abdf731a947fc90b607b82a0362da0b312e3b644defedb81f"
-                            .try_into()
-                            .or_fail()?,
+                        sha256: Sha256::try_from_base64(
+                            "j546SufYbEq99zGpR/yQtge4KgNi2gsxLjtkTe/tuB8=",
+                        )
+                        .or_fail()?,
                         file_size: 123457,
                     },
                     Video {
@@ -453,9 +455,10 @@ pub mod test {
                         id: uuid::Uuid::from_str("eddb4450-a9ff-4a4b-ad81-2a8b78998405")
                             .or_fail()?,
                         uri: "s3://bucket/riemann-sum.mp4".parse().or_fail()?,
-                        sha256: "a6d3b80cd14f78b21ffbf5995bbda38ad8834459557782d245ed720134d36fc4"
-                            .try_into()
-                            .or_fail()?,
+                        sha256: Sha256::try_from_base64(
+                            "ptO4DNFPeLIf+/WZW72jitiDRFlVd4LSRe1yATTTb8Q=",
+                        )
+                        .or_fail()?,
                         file_size: 123459,
                     },
                 ],
@@ -675,8 +678,7 @@ pub mod test {
                     name: "Quadratic equations".to_string(),
                     id,
                     uri: "s3://bucket/quadratic-equations.mp4".parse().or_fail()?,
-                    sha256: "8f9e3a4ae7d86c4abdf731a947fc90b607b82a0362da0b312e3b644defedb81f"
-                        .try_into()
+                    sha256: Sha256::try_from_base64("j546SufYbEq99zGpR/yQtge4KgNi2gsxLjtkTe/tuB8=")
                         .or_fail()?,
                     file_size: 123457,
                 },
@@ -741,8 +743,7 @@ pub mod test {
                     name: name.clone(),
                     id,
                     uri,
-                    sha256: "9f64a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a"
-                        .try_into()
+                    sha256: Sha256::try_from_base64("n2SnR+G5fxMfq7a0Rylsm28CAeefs8U1bmx36JtqgGo=")
                         .or_fail()?,
                     file_size: 4,
                 },
@@ -802,8 +803,7 @@ pub mod test {
                     name: name.clone(),
                     id,
                     uri,
-                    sha256: "9f64a747e1b97f131fabb6b447296c9b6f0201e79fb3c5356e6c77e89b6a806a"
-                        .try_into()
+                    sha256: Sha256::try_from_base64("n2SnR+G5fxMfq7a0Rylsm28CAeefs8U1bmx36JtqgGo=")
                         .or_fail()?,
                     file_size: 4,
                 },

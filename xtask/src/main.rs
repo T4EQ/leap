@@ -34,6 +34,7 @@ struct RunArgs {
 #[derive(Debug, clap::Subcommand)]
 enum Command {
     Build(BuildArgs),
+    Frontend(BuildArgs),
     Run(RunArgs),
 }
 
@@ -43,16 +44,9 @@ struct Args {
     command: Command,
 }
 
-fn build(args: &BuildArgs) -> anyhow::Result<()> {
+fn build_frontend(args: &BuildArgs) -> anyhow::Result<()> {
     let release = args.release.then_some("--release");
     let offline = args.offline.then_some("--offline");
-    let num_threads = &(args.num_threads > 0).then_some(format!("-j={}", args.num_threads));
-    let target = &args
-        .target
-        .as_ref()
-        .map(|target| format!("--target={target}"));
-
-    // First build the frontend and package it using trunk
     let shell = xshell::Shell::new()?;
     {
         let _dir = shell.push_dir("leap-site");
@@ -64,7 +58,21 @@ fn build(args: &BuildArgs) -> anyhow::Result<()> {
         cmd!(shell, "trunk build {offline...} {release...}").run()?;
     }
 
-    // Now build the backend
+    Ok(())
+}
+
+fn build(args: &BuildArgs) -> anyhow::Result<()> {
+    let release = args.release.then_some("--release");
+    let offline = args.offline.then_some("--offline");
+    let num_threads = &(args.num_threads > 0).then_some(format!("-j={}", args.num_threads));
+    let target = &args
+        .target
+        .as_ref()
+        .map(|target| format!("--target={target}"));
+
+    build_frontend(args)?;
+
+    let shell = xshell::Shell::new()?;
     cmd!(
         shell,
         "cargo build {offline...} {release...} {num_threads...} {target...}"
@@ -96,6 +104,7 @@ fn main() -> anyhow::Result<()> {
     let args = Args::parse();
     match &args.command {
         Command::Build(args) => build(args)?,
+        Command::Frontend(args) => build_frontend(args)?,
         Command::Run(args) => run(args)?,
     }
 

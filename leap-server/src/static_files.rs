@@ -37,7 +37,7 @@ fn register_static_files(
         };
 
         app.service(web::resource(INDEX_PAGE).get(handler));
-        app.default_service(web::route().to(handler));
+        app.default_service(web::get().to(handler));
     }
 
     app.service(

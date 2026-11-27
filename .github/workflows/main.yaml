@@ -51,7 +51,7 @@ jobs:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
     - name: 'Install rust-toolchain.toml'
       run: rustup toolchain install
-    - uses: cargo-bins/cargo-binstall@6c06e003d09d426d051398c7ed2a9d12188a46d2 # main
+    - uses: cargo-bins/cargo-binstall@32100a49ba437bae66d89bf15c8db78545576f66 # main
     - run: cargo binstall trunk
     - run: cargo br
 
@@ -62,7 +62,7 @@ jobs:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
     - name: 'Install rust-toolchain.toml'
       run: rustup toolchain install
-    - uses: cargo-bins/cargo-binstall@6c06e003d09d426d051398c7ed2a9d12188a46d2 # main
+    - uses: cargo-bins/cargo-binstall@32100a49ba437bae66d89bf15c8db78545576f66 # main
     - run: cargo binstall cargo-nextest
     - run: cargo binstall trunk
     - run: cargo frontend
@@ -97,7 +97,7 @@ jobs:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
     - name: 'Install rust-toolchain.toml'
       run: rustup toolchain install
-    - uses: cargo-bins/cargo-binstall@6c06e003d09d426d051398c7ed2a9d12188a46d2 # main
+    - uses: cargo-bins/cargo-binstall@32100a49ba437bae66d89bf15c8db78545576f66 # main
     - run: cargo binstall cargo-llvm-cov
     - run: cargo binstall trunk
     - run: cargo frontend
